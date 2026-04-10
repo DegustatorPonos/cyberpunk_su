@@ -1,8 +1,10 @@
 import './App.css';
+import './Fonts.css';
 import Sidebar from './Emelents/Sidebar';
 import { createBrowserRouter, RouterProvider } from 'react-router';
 import IndexElement from './Emelents/IndexElement';
 import ClassesList from './Emelents/ClassList';
+import Topbar from './Emelents/Topbar';
 
 const router = createBrowserRouter([
     {
@@ -17,9 +19,12 @@ const router = createBrowserRouter([
 
 function App() {
     return (
-        <div>
-            <Sidebar />
-            <RouterProvider router={router} />
+        <div className='App'>
+            <Topbar />
+            <div className='AppContents'>
+                <Sidebar />
+                <RouterProvider router={router} />
+            </div>
         </div>
     );
 }

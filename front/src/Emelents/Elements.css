@@ -1,0 +1,56 @@
+.Sidebar {
+    --width: 300px;
+    height: 100%;
+    min-width: var(--width);
+    max-width: var(--width);
+    min-height: 1000px;
+    background-color: var(--colorscheme-white);
+    border: 2px solid var(--colorscheme-gray);
+    color: var(--colorscheme-gray);
+
+
+    background: var(--colorscheme-white);
+    background-image: radial-gradient(var(--colorscheme-gray) 1px, transparent 0);
+    background-size: 4px 4px;
+}
+
+.Topbar {
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+}
+
+.Topbar > h1 {
+    margin-bottom: 0px;
+}
+
+.TopbarContents {
+    border-top: 2px solid var(--colorscheme-black);
+    display: flex;
+}
+
+.TopbarContents > h2 {
+    --width: 280px;
+    min-width: var(--width);
+    max-width: var(--width);
+    min-height: 30px;
+    padding: 5px;
+    margin-top: 0px;
+    background-color: var(--colorscheme-black);
+    color: var(--colorscheme-white);
+    text-align: center;
+}
+
+.SidebarContents {
+    --width: 260px;
+    min-width: var(--width);
+    max-width: var(--width);
+    background-color: var(--colorscheme-white);
+    color: var(--colorscheme-gray);
+    margin: 20px;
+}
+
+.SidebarContents > h1 {
+    color: var(--colorscheme-gray);
+    text-align: center;
+}

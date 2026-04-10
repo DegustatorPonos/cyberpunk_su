@@ -1,12 +1,15 @@
+import './Elements.css';
+
 function Sidebar() {
     return (
         <nav className='Sidebar'>
-            <h1> Test </h1>
-            <ul>
-            <li> <a href="/classes"> Class list </a> </li>
-            </ul>
+            <div className='SidebarContents'>
+                <h1> Contents </h1>
+                <ul>
+                </ul>
+            </div>
         </nav>
-    )
+    );
 }
 
 export default Sidebar;

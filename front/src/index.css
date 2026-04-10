@@ -1,3 +1,14 @@
+:root {
+    --colorscheme-black: #050A0E;
+    --colorscheme-blue: #00F0FF;
+    --colorscheme-white: #FAFAFA;
+    --colorscheme-gray: #3C3C3C;
+}
+
+* {
+    color: var(--colorscheme-black);
+}
+
 body {
     padding: 0;
     margin: 0;
@@ -8,6 +19,12 @@ body {
     -moz-osx-font-smoothing: grayscale;
     position: absolute;
     top: 0px;
+    min-height: 100%;
+    min-width: 100%;
+}
+
+body > #root > div {
+    height: 1000px;
 }
 
 code {
