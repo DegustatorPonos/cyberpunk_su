@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { AllowedLanguages, LanguageContext } from '../Locales/Context';
-import { GetString } from '../Locales/Locales';
+import { GetLocalizedString } from '../Locales/Locales';
 import './Elements.css';
 
 type SidebarProps = {
@@ -13,11 +13,11 @@ function Sidebar({setLang}: SidebarProps) {
     return (
         <nav className='Sidebar'>
             <div className='SidebarContents'>
-                <button onClick={() => setLang("ru")}> ru </button>
-                <button onClick={() => setLang("en")}> en </button>
-                <h1> {GetString("contents", language)} </h1>
+                <h1> {GetLocalizedString("contents", language)} </h1>
                 <ul>
                 </ul>
+                <button onClick={() => setLang("ru")}> ru </button>
+                <button onClick={() => setLang("en")}> en </button>
             </div>
         </nav>
     );

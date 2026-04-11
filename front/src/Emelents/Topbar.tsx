@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { LanguageContext } from "../Locales/Context";
-import { GetString } from "../Locales/Locales";
+import { GetLocalizedString } from "../Locales/Locales";
 
 const defaultPathName = 'index';
 
@@ -12,7 +12,7 @@ function Topbar() {
         <div className="Topbar">
             <h1> View from the edge </h1>
             <div className="TopbarContents">
-                <h2> {GetString(path, language)} </h2>
+                <h2> {GetLocalizedString(path, language)} </h2>
             </div>
         </div>
     );

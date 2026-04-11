@@ -1,11 +1,13 @@
-import { useState } from "react";
-import { GetString } from "../Locales/Locales";
+import { useContext, useState } from "react";
+import { LanguageContext } from "../Locales/Context";
+import { GetLocalizedString } from "../Locales/Locales";
 
 function IndexElement() {
-    const [lang, setLang] = useState('en');
+    var lang = useContext(LanguageContext);
+
     return (
         <div>
-            <h1> {GetString("index", lang)} </h1>
+            <h1> {GetLocalizedString("index", lang)} </h1>
         </div>
     );
 }

@@ -7,6 +7,7 @@ import ClassesList from './Emelents/ClassList';
 import Topbar from './Emelents/Topbar';
 import { AllowedLanguages, LanguageContext } from './Locales/Context';
 import { useState } from 'react';
+import { ReadCurrentLocale, SaveCurrentLocale } from './Locales/Locales';
 
 const router = createBrowserRouter([
     {
@@ -20,10 +21,11 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-    const [lang, setLang] = useState<AllowedLanguages>("en");
+    const [lang, setLang] = useState<AllowedLanguages>(ReadCurrentLocale());
 
     function SetLanguage(newLang: AllowedLanguages) {
         console.log(`Setting a new language ${newLang}...`);
+        SaveCurrentLocale(newLang);
         setLang(newLang);
     }
 

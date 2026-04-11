@@ -1,5 +1,4 @@
-import { createContext } from 'vm';
-import { LanguageContext } from './Context';
+import { AllowedLanguages } from './Context';
 import en_us from './en_US';
 import Language from './Language';
 import ru_ru from './ru_RU';
@@ -12,13 +11,14 @@ const nameToLocale = new Map<string, Language>([
     ['ru', ru_ru],
 ]);
 
-function getCurrentLocale(lang: string): Language {
+function getCurrentLocale(lang: AllowedLanguages): Language {
     const outp = nameToLocale.get(lang);
     if (outp == undefined) return defaultLocale;
     return outp;
 }
 
-export function GetString(query: string, lang: string): string {
+export function GetLocalizedString(query: string, lang: AllowedLanguages): string {
+    query = query.toLowerCase();
     const locale = getCurrentLocale(lang);
     const found = locale.LocalizedStrings.get(query);
     if (found == undefined) return defaultLocale.LocalizedStrings.get(query) || query;
@@ -27,4 +27,14 @@ export function GetString(query: string, lang: string): string {
 
 export function SetLocale(locale: string, setLang: (x: string) => void) {
     if (nameToLocale.has(locale)) setLang(locale);
+}
+
+const StorageLanguageName = "language";
+
+export function SaveCurrentLocale(lang: AllowedLanguages) {
+    localStorage.setItem(StorageLanguageName, lang)
+}
+
+export function ReadCurrentLocale(): AllowedLanguages {
+    return localStorage.getItem(StorageLanguageName) as AllowedLanguages || "en"; 
 }
