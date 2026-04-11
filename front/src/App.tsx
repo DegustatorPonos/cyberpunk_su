@@ -8,6 +8,8 @@ import Topbar from './Emelents/Topbar';
 import { AllowedLanguages, LanguageContext } from './Locales/Context';
 import { useState } from 'react';
 import { ReadCurrentLocale, SaveCurrentLocale } from './Locales/Locales';
+import LegalNote from './Emelents/LegalNote';
+import WeaponsIndex from './Pages/Weapons';
 
 const router = createBrowserRouter([
     {
@@ -17,6 +19,10 @@ const router = createBrowserRouter([
     {
         path: "/classes",
         element: (<ClassesList />),
+    },
+    {
+        path: "/weapons",
+        element: (<WeaponsIndex />),
     },
 ]);
 
@@ -39,6 +45,7 @@ function App() {
                         />
                     <RouterProvider router={router} />
                 </div>
+                <LegalNote />
             </div>
         </LanguageContext.Provider>
     );

@@ -8,6 +8,7 @@ lang.LocalizedStrings = new Map<string, string>([
     ["contents", "Содержание"],
     ["classes list", "Список классов"],
     ["weapons", "Оружие"],
+    ["weapons index", "Список вооружения"],
 ]);
 
 export default lang;

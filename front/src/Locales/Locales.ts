@@ -18,10 +18,10 @@ function getCurrentLocale(lang: AllowedLanguages): Language {
 }
 
 export function GetLocalizedString(query: string, lang: AllowedLanguages): string {
-    query = query.toLowerCase();
+    var lowerQuery = query.toLowerCase();
     const locale = getCurrentLocale(lang);
-    const found = locale.LocalizedStrings.get(query);
-    if (found == undefined) return defaultLocale.LocalizedStrings.get(query) || query;
+    const found = locale.LocalizedStrings.get(lowerQuery);
+    if (found == undefined) return defaultLocale.LocalizedStrings.get(lowerQuery) || query;
     return found;
 }
 
