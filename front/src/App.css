@@ -8,3 +8,14 @@
 .App > div {
     padding: 10px;
 }
+
+.AppContents > div {
+    padding-left: 10px;
+}
+
+.AppContents > div > h1 {
+    background-color: var(--colorscheme-black);
+    color: var(--colorscheme-white);
+    padding-left: 10px;
+    padding-right: 10px;
+}

@@ -35,7 +35,7 @@
     max-width: var(--width);
     min-height: 30px;
     padding: 5px;
-    margin-top: 0px;
+    margin: 0px;
     background-color: var(--colorscheme-black);
     color: var(--colorscheme-white);
     text-align: center;
@@ -48,6 +48,7 @@
     background-color: var(--colorscheme-white);
     color: var(--colorscheme-gray);
     margin: 20px;
+    text-transform: uppercase;
 }
 
 .SidebarContents > h1 {

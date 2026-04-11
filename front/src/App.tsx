@@ -5,6 +5,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router';
 import IndexElement from './Emelents/IndexElement';
 import ClassesList from './Emelents/ClassList';
 import Topbar from './Emelents/Topbar';
+import { AllowedLanguages, LanguageContext } from './Locales/Context';
+import { useState } from 'react';
 
 const router = createBrowserRouter([
     {
@@ -18,14 +20,25 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+    const [lang, setLang] = useState<AllowedLanguages>("en");
+
+    function SetLanguage(newLang: AllowedLanguages) {
+        console.log(`Setting a new language ${newLang}...`);
+        setLang(newLang);
+    }
+
     return (
-        <div className='App'>
-            <Topbar />
-            <div className='AppContents'>
-                <Sidebar />
-                <RouterProvider router={router} />
+        <LanguageContext.Provider value={lang}>
+            <div className='App'>
+                <Topbar />
+                <div className='AppContents'>
+                    <Sidebar 
+                        setLang={SetLanguage}
+                        />
+                    <RouterProvider router={router} />
+                </div>
             </div>
-        </div>
+        </LanguageContext.Provider>
     );
 }
 
