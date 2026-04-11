@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { LanguageContext } from "../Locales/Context";
 import { GetLocalizedString } from "../Locales/Locales";
 

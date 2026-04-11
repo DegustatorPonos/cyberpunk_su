@@ -48,10 +48,36 @@
     background-color: var(--colorscheme-white);
     color: var(--colorscheme-gray);
     margin: 20px;
-    text-transform: uppercase;
 }
 
 .SidebarContents > h1 {
     color: var(--colorscheme-gray);
     text-align: center;
+    text-transform: uppercase;
+}
+
+.ContentsList {
+    padding-left: 20px;
+    color: var(--colorscheme-gray);
+}
+
+.ContentsList > li > span {
+    display: flex;
+}
+
+.ContentsList > li > span > span {
+    flex-grow: 1;
+    font-family: "Rubik Dirt", system-ui;
+    color: var(--colorscheme-gray);
+    font-style: italic;
+    overflow: hidden;
+}
+
+.ContentsList > li::marker {
+    color: var(--colorscheme-gray);
+}
+
+.ContentsList > li > span > a {
+    font-style: italic;
+    color: var(--colorscheme-gray);
 }

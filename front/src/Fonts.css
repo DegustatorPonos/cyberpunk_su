@@ -5,3 +5,7 @@ h1, h2 {
     font-weight: 400;
     font-style: normal;
 }
+
+a {
+    font-family: "Rubik Dirt", system-ui;
+}
