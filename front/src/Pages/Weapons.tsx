@@ -6,8 +6,13 @@ function WeaponsIndex() {
     var lang = useContext(LanguageContext);
 
     return (
-        <h1> {GetLocalizedString("Weapons index", lang)} </h1>
+        <div>
+            <h1> {GetLocalizedString("Weapons index", lang)} </h1>
+        </div>
     );
+}
+
+function WeaponsType() {
 }
 
 export default WeaponsIndex;
