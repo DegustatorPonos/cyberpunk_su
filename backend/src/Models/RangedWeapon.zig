@@ -1,6 +1,8 @@
 const std = @import("std");
 
 pub const RangedWeaponType = struct {
+    Name: []const u8,
+
     WeaponType: []const u8,
     Accuracy: i8,
     Concealability: []const u8,
@@ -29,8 +31,11 @@ pub const RangedWeaponType = struct {
     }
 };
 
-test "CompactNotation" {
-    var testType: RangedWeaponType = .{
+// ==================== tests ====================
+
+fn getTestType() RangedWeaponType {
+    return .{
+        .Name = "any",
         .WeaponType = "P",
         .Accuracy = -1,
         .Concealability = "P",
@@ -41,6 +46,10 @@ test "CompactNotation" {
         .RateOfFire = 2,
         .Reliability = "ST"
     };
+}
+
+test "CompactNotation" {
+    var testType = getTestType();
 
     try std.testing.expectEqualStrings(
         "P/-1/P/E/1D6(5mm)/8/2/ST", 

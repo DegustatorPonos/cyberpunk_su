@@ -1,7 +1,7 @@
 const std = @import("std");
 const backend = @import("backend");
 const httpz = @import("httpz");
-const tests = @import("tests.zig");
+const db = @import("Database/Connection.zig");
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -16,8 +16,15 @@ pub fn main() !void {
         server.deinit();
     }
 
+
     var router = try server.router(.{});
     router.get("/", index, .{});
+
+    @import("API/WeaponsAPI.zig").RegisterEndpoints(router);
+    
+    // PSQL connection
+    try db.Connect(allocator);
+    defer db.Disconnect();
 
     try server.listen();
 }
@@ -28,5 +35,5 @@ fn index(_: *httpz.Request, res: *httpz.Response) !void {
 }
 
 test "TestRunner" {
-    std.testing.refAllDecls(@This());
+    _ = @import("Models/RangedWeapon.zig");
 }

@@ -96,6 +96,18 @@ pub fn build(b: *std.Build) void {
 
     exe.root_module.addImport("httpz", httpz.module("httpz"));
 
+
+    // postgres driver
+    
+    const pg_module = b.dependency("pg", .{}).module("pg");
+
+    exe.root_module.addImport("pg", pg_module);
+
+    // .env
+
+    const dotenv_module = b.dependency("dotenv", .{}).module("dotenv");
+    exe.root_module.addImport("dotenv", dotenv_module);
+
     // This creates a top level step. Top level steps have a name and can be
     // invoked by name when running `zig build` (e.g. `zig build run`).
     // This will evaluate the `run` step rather than the default step.
