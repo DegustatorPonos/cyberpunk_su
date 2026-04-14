@@ -7,11 +7,12 @@ pub fn RegisterEndpoints(router: *httpz.Router(void, *const fn (*httpz.request.R
     router.get("/weapons", testEndpoint, .{});
     router.post("/weapons/ranged", newRangedWeapon, .{});
     router.get("/weapons/ranged", getAllRangedWeapons, .{});
+    // router.get("/weapons/ranged/:id", getAllRangedWeapons, .{});
 }
 
 fn testEndpoint(_: *httpz.Request, res: *httpz.Response) !void {
     const testType: model.RangedWeaponType = .{
-        .Id = 0,
+        .Id = "any",
         .Name = "BudgetArms C-13",
         .WeaponType = "P",
         .Accuracy = -1,
@@ -39,6 +40,15 @@ fn getAllRangedWeapons(_: *httpz.Request, res: *httpz.Response) !void {
     defer found.deinit(allocator);
 
     try res.json(found.items, .{});
+}
+
+fn getRangedWeaponById(req: *httpz.Request, res: *httpz.Response) !void {
+    const id = req.param("id") orelse {
+        res.status = 400;
+        return;
+    };
+
+    _ = id;
 }
 
 fn newRangedWeapon(req: *httpz.Request, res: *httpz.Response) !void {

@@ -2,7 +2,7 @@ const std = @import("std");
 const pg = @import("pg");
 
 pub const RangedWeaponType = struct {
-    Id: i32,
+    Id: []const u8,
     Name: []const u8,
 
     WeaponType: []const u8,
@@ -39,7 +39,7 @@ pub const RangedWeaponType = struct {
     // actual DB schema and use * as a fields selector
     pub fn Map(row: *const pg.Row) !RangedWeaponType {
         return RangedWeaponType {
-            .Id = try row.get(i32, 0),
+            .Id = try row.get([]const u8, 0),
             .Name = try row.get([]const u8, 1),
             .WeaponType = try row.get([]const u8, 2),
             .Accuracy = try row.get(i32, 3),
@@ -54,13 +54,14 @@ pub const RangedWeaponType = struct {
             .UpdatedAt = try row.get(i64, 12),
         };
     }
+
 };
 
 // ==================== tests ====================
 
 fn getTestType() RangedWeaponType {
     return .{
-        .Id = 0,
+        .Id = "any",
         .Name = "any",
         .WeaponType = "P",
         .Accuracy = -1,

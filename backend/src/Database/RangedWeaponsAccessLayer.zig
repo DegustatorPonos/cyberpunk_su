@@ -18,3 +18,7 @@ pub fn GetAll(alloc: std.mem.Allocator) !std.ArrayList(model.RangedWeaponType) {
     }
     return outp;
 }
+
+// pub fn GetByDisplayName(alloc: std.mem.Allocator, displayName: []const u8) !model.RangedWeaponType {
+    // const query = "SELECT * FROM RangedWeapons WHERE Id = ";
+// }
