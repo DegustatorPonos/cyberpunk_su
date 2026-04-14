@@ -2,7 +2,7 @@ const std = @import("std");
 const pg = @import("pg");
 const dotenv = @import("dotenv");
 
-var pool: *pg.Pool = undefined;
+pub var pool: *pg.Pool = undefined;
 
 pub fn Connect(alloc: std.mem.Allocator) !void {
     var env = try dotenv.init(alloc, ".env");
@@ -26,3 +26,5 @@ pub fn Connect(alloc: std.mem.Allocator) !void {
 pub fn Disconnect() void {
     pool.deinit();
 }
+
+pub const RangedWeapons = @import("RangedWeaponsAccessLayer.zig");

@@ -1,17 +1,22 @@
 const std = @import("std");
+const pg = @import("pg");
 
 pub const RangedWeaponType = struct {
+    Id: i32,
     Name: []const u8,
 
     WeaponType: []const u8,
-    Accuracy: i8,
+    Accuracy: i32,
     Concealability: []const u8,
     Avaliability: []const u8,
     Damage: []const u8,
     Ammunition: []const u8,
-    NumberOfShots: u8,
-    RateOfFire: u8,
+    NumberOfShots: u31,
+    RateOfFire: u32,
     Reliability: []const u8,
+
+    CreatedAt: i64,
+    UpdatedAt: i64,
 
     pub fn GetCompactNotation(self: *RangedWeaponType, separator: u8) ![]const u8 {
         var b: [64]u8 = undefined;
@@ -29,12 +34,33 @@ pub const RangedWeaponType = struct {
                 self.Reliability,
             });
     }
+
+    // Parses the db row and returns the result. You are expected to use the
+    // actual DB schema and use * as a fields selector
+    pub fn Map(row: *const pg.Row) !RangedWeaponType {
+        return RangedWeaponType {
+            .Id = try row.get(i32, 0),
+            .Name = try row.get([]const u8, 1),
+            .WeaponType = try row.get([]const u8, 2),
+            .Accuracy = try row.get(i32, 3),
+            .Concealability = try row.get([]const u8, 4),
+            .Avaliability = try row.get([]const u8, 5),
+            .Damage = try row.get([]const u8, 6),
+            .Ammunition = try row.get([]const u8, 7),
+            .NumberOfShots = @intCast(try row.get(i32, 8)),
+            .RateOfFire = @intCast(try row.get(i32, 9)),
+            .Reliability = try row.get([]const u8, 10),
+            .CreatedAt = try row.get(i64, 11),
+            .UpdatedAt = try row.get(i64, 12),
+        };
+    }
 };
 
 // ==================== tests ====================
 
 fn getTestType() RangedWeaponType {
     return .{
+        .Id = 0,
         .Name = "any",
         .WeaponType = "P",
         .Accuracy = -1,
@@ -44,7 +70,9 @@ fn getTestType() RangedWeaponType {
         .Ammunition = "5mm",
         .NumberOfShots = 8,
         .RateOfFire = 2,
-        .Reliability = "ST"
+        .Reliability = "ST",
+        .CreatedAt = 0,
+        .UpdatedAt = 0,
     };
 }
 

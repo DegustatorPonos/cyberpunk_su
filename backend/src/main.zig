@@ -16,7 +16,6 @@ pub fn main() !void {
         server.deinit();
     }
 
-
     var router = try server.router(.{});
     router.get("/", index, .{});
 
@@ -25,6 +24,9 @@ pub fn main() !void {
     // PSQL connection
     try db.Connect(allocator);
     defer db.Disconnect();
+
+    var outp = try db.RangedWeapons.GetAll(allocator);
+    outp.deinit(allocator);
 
     try server.listen();
 }
