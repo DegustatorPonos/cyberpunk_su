@@ -29,3 +29,77 @@ pub fn GetByDisplayName(allocator: std.mem.Allocator, displayName: []const u8) !
     try row.deinit();
     return outp;
 }
+
+pub fn Update(displayName: []const u8, updatedModel: *model.RangedWeaponType) !void {
+    const query = 
+        \\ UPDATE RangedWeapons SET
+        \\ id = $1,
+        \\ name = $2,
+        \\ weapon_type = $3,
+        \\ accuracy = $4,
+        \\ concealability = $5,
+        \\ availability = $6,
+        \\ damage = $7,
+        \\ ammunition = $8,
+        \\ number_of_shots = $9,
+        \\ rate_of_fire = $10,
+        \\ reliability = $11,
+        \\ updated_at = CURRENT_TIMESTAMP
+        \\ WHERE id = $12
+        ;
+
+    _ = try conn.pool.exec(query, .{
+        updatedModel.Id,
+        updatedModel.Name,
+        updatedModel.WeaponType,
+        updatedModel.Accuracy,
+        updatedModel.Concealability,
+        updatedModel.Avaliability,
+        updatedModel.Damage,
+        updatedModel.Ammunition,
+        updatedModel.NumberOfShots,
+        updatedModel.RateOfFire,
+        updatedModel.Reliability,
+        displayName,
+    });
+}
+
+pub fn Create(NewWeapon: *model.RangedWeaponType) !void {
+    if (try Exists(NewWeapon.Id)) return conn.ResultErrors.AlreadyExists;
+    const query = 
+        \\ INSERT INTO RangedWeapons 
+        \\ (id, name, weapon_type, accuracy, concealability, availability, damage, ammunition, number_of_shots, rate_of_fire, reliability)
+        \\ VALUES
+        \\ ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        ;
+
+    _ = try conn.pool.exec(query, .{
+        NewWeapon.Id,
+        NewWeapon.Name,
+        NewWeapon.WeaponType,
+        NewWeapon.Accuracy,
+        NewWeapon.Concealability,
+        NewWeapon.Avaliability,
+        NewWeapon.Damage,
+        NewWeapon.Ammunition,
+        NewWeapon.NumberOfShots,
+        NewWeapon.RateOfFire,
+        NewWeapon.Reliability,
+    });
+}
+
+pub fn Exists(displayName: []const u8) !bool {
+    const query = "SELECT Id FROM RangedWeapons WHERE Id = $1";
+    var row = try conn.pool.row(query, .{displayName}) orelse {
+        return false;
+    };
+    try row.deinit();
+    return true;
+}
+
+pub fn Delete(displayName: []const u8) !void {
+    const query = "DELETE FROM RangedWeapons WHERE Id = $1";
+    _ = try conn.pool.exec(query, .{
+        displayName,
+    });
+}

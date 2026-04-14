@@ -4,6 +4,7 @@ const dotenv = @import("dotenv");
 
 pub const ResultErrors = error {
     NotFound,
+    AlreadyExists
 };
 
 pub var pool: *pg.Pool = undefined;
