@@ -31,6 +31,7 @@ pub fn GetByDisplayName(allocator: std.mem.Allocator, displayName: []const u8) !
 }
 
 pub fn Update(displayName: []const u8, updatedModel: *model.RangedWeaponType) !void {
+    if (!try Exists(displayName)) return conn.ResultErrors.NotFound;
     const query = 
         \\ UPDATE RangedWeapons SET
         \\ id = $1,

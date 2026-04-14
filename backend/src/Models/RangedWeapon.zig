@@ -77,6 +77,41 @@ pub const RangedWeaponType = struct {
 
 };
 
+
+// The full model is causing error.MissingFields if we don't specify readonly
+// CreatedAt and UpdatedAt fields
+pub const RequestBody = struct {
+    Id: []const u8,
+    Name: []const u8,
+    WeaponType: []const u8,
+    Accuracy: i32,
+    Concealability: []const u8,
+    Avaliability: []const u8,
+    Damage: []const u8,
+    Ammunition: []const u8,
+    NumberOfShots: u31,
+    RateOfFire: u32,
+    Reliability: []const u8,
+
+    pub fn ToModel(this: RequestBody) RangedWeaponType {
+        return RangedWeaponType {
+            .Id = this.Id,
+            .Name = this.Name,
+            .WeaponType = this.WeaponType,
+            .Accuracy = this.Accuracy,
+            .Concealability = this.Concealability,
+            .Avaliability = this.Avaliability,
+            .Damage = this.Damage,
+            .Ammunition = this.Ammunition,
+            .NumberOfShots = this.NumberOfShots,
+            .RateOfFire = this.RateOfFire,
+            .Reliability = this.Reliability,
+            .CreatedAt = 0,
+            .UpdatedAt = 0
+        };
+    }
+};
+
 // ==================== tests ====================
 
 fn getTestType() RangedWeaponType {
@@ -103,4 +138,29 @@ test "CompactNotation" {
     try std.testing.expectEqualStrings(
         "P/-1/P/E/1D6(5mm)/8/2/ST", 
         try testType.GetCompactNotation('/'));
+}
+
+test "Request to model" {
+    var req: RequestBody = .{
+        .Id = "any",
+        .Name = "any",
+        .WeaponType = "P",
+        .Accuracy = -1,
+        .Concealability = "P",
+        .Avaliability = "E",
+        .Damage = "1D6",
+        .Ammunition = "5mm",
+        .NumberOfShots = 8,
+        .RateOfFire = 2,
+        .Reliability = "ST",
+    };
+
+    const expected = getTestType();
+    const result = req.ToModel();
+
+    try std.testing.expectEqualStrings(expected.Id, result.Id);
+    try std.testing.expectEqualStrings(expected.Name, result.Name);
+    try std.testing.expectEqual(expected.Accuracy, result.Accuracy);
+    try std.testing.expectEqual(0, result.CreatedAt);
+    try std.testing.expectEqual(0, result.UpdatedAt);
 }

@@ -5,33 +5,11 @@ const db = @import("../Database/Connection.zig");
 const errDesc = @import("ErrorDescription.zig");
 
 pub fn RegisterEndpoints(router: *httpz.Router(void, *const fn (*httpz.request.Request, *httpz.response.Response) anyerror!void)) void {
-    router.get("/weapons", testEndpoint, .{});
     router.get("/weapons/ranged", getAllRangedWeapons, .{});
     router.post("/weapons/ranged", newRangedWeapon, .{});
     router.get("/weapons/ranged/:id", getRangedWeaponById, .{});
     router.put("/weapons/ranged/:id", updateRangedWeapon, .{});
     router.delete("/weapons/ranged/:id", deleteRangedWeapon, .{});
-}
-
-fn testEndpoint(_: *httpz.Request, res: *httpz.Response) !void {
-    const testType: model.RangedWeaponType = .{
-        .Id = "any",
-        .Name = "BudgetArms C-13",
-        .WeaponType = "P",
-        .Accuracy = -1,
-        .Concealability = "P",
-        .Avaliability = "E",
-        .Damage = "1D6",
-        .Ammunition = "5mm",
-        .NumberOfShots = 8,
-        .RateOfFire = 2,
-        .Reliability = "ST",
-        .CreatedAt = 0,
-        .UpdatedAt = 0,
-    };
-
-    res.status = 200;
-    try res.json(testType, .{});
 }
 
 fn getAllRangedWeapons(req: *httpz.Request, res: *httpz.Response) !void {
@@ -51,6 +29,7 @@ fn getRangedWeaponById(req: *httpz.Request, res: *httpz.Response) !void {
         // Empty result handling
         if (err == db.ResultErrors.NotFound) {
             res.status = 204;
+            try res.json(errDesc.NotFoundDescriptor, .{});
             return;
         }
         return err;
@@ -60,12 +39,13 @@ fn getRangedWeaponById(req: *httpz.Request, res: *httpz.Response) !void {
 }
 
 fn newRangedWeapon(req: *httpz.Request, res: *httpz.Response) !void {
-    var body = try req.json(model.RangedWeaponType) orelse {
+    var body = try req.json(model.RequestBody) orelse {
         res.status = 400;
         return;
     };
 
-    db.RangedWeapons.Create(&body) catch |err| {
+    var weapon = body.ToModel();
+    db.RangedWeapons.Create(&weapon) catch |err| {
         if (err == db.ResultErrors.AlreadyExists) {
             res.status = 400;
             try res.json(errDesc.ErrorDescriptor { 
@@ -79,19 +59,26 @@ fn newRangedWeapon(req: *httpz.Request, res: *httpz.Response) !void {
     res.status = 201;
 }
 
-
 fn updateRangedWeapon(req: *httpz.Request, res: *httpz.Response) !void {
     const id = req.param("id") orelse {
         res.status = 400;
         return;
     };
 
-    var body = try req.json(model.RangedWeaponType) orelse {
+    var body = try req.json(model.RequestBody) orelse {
         res.status = 400;
         return;
     };
 
-    try db.RangedWeapons.Update(id, &body);
+    var weapon = body.ToModel();
+    db.RangedWeapons.Update(id, &weapon) catch |err| {
+        if (err == db.ResultErrors.NotFound) {
+            res.status = 204;
+            try res.json(errDesc.NotFoundDescriptor, .{});
+            return;
+        }
+        return err;
+    };  
 }
 
 fn deleteRangedWeapon(req: *httpz.Request, res: *httpz.Response) !void {
