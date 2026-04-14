@@ -2,6 +2,10 @@ const std = @import("std");
 const pg = @import("pg");
 const dotenv = @import("dotenv");
 
+pub const ResultErrors = error {
+    NotFound,
+};
+
 pub var pool: *pg.Pool = undefined;
 
 pub fn Connect(alloc: std.mem.Allocator) !void {

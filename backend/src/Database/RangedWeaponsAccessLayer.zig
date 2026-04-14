@@ -13,12 +13,19 @@ pub fn GetAll(alloc: std.mem.Allocator) !std.ArrayList(model.RangedWeaponType) {
 
     var outp: std.ArrayList(model.RangedWeaponType) = .empty;
     while (try result.next()) |row| {
-        const newRW = try model.RangedWeaponType.Map(&row);
+        const newRW = try model.RangedWeaponType.MapWithAlloc(alloc, &row);
         try outp.append(alloc, newRW);
     }
     return outp;
 }
 
-// pub fn GetByDisplayName(alloc: std.mem.Allocator, displayName: []const u8) !model.RangedWeaponType {
-    // const query = "SELECT * FROM RangedWeapons WHERE Id = ";
-// }
+pub fn GetByDisplayName(allocator: std.mem.Allocator, displayName: []const u8) !model.RangedWeaponType {
+    const query = "SELECT * FROM RangedWeapons WHERE Id = $1";
+    var row = try conn.pool.row(query, .{displayName}) orelse {
+        return conn.ResultErrors.NotFound;
+    };
+
+    const outp = try model.RangedWeaponType.MapWithAlloc(allocator, &row.row);
+    try row.deinit();
+    return outp;
+}

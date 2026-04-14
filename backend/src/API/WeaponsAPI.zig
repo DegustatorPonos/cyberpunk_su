@@ -6,8 +6,8 @@ const db = @import("../Database/Connection.zig");
 pub fn RegisterEndpoints(router: *httpz.Router(void, *const fn (*httpz.request.Request, *httpz.response.Response) anyerror!void)) void {
     router.get("/weapons", testEndpoint, .{});
     router.post("/weapons/ranged", newRangedWeapon, .{});
+    router.get("/weapons/ranged/:id", getRangedWeaponById, .{});
     router.get("/weapons/ranged", getAllRangedWeapons, .{});
-    // router.get("/weapons/ranged/:id", getAllRangedWeapons, .{});
 }
 
 fn testEndpoint(_: *httpz.Request, res: *httpz.Response) !void {
@@ -31,13 +31,9 @@ fn testEndpoint(_: *httpz.Request, res: *httpz.Response) !void {
     try res.json(testType, .{});
 }
 
-fn getAllRangedWeapons(_: *httpz.Request, res: *httpz.Response) !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
-    defer _ = gpa.deinit();
-
-    var found = try db.RangedWeapons.GetAll(allocator);
-    defer found.deinit(allocator);
+fn getAllRangedWeapons(req: *httpz.Request, res: *httpz.Response) !void {
+    var found = try db.RangedWeapons.GetAll(req.arena);
+    defer found.deinit(req.arena);
 
     try res.json(found.items, .{});
 }
@@ -48,7 +44,16 @@ fn getRangedWeaponById(req: *httpz.Request, res: *httpz.Response) !void {
         return;
     };
 
-    _ = id;
+    const found = db.RangedWeapons.GetByDisplayName(req.arena, id) catch |err| {
+        // Empty result handling
+        if (err == db.ResultErrors.NotFound) {
+            res.status = 204;
+            return;
+        }
+        return err;
+    };
+
+    try res.json(found, .{});
 }
 
 fn newRangedWeapon(req: *httpz.Request, res: *httpz.Response) !void {

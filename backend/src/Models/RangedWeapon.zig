@@ -55,6 +55,26 @@ pub const RangedWeaponType = struct {
         };
     }
 
+    // Parses the db row and returns the result. You are expected to use the
+    // actual DB schema and use * as a fields selector
+    pub fn MapWithAlloc(allocator: std.mem.Allocator, row: *const pg.Row) !RangedWeaponType {
+        return RangedWeaponType {
+            .Id = try allocator.dupe(u8, try row.get([]const u8, 0)),
+            .Name = try allocator.dupe(u8, try row.get([]const u8, 1)),
+            .WeaponType = try allocator.dupe(u8, try row.get([]const u8, 2)),
+            .Accuracy = try row.get(i32, 3),
+            .Concealability = try allocator.dupe(u8, try row.get([]const u8, 4)),
+            .Avaliability = try allocator.dupe(u8, try row.get([]const u8, 5)),
+            .Damage = try allocator.dupe(u8, try row.get([]const u8, 6)),
+            .Ammunition = try allocator.dupe(u8, try row.get([]const u8, 7)),
+            .NumberOfShots = @intCast(try row.get(i32, 8)),
+            .RateOfFire = @intCast(try row.get(i32, 9)),
+            .Reliability = try allocator.dupe(u8, try row.get([]const u8, 10)),
+            .CreatedAt = try row.get(i64, 11),
+            .UpdatedAt = try row.get(i64, 12),
+        };
+    }
+
 };
 
 // ==================== tests ====================
