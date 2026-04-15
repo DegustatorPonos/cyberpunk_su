@@ -15,9 +15,10 @@ CREATE TABLE RangedWeapons (
 );
 
 CREATE TABLE Users (
-    Id UUID PRIMARY KEY,
+    Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     Username TEXT NOT NULL UNIQUE,
     /* SHA512 encryption */
     PasswordHash VARCHAR(512) NOT NULL UNIQUE,
     Role TEXT NOT NULL
 );
+

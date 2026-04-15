@@ -62,12 +62,12 @@ fn newRangedWeapon(_: *Handler.Handler, req: *httpz.Request, res: *httpz.Respons
 
 fn updateRangedWeapon(_: *Handler.Handler, req: *httpz.Request, res: *httpz.Response) !void {
     const id = req.param("id") orelse {
-        res.setStatus(.no_content);
+        res.setStatus(.bad_request);
         return;
     };
 
     var body = try req.json(model.RequestBody) orelse {
-        res.setStatus(.no_content);
+        res.setStatus(.bad_request);
         return;
     };
 

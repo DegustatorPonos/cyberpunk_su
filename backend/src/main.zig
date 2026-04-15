@@ -24,6 +24,7 @@ pub fn main() !void {
     router.get("/", index, .{});
 
     @import("API/WeaponsAPI.zig").RegisterEndpoints(router);
+    @import("API/AuthenticationAPI.zig").RegisterEndpoints(router);
     
     // PSQL connection
     try db.Connect(allocator);

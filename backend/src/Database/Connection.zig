@@ -32,4 +32,5 @@ pub fn Disconnect() void {
     pool.deinit();
 }
 
+pub const Users = @import("UserAccessLayer.zig");
 pub const RangedWeapons = @import("RangedWeaponsAccessLayer.zig");
