@@ -2,14 +2,18 @@ const std = @import("std");
 const backend = @import("backend");
 const httpz = @import("httpz");
 const db = @import("Database/Connection.zig");
+const handler = @import("Handler.zig");
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
+    
+    var httpHandler = handler.Handler {
+    };
 
-    var server = try httpz.Server(void).init(allocator, .{
+    var server = try httpz.Server(*handler.Handler).init(allocator, .{
         .address = .all(6969),
-    }, {});
+    }, &httpHandler);
 
     defer {
         server.stop();
@@ -31,7 +35,7 @@ pub fn main() !void {
     try server.listen();
 }
 
-fn index(_: *httpz.Request, res: *httpz.Response) !void {
+fn index(_: *handler.Handler, _: *httpz.Request, res: *httpz.Response) !void {
     res.status = 200;
     try res.json(.{.status = "OK"}, .{});
 }
