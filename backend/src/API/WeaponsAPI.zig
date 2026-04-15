@@ -48,7 +48,7 @@ fn newRangedWeapon(_: *Handler.Handler, req: *httpz.Request, res: *httpz.Respons
     var weapon = body.ToModel();
     db.RangedWeapons.Create(&weapon) catch |err| {
         if (err == db.ResultErrors.AlreadyExists) {
-            res.status = 400;
+            res.setStatus(.bad_request);
             try res.json(errDesc.ErrorDescriptor { 
                 .Message = "A weapon with that ID already exists"
             }, .{});

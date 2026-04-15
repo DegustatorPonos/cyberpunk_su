@@ -42,4 +42,5 @@ fn index(_: *handler.Handler, _: *httpz.Request, res: *httpz.Response) !void {
 
 test "TestRunner" {
     _ = @import("Models/RangedWeapon.zig");
+    _ = @import("Models/User.zig");
 }

@@ -14,3 +14,10 @@ CREATE TABLE RangedWeapons (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE Users (
+    Id UUID PRIMARY KEY,
+    Username TEXT NOT NULL UNIQUE,
+    /* SHA512 encryption */
+    PasswordHash VARCHAR(512) NOT NULL UNIQUE,
+    Role TEXT NOT NULL
+);
