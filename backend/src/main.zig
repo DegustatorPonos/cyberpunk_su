@@ -7,7 +7,7 @@ const handler = @import("Handler.zig");
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
-    
+
     var httpHandler = handler.Handler {
     };
 
@@ -43,4 +43,5 @@ fn index(_: *handler.Handler, _: *httpz.Request, res: *httpz.Response) !void {
 test "TestRunner" {
     _ = @import("Models/RangedWeapon.zig");
     _ = @import("Models/User.zig");
+    _ = @import("Authentication/Password.zig");
 }
