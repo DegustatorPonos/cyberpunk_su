@@ -7,6 +7,7 @@ const Handler = @import("../Handler.zig");
 
 pub fn RegisterEndpoints(router: *httpz.Router(*Handler.Handler,*const fn (*Handler.Handler, *httpz.request.Request, *httpz.response.Response) anyerror!void)) void {
     router.post("/auth/register", register, .{});
+    router.post("/auth/login", login, .{});
 }
 
 fn register(_: *Handler.Handler, req: *httpz.Request, res: *httpz.Response) !void {
@@ -27,4 +28,27 @@ fn register(_: *Handler.Handler, req: *httpz.Request, res: *httpz.Response) !voi
         return;
     };
     res.setStatus(.created);
+}
+
+fn login(_: *Handler.Handler, req: *httpz.Request, res: *httpz.Response) !void {
+    const body = try req.json(model.RequestBody) orelse {
+        res.setStatus(.bad_request);
+        return;
+    };
+
+    const username = body.Username;
+    const pwd = body.Password;
+
+    _ = db.Users.GetByCredentials(req.arena, username, pwd) catch |err| {
+        if (err == db.ResultErrors.NotFound) {
+            res.setStatus(.unauthorized);
+            try res.json(errDesc.ErrorDescriptor {
+                .Message = "Login or password is incorrect"
+            }, .{});
+            return;
+        }
+        return err;
+    };
+
+    // TODO: add token here
 }

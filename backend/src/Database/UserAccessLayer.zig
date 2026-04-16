@@ -5,7 +5,7 @@ const conn = @import("Connection.zig");
 const std = @import("std");
 const pg = @import("pg");
 const model = @import("../Models/User.zig");
-
+const pwd = @import("../Authentication/Password.zig");
 
 pub fn Create(NewUser: *model.User) !void {
     if (try ExistsByUsername(NewUser.Username)) 
@@ -27,14 +27,19 @@ pub fn Create(NewUser: *model.User) !void {
 pub fn GetByCredentials(allocator: std.mem.Allocator, username: []const u8, passwordHash: []const u8) !model.User {
     const query = 
         \\ SELECT * FROM Users WHERE
-        \\ Username = $1 AND PasswordHash = $2
+        \\ Username = $1
         ;
-    var row = try conn.pool.row(query, .{ username, passwordHash }) orelse {
+    var row = try conn.pool.row(query, .{ username }) orelse {
         return conn.ResultErrors.NotFound;
     };
 
-    const outp = try model.User.MapWithAllocator(allocator, row.row);
+    const outp = try model.User.MapWithAllocator(allocator, &row.row);
     try row.deinit();
+
+    if (!pwd.CheckPasswordHash(outp.PasswordHash, passwordHash)) {
+        return conn.ResultErrors.NotFound;
+    }
+
     return outp;
 }
 

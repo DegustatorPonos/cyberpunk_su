@@ -50,7 +50,7 @@ pub const User = struct {
     // Parses the db row and returns the result. You are expected to use the
     // actual DB schema and use * as a fields selector
     pub fn MapWithAllocator(allocator: std.mem.Allocator, row: *const pg.Row) !User {
-        const role_record = try allocator.dupe(u8, row.get([]const u8, 3));
+        const role_record = try allocator.dupe(u8, try row.get([]const u8, 3));
 
         return User {
             .Id = try allocator.dupe(u8, try row.get([]const u8, 0)),
