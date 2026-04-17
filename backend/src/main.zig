@@ -27,9 +27,10 @@ pub fn main() !void {
     try redis.WriteToTopic("test", redis.Message {
         .Key = "xdd",
         .Value = "ddx",
+        .SecondsToLive = 10,
     });
 
-    std.debug.print("redis response: {s}\n", .{try redis.ReadFromTopic("test", "xdd") orelse "not found"});
+    std.debug.print("redis response: {s}\n", .{redis.ReadFromTopic("test", "xdd") orelse "not found"});
 
     var router = try server.router(.{});
     router.get("/", index, .{});

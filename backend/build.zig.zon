@@ -44,10 +44,6 @@
             .url = "git+https://github.com/zigster64/dotenv.zig?ref=main#7d50f9fe0ce223d94d180d5a5a49fe0df5bc3743",
             .hash = "dotenv-0.1.0-Q9TxeuEMAADw6cHl9uKbjwunS0PlYYc1yw9Ol82TwAAm",
         },
-        .okredis = .{
-            .url = "git+https://github.com/kristoff-it/zig-okredis?ref=master#f00a50311e5fcc5a688fc027bd0a7ebbe8e2f0cc",
-            .hash = "okredis-0.1.0-Cg726sgHBAClOCW_xaaqoS6m_uyiw3iD9Qj20AAzGcTL",
-        },
     },
     .paths = .{
         "build.zig",

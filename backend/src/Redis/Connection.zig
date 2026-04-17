@@ -23,20 +23,28 @@ pub fn Disconnect() void {
 
 pub const Message = struct {
     Key: []const u8,
-    Value: []const u8
+    Value: []const u8,
+    SecondsToLive: u16
 };
 
 pub fn WriteToTopic(topic: []const u8, message: Message) !void {
-    _ = redis.redisCommand(connection, "SET %s:%s %s", 
+    _ = redis.redisCommand(connection, "SET %s:%s %s EX %d", 
         topic.ptr,
         message.Key.ptr,
-        message.Value.ptr); 
+        message.Value.ptr,
+        message.SecondsToLive); 
 }
 
-pub fn ReadFromTopic(topic: []const u8, Key: []const u8) !?[]const u8 {
-    const resp: *redis.redisReply = @alignCast(@ptrCast(redis.redisCommand(connection, "GET %s:%s", 
-        topic.ptr,
-        Key.ptr)));
+pub fn ReadFromTopic(topic: []const u8, Key: []const u8) ?[]const u8 {
+    const raw = redis.redisCommand(connection, "GET %s:%s", 
+            topic.ptr,
+            Key.ptr);
+    if (raw == null) {
+        return null;
+    }
+    const resp: *redis.redisReply = @alignCast(@ptrCast(raw));
+    if (resp.type != redis.REDIS_REPLY_STRING) {
+        return null;
+    }
     return std.mem.span(resp.str);
 }
-
