@@ -8,6 +8,13 @@ const redis = @import("Redis/Connection.zig");
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
+   
+    // PSQL connection
+    try db.Connect(allocator);
+    defer db.Disconnect();
+
+    try redis.Connect();
+    defer redis.Disconnect();
 
     var httpHandler = handler.Handler {
     };
@@ -20,30 +27,12 @@ pub fn main() !void {
         server.stop();
         server.deinit();
     }
-
-    try redis.Connect();
-    defer redis.Disconnect();
-
-    try redis.WriteToTopic("test", redis.Message {
-        .Key = "xdd",
-        .Value = "ddx",
-        .SecondsToLive = 10,
-    });
-
-    std.debug.print("redis response: {s}\n", .{redis.ReadFromTopic("test", "xdd") orelse "not found"});
-
+   
     var router = try server.router(.{});
     router.get("/", index, .{});
 
     @import("API/WeaponsAPI.zig").RegisterEndpoints(router);
     @import("API/AuthenticationAPI.zig").RegisterEndpoints(router);
-    
-    // PSQL connection
-    try db.Connect(allocator);
-    defer db.Disconnect();
-
-    var outp = try db.RangedWeapons.GetAll(allocator);
-    outp.deinit(allocator);
 
     try server.listen();
 }
@@ -57,4 +46,5 @@ test "TestRunner" {
     _ = @import("Models/RangedWeapon.zig");
     _ = @import("Models/User.zig");
     _ = @import("Authentication/Password.zig");
+    _ = redis;
 }

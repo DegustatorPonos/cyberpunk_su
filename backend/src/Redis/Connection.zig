@@ -48,3 +48,19 @@ pub fn ReadFromTopic(topic: []const u8, Key: []const u8) ?[]const u8 {
     }
     return std.mem.span(resp.str);
 }
+
+test "Redis connection" {
+    try Connect();
+    defer Disconnect();
+
+    try WriteToTopic("test", Message {
+        .Key = "key",
+        .Value = "value",
+        .SecondsToLive = 1,
+    });
+
+    try std.testing.expectEqualStrings("value", ReadFromTopic("test", "key") orelse "not found");
+    std.Thread.sleep(1_500_000_000);
+    // KVP TTL check
+    try std.testing.expectEqualStrings("not found", ReadFromTopic("test", "key") orelse "not found");
+}
