@@ -28,11 +28,15 @@ pub const Message = struct {
 };
 
 pub fn WriteToTopic(topic: []const u8, message: Message) !void {
-    _ = redis.redisCommand(connection, "SET %s:%s %s EX %d", 
-        topic.ptr,
-        message.Key.ptr,
-        message.Value.ptr,
+    const rep = redis.redisCommand(connection, "SET %b:%b %b EX %d", 
+        topic.ptr, topic.len,
+        message.Key.ptr, message.Key.len,
+        message.Value.ptr, message.Value.len,
         message.SecondsToLive); 
+
+    if (rep != null) {
+        redis.freeReplyObject(rep);
+    }
 }
 
 pub fn ReadFromTopic(topic: []const u8, Key: []const u8) ?[]const u8 {
@@ -41,6 +45,9 @@ pub fn ReadFromTopic(topic: []const u8, Key: []const u8) ?[]const u8 {
             Key.ptr);
     if (raw == null) {
         return null;
+    }
+    defer {
+        redis.freeReplyObject(raw);
     }
     const resp: *redis.redisReply = @alignCast(@ptrCast(raw));
     if (resp.type != redis.REDIS_REPLY_STRING) {

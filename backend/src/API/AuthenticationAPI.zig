@@ -4,6 +4,7 @@ const model = @import("../Models/User.zig");
 const db = @import("../Database/Connection.zig");
 const errDesc = @import("ErrorDescription.zig");
 const Handler = @import("../Handler.zig");
+const Tokens = @import("../Authentication/Tokens.zig");
 
 pub fn RegisterEndpoints(router: *httpz.Router(*Handler.Handler,*const fn (*Handler.Handler, *httpz.request.Request, *httpz.response.Response) anyerror!void)) void {
     router.post("/auth/register", register, .{});
@@ -39,7 +40,7 @@ fn login(_: *Handler.Handler, req: *httpz.Request, res: *httpz.Response) !void {
     const username = body.Username;
     const pwd = body.Password;
 
-    _ = db.Users.GetByCredentials(req.arena, username, pwd) catch |err| {
+    const user = db.Users.GetByCredentials(req.arena, username, pwd) catch |err| {
         if (err == db.ResultErrors.NotFound) {
             res.setStatus(.unauthorized);
             try res.json(errDesc.ErrorDescriptor {
@@ -49,6 +50,9 @@ fn login(_: *Handler.Handler, req: *httpz.Request, res: *httpz.Response) !void {
         }
         return err;
     };
+
+    const token = try Tokens.GenerateNewSession(res.arena, user);
+    try res.json(.{ .Token = token } , .{});
 
     // TODO: add token here
 }
