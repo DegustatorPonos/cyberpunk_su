@@ -3,6 +3,7 @@ const backend = @import("backend");
 const httpz = @import("httpz");
 const db = @import("Database/Connection.zig");
 const handler = @import("Handler.zig");
+const redis = @import("Redis/Connection.zig");
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -19,6 +20,16 @@ pub fn main() !void {
         server.stop();
         server.deinit();
     }
+
+    try redis.Connect();
+    defer redis.Disconnect();
+
+    try redis.WriteToTopic("test", redis.Message {
+        .Key = "xdd",
+        .Value = "ddx",
+    });
+
+    std.debug.print("redis response: {s}\n", .{try redis.ReadFromTopic("test", "xdd") orelse "not found"});
 
     var router = try server.router(.{});
     router.get("/", index, .{});

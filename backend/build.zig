@@ -93,20 +93,20 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
-
     exe.root_module.addImport("httpz", httpz.module("httpz"));
 
-
     // postgres driver
-    
     const pg_module = b.dependency("pg", .{}).module("pg");
-
     exe.root_module.addImport("pg", pg_module);
 
     // .env
-
     const dotenv_module = b.dependency("dotenv", .{}).module("dotenv");
     exe.root_module.addImport("dotenv", dotenv_module);
+
+    // Redis
+    exe.root_module.linkSystemLibrary("hiredis", .{
+        .needed = true,
+    });
 
     // This creates a top level step. Top level steps have a name and can be
     // invoked by name when running `zig build` (e.g. `zig build run`).
