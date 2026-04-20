@@ -20,6 +20,9 @@ pub fn Init() !void {
 fn generateSessionToken(buf: []u8) []u8 {
     for (0..64) |i| {
         buf[i] = std.Random.intRangeAtMost(rnd, u8, 'A', 'z');
+        if (buf[i] == '\\') {
+            buf[i] = '@';
+        }
     }
     return buf;
 }
@@ -39,4 +42,20 @@ pub fn GenerateNewSession(allocator: std.mem.Allocator, user: userModel.User) ![
     });
 
     return newToken;
+}
+
+pub fn GetUserFromToken(allocator: std.mem.Allocator, token: []const u8) !?std.json.Parsed(userModel.User) {
+    const saved = try redis.ReadFromTopic(allocator, topicName, token) orelse {
+        std.debug.print("The token was not found \n", .{});
+        return null;
+    };
+    std.debug.print("FromRedis: {s}\n", .{ saved });
+    const parsed = try std.json.parseFromSlice(
+        userModel.User, 
+        allocator,
+        saved, 
+        .{ 
+            .ignore_unknown_fields = true,
+        });
+    return parsed;
 }

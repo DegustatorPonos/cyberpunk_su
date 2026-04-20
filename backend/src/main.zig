@@ -40,9 +40,12 @@ pub fn main() !void {
     try server.listen();
 }
 
-fn index(_: *handler.Handler, _: *httpz.Request, res: *httpz.Response) !void {
-    res.status = 200;
-    try res.json(.{.status = "OK"}, .{});
+fn index(data: *handler.RequestData, _: *httpz.Request, res: *httpz.Response) !void {
+    if (data.User == null) {
+        try res.json(.{.status = "Unauthnticated"}, .{});
+        return;
+    }
+    try res.json(data.User, .{});
 }
 
 test "TestRunner" {

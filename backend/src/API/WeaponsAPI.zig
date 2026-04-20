@@ -5,7 +5,7 @@ const db = @import("../Database/Connection.zig");
 const errDesc = @import("ErrorDescription.zig");
 const Handler = @import("../Handler.zig");
 
-pub fn RegisterEndpoints(router: *httpz.Router(*Handler.Handler,*const fn (*Handler.Handler, *httpz.request.Request, *httpz.response.Response) anyerror!void)) void {
+pub fn RegisterEndpoints(router: *httpz.Router(*Handler.Handler,*const fn (*Handler.RequestData, *httpz.request.Request, *httpz.response.Response) anyerror!void)) void {
     router.get("/weapons/ranged", getAllRangedWeapons, .{});
     router.post("/weapons/ranged", newRangedWeapon, .{});
     router.get("/weapons/ranged/:id", getRangedWeaponById, .{});
@@ -13,14 +13,14 @@ pub fn RegisterEndpoints(router: *httpz.Router(*Handler.Handler,*const fn (*Hand
     router.delete("/weapons/ranged/:id", deleteRangedWeapon, .{});
 }
 
-fn getAllRangedWeapons(_: *Handler.Handler, req: *httpz.Request, res: *httpz.Response) !void {
+fn getAllRangedWeapons(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
     var found = try db.RangedWeapons.GetAll(req.arena);
     defer found.deinit(req.arena);
 
     try res.json(found.items, .{});
 }
 
-fn getRangedWeaponById(_: *Handler.Handler, req: *httpz.Request, res: *httpz.Response) !void {
+fn getRangedWeaponById(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
     const id = req.param("id") orelse {
         res.setStatus(.bad_request);
         return;
@@ -39,7 +39,7 @@ fn getRangedWeaponById(_: *Handler.Handler, req: *httpz.Request, res: *httpz.Res
     try res.json(found, .{});
 }
 
-fn newRangedWeapon(_: *Handler.Handler, req: *httpz.Request, res: *httpz.Response) !void {
+fn newRangedWeapon(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
     var body = try req.json(model.RequestBody) orelse {
         res.setStatus(.bad_request);
         return;
@@ -60,7 +60,7 @@ fn newRangedWeapon(_: *Handler.Handler, req: *httpz.Request, res: *httpz.Respons
     res.setStatus(.created);
 }
 
-fn updateRangedWeapon(_: *Handler.Handler, req: *httpz.Request, res: *httpz.Response) !void {
+fn updateRangedWeapon(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
     const id = req.param("id") orelse {
         res.setStatus(.bad_request);
         return;
@@ -82,7 +82,7 @@ fn updateRangedWeapon(_: *Handler.Handler, req: *httpz.Request, res: *httpz.Resp
     };  
 }
 
-fn deleteRangedWeapon(_: *Handler.Handler, req: *httpz.Request, res: *httpz.Response) !void {
+fn deleteRangedWeapon(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
     const id = req.param("id") orelse {
         res.setStatus(.bad_request);
         return;

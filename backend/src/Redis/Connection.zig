@@ -39,10 +39,10 @@ pub fn WriteToTopic(topic: []const u8, message: Message) !void {
     }
 }
 
-pub fn ReadFromTopic(topic: []const u8, Key: []const u8) ?[]const u8 {
-    const raw = redis.redisCommand(connection, "GET %s:%s", 
-            topic.ptr,
-            Key.ptr);
+pub fn ReadFromTopic(allocator: std.mem.Allocator, topic: []const u8, Key: []const u8) !?[]const u8 {
+    const raw = redis.redisCommand(connection, "GET %b:%b", 
+            topic.ptr, topic.len,
+            Key.ptr, Key.len);
     if (raw == null) {
         return null;
     }
@@ -53,7 +53,7 @@ pub fn ReadFromTopic(topic: []const u8, Key: []const u8) ?[]const u8 {
     if (resp.type != redis.REDIS_REPLY_STRING) {
         return null;
     }
-    return std.mem.span(resp.str);
+    return try allocator.dupe(u8, resp.str[0..resp.len]);
 }
 
 test "Redis connection" {
@@ -66,8 +66,18 @@ test "Redis connection" {
         .SecondsToLive = 1,
     });
 
-    try std.testing.expectEqualStrings("value", ReadFromTopic("test", "key") orelse "not found");
+    const alloc = std.testing.allocator;
+
+    var resp = try ReadFromTopic(alloc, "test", "key");
+    try std.testing.expectEqualStrings("value", resp orelse "not found");
     std.Thread.sleep(1_500_000_000);
     // KVP TTL check
-    try std.testing.expectEqualStrings("not found", ReadFromTopic("test", "key") orelse "not found");
+    if (resp) |r|  {
+        alloc.free(r);
+    }
+    resp = try ReadFromTopic(alloc, "test", "key");
+    try std.testing.expectEqualStrings("not found", resp orelse "not found");
+    if (resp) |r|  {
+        defer alloc.free(r);
+    }
 }
