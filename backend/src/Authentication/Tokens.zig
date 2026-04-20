@@ -8,6 +8,10 @@ const token_ttl: u16 = 43_200; // 12 hours
 var prng: std.Random.DefaultPrng= undefined;
 var rnd: std.Random = undefined;
 
+const errors = error {
+    NotFound,
+};
+
 pub fn Init() !void {
     // Random enough
     var seed: u64 = undefined;
@@ -16,7 +20,7 @@ pub fn Init() !void {
     rnd = prng.random();
 }
 
-/// Generates a new token in the heap. Expects [64]u8 as an input 
+/// Generates a new token in the stack. Expects [64]u8 as an input 
 fn generateSessionToken(buf: []u8) []u8 {
     for (0..64) |i| {
         buf[i] = std.Random.intRangeAtMost(rnd, u8, 'A', 'z');
@@ -34,7 +38,7 @@ pub fn GenerateNewSession(allocator: std.mem.Allocator, user: userModel.User) ![
     // Redis cache 
     var string: std.io.Writer.Allocating = .init(allocator);
     defer string.deinit();
-    try string.writer.print("{f}", .{std.json.fmt(user, .{})});
+    try string.writer.print("{f}", .{ std.json.fmt(user, .{}) });
     try redis.WriteToTopic(topicName, redis.Message {
         .Key = token,
         .Value = string.written(),
@@ -46,12 +50,12 @@ pub fn GenerateNewSession(allocator: std.mem.Allocator, user: userModel.User) ![
 
 pub fn GetUserFromToken(allocator: std.mem.Allocator, token: []const u8) !?std.json.Parsed(userModel.User) {
     const saved = try redis.ReadFromTopic(allocator, topicName, token) orelse {
-        std.debug.print("The token was not found \n", .{});
-        return null;
+        // std.debug.print("The token was not found \n", .{});
+        return errors.NotFound;
     };
-    std.debug.print("FromRedis: {s}\n", .{ saved });
+
     const parsed = try std.json.parseFromSlice(
-        userModel.User, 
+        userModel.User,
         allocator,
         saved, 
         .{ 

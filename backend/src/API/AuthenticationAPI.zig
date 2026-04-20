@@ -7,8 +7,20 @@ const Handler = @import("../Handler.zig");
 const Tokens = @import("../Authentication/Tokens.zig");
 
 pub fn RegisterEndpoints(router: *httpz.Router(*Handler.Handler,*const fn (*Handler.RequestData, *httpz.request.Request, *httpz.response.Response) anyerror!void)) void {
+    router.get("/auth", getUser, .{});
     router.post("/auth/register", register, .{});
     router.post("/auth/login", login, .{});
+}
+
+fn getUser(data: *Handler.RequestData, _: *httpz.Request, res: *httpz.Response) !void { 
+    if (data.User == null) {
+        try res.json(.{.status = "Unauthnticated"}, .{});
+        return;
+    }
+    try res.json(.{ 
+        .Username = data.User.?.Username,
+        .Role = data.User.?.Role,
+    }, .{});
 }
 
 fn register(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {

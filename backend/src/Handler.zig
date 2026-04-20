@@ -29,7 +29,7 @@ pub const RequestData = struct {
 pub const Handler = struct {
     pub fn dispatch(_: *Handler, action: httpz.Action(*RequestData), req: *httpz.Request, res: *httpz.Response) !void {
         var data = try RequestData.Init(req);
-        std.debug.print("Data: {any}\n", .{ data });
+        // std.debug.print("Data: {any}\n", .{ data });
         try action(&data, req, res);
         std.debug.print("{any} {s}: {d}\n", .{req.method, req.url.raw, res.status});
     }
