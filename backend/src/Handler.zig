@@ -8,7 +8,7 @@ pub const RequestData = struct {
 
     pub fn Init(req: *httpz.Request) !RequestData {
         return .{
-            .User = try getUser(req),
+            .User = getUser(req),
         };
     }
 
@@ -16,6 +16,9 @@ pub const RequestData = struct {
         const header = req.header("authorization") orelse return null;
         const stripped = stripBearerPrefix(header);
         const parsed = tokens.GetUserFromToken(req.arena, stripped) catch |err| {
+            if (err == tokens.errors.NotFound) {
+                return null;
+            }
             std.debug.print("Failed to parse a user: {any}\n", .{ err });
             return err;
         } orelse {

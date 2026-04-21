@@ -8,7 +8,7 @@ const token_ttl: u16 = 43_200; // 12 hours
 var prng: std.Random.DefaultPrng= undefined;
 var rnd: std.Random = undefined;
 
-const errors = error {
+pub const errors = error {
     NotFound,
 };
 
