@@ -8,7 +8,7 @@ pub const RequestData = struct {
 
     pub fn Init(req: *httpz.Request) !RequestData {
         return .{
-            .User = getUser(req),
+            .User = try getUser(req),
         };
     }
 
@@ -26,6 +26,11 @@ pub const RequestData = struct {
         };
 
         return parsed.value;
+    }
+
+    pub fn CanUserAccess(self: RequestData, minimalRole: userModel.Role) bool {
+        if (self.User == null) return false;
+        return self.User.?.Role >= minimalRole;
     }
 };
 

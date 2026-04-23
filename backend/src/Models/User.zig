@@ -11,9 +11,9 @@ const RolesMap = std.static_string_map.StaticStringMap(Role).initComptime(.{
     .{ "editor", .editor },
 });
 
-pub const Role = enum {
-    user,
-    editor,
+pub const Role = enum (u8) {
+    user = 0,
+    editor = 1,
 
     pub fn ToString(self: Role) []const u8 {
         return switch (self) {

@@ -7,7 +7,7 @@ const pg = @import("pg");
 const model = @import("../Models/RangedWeapon.zig");
 
 pub fn GetAll(alloc: std.mem.Allocator) !std.ArrayList(model.RangedWeaponType) {
-    const query = "SELECT * FROM RangedWeapons";
+    const query = "SELECT * FROM RangedWeapons ORDER BY weapon_type";
     var result = try conn.pool.query(query, .{});
     defer _ = result.deinit();
 

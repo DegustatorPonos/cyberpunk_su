@@ -13,7 +13,7 @@
     padding-left: 10px;
 }
 
-.AppContents > div > h1 {
+.AppContents > div > h1, .AppContents > div > span > h1 {
     background-color: var(--colorscheme-black);
     color: var(--colorscheme-white);
     padding-left: 10px;

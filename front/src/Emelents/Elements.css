@@ -65,6 +65,10 @@
     display: flex;
 }
 
+.ContentsList > li > span {
+    display: flex;
+}
+
 .ContentsList > li > span > span {
     flex-grow: 1;
     font-family: "Rubik Dirt", system-ui;
@@ -87,4 +91,31 @@
     color: var(--colorscheme-gray);
     font-size: 15px;
     font-family: "Rubik Dirt", system-ui;
+}
+
+.WeaponsDiv {
+    flex-grow: 1;
+}
+
+.WeaponsDiv > span {
+    display: flex;
+}
+
+.WeaponTable {
+    width: 100%;
+}
+
+.WeaponTable > tbody > tr > td {
+  font-family: "Wix Madefor Text", sans-serif;
+}
+
+.WeaponTable, .WeaponTable > tbody, .WeaponTable > tbody > tr > td, .WeaponTable > tbody > tr {
+    border: 0px solid red;
+    border-collapse: collapse;
+}
+
+.CategoryName {
+    padding-top: 10px;
+    font-family: "Rubik Dirt", system-ui !important;
+    font-size: 20px;
 }

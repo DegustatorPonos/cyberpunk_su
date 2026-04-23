@@ -11,7 +11,7 @@ pub const RangedWeaponType = struct {
     Avaliability: []const u8,
     Damage: []const u8,
     Ammunition: []const u8,
-    NumberOfShots: u31,
+    NumberOfShots: u32,
     RateOfFire: u32,
     Reliability: []const u8,
 

@@ -26,12 +26,22 @@ pub fn main() !void {
         .address = .all(6969),
     }, &httpHandler);
 
+    const cors = try server.middleware(httpz.middleware.Cors, .{
+        .origin = "*",
+        .methods = "GET,POST,PUT,DELETE,OPTIONS",
+        .headers = "authorization,content-type",
+    });
+
     defer {
         server.stop();
         server.deinit();
     }
    
-    var router = try server.router(.{});
+    var router = try server.router(.{
+        .middlewares = &.{
+            cors
+        }
+    });
     router.get("/", index, .{});
 
     @import("API/WeaponsAPI.zig").RegisterEndpoints(router);
