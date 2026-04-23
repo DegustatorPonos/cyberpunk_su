@@ -103,19 +103,29 @@
 
 .WeaponTable {
     width: 100%;
+    table-layout: fixed;
 }
 
-.WeaponTable > tbody > tr > td {
-  font-family: "Wix Madefor Text", sans-serif;
+.WeaponTable > tbody > tr > td > a {
+  font-family: "Wix Madefor Text", sans-serif; 
 }
 
 .WeaponTable, .WeaponTable > tbody, .WeaponTable > tbody > tr > td, .WeaponTable > tbody > tr {
-    border: 0px solid red;
     border-collapse: collapse;
+    border: 0px solid red;
+}
+
+.WeaponTable > tbody > tr > td {
+  font-family: "Wix Madefor Text", sans-serif; 
+  border-left: 1px solid var(--colorscheme-light-gray); 
+}
+
+.WeaponTable > tbody > tr > td:nth-child(1) {
+  border-left: 0px solid var(--colorscheme-light-gray); 
 }
 
 .CategoryName {
     padding-top: 10px;
-    font-family: "Rubik Dirt", system-ui !important;
+    font-family: "Rubik Dirt", system-ui !important; 
     font-size: 20px;
 }

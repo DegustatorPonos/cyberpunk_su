@@ -10,6 +10,38 @@ lang.LocalizedStrings = new Map<string, string>([
     ["weapons", "Оружие"],
     ["weapons index", "Список вооружения"],
     ["ranged weapons", "Дальнобойное оружие"],
+
+    ["heavy pistols", "Тяжёлые пистолеты"],
+    ["medium pistols", "Средние пистолеты"],
+
+    ["heavy pistol", "Тяжёлый пистолет"],
+    ["medium pistol", "Средний пистолет"],
+
+    ["accuracy", "Точность"],
+    ["concealability", "Возможность скрыть"],
+    ["avaliability", "Доступность"],
+    ["damage/ammunition", "Урон/Аммуниция"],
+    ["number of shots", "Количество выстрелов"],
+    ["rate of fire", "Скорострельность"],
+    ["reliability", "Надёжность"],
+
+    // Concealabilities
+    ["pocket", "Карман"],
+    ["jacket", "Куртка"],
+    ["long", "Длинный плащ"],
+    ["Nothing", "Невозможно спрятать"],
+
+    // Avaliabilities
+    ["excellent", "Отличная"],
+    ["common", "Обычная"],
+    ["poor", "Малая"],
+    ["rare", "Редкая"],
+
+    // Relicabilities
+    ["very reliable", "Очень надёжное"],
+    ["standard", "Обычное"],
+    ["unreliable", "Ненадёжное"],
+
 ]);
 
 export default lang;

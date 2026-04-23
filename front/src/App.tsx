@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { ReadCurrentLocale, SaveCurrentLocale } from './Locales/Locales';
 import LegalNote from './Emelents/LegalNote';
 import WeaponsIndex from './Pages/Weapons';
+import RangedWeaponPage from './Pages/RangedWeapon';
 
 const router = createBrowserRouter([
     {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
     {
         path: "/weapons",
         element: (<WeaponsIndex />),
+    },
+    {
+        path: "/weapons/:id",
+        element: (<RangedWeaponPage />),
     },
 ]);
 
