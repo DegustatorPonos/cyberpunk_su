@@ -5,6 +5,7 @@ const conn = @import("Connection.zig");
 const std = @import("std");
 const pg = @import("pg");
 const model = @import("../Models/RangedWeapon.zig");
+const descriptionModel = @import("../Models/Description.zig");
 
 pub fn GetAll(alloc: std.mem.Allocator) !std.ArrayList(model.RangedWeaponType) {
     const query = "SELECT * FROM RangedWeapons ORDER BY weapon_type";
@@ -102,5 +103,30 @@ pub fn Delete(displayName: []const u8) !void {
     const query = "DELETE FROM RangedWeapons WHERE Id = $1";
     _ = try conn.pool.exec(query, .{
         displayName,
+    });
+}
+
+pub fn GetDescription(allocator: std.mem.Allocator, displayName: []const u8, language: []const u8) !descriptionModel.Description {
+    const query = "SELECT * FROM RangedWeaponsDescriptions WHERE id = $1 AND language = $2";
+    var row = try conn.pool.row(query, .{displayName, language}) orelse {
+        return conn.ResultErrors.NotFound;
+    };
+    const outp = try descriptionModel.Description.MapWithAlloc(allocator, &row.row);
+    try row.deinit();
+    return outp;
+}
+
+pub fn SetDescription(Model: descriptionModel.Description) !void {
+    const query =
+        \\ INSERT INTO RangedWeaponsDescriptions (id, language, contents)
+        \\ VALUES ($1, $2, $3)
+        \\ ON CONFLICT (id, language) 
+        \\ DO UPDATE SET contents = EXCLUDED.contents
+        ;
+
+    _ = try conn.pool.exec(query, .{
+        Model.Id,
+        Model.Language,
+        Model.Contents,
     });
 }

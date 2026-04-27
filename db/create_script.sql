@@ -14,6 +14,14 @@ CREATE TABLE RangedWeapons (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE RangedWeaponsDescriptions (
+    id VARCHAR(255) REFERENCES RangedWeapons(id),
+    language VARCHAR(16),
+    contents TEXT,
+
+    PRIMARY KEY (id, language)
+);
+
 CREATE TABLE Users (
     Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     Username TEXT NOT NULL UNIQUE,
@@ -21,4 +29,3 @@ CREATE TABLE Users (
     PasswordHash VARCHAR(512) NOT NULL UNIQUE,
     Role TEXT NOT NULL
 );
-

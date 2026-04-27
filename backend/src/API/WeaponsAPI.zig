@@ -1,6 +1,7 @@
 const std = @import("std");
 const httpz = @import("httpz");
 const model = @import("../Models/RangedWeapon.zig");
+const descModel = @import("../Models/Description.zig");
 const db = @import("../Database/Connection.zig");
 const errDesc = @import("ErrorDescription.zig");
 const Handler = @import("../Handler.zig");
@@ -8,6 +9,8 @@ const Handler = @import("../Handler.zig");
 pub fn RegisterEndpoints(router: *httpz.Router(*Handler.Handler,*const fn (*Handler.RequestData, *httpz.request.Request, *httpz.response.Response) anyerror!void)) void {
     router.get("/weapons/ranged", getAllRangedWeapons, .{});
     router.post("/weapons/ranged", newRangedWeapon, .{});
+    router.get("/weapons/ranged/:id/description", getRangedWeaponDescription, .{});
+    router.post("/weapons/ranged/:id/description", setRangedWeaponDescription, .{});
     router.get("/weapons/ranged/:id", getRangedWeaponById, .{});
     router.put("/weapons/ranged/:id", updateRangedWeapon, .{});
     router.delete("/weapons/ranged/:id", deleteRangedWeapon, .{});
@@ -89,4 +92,46 @@ fn deleteRangedWeapon(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.
     };
 
     try db.RangedWeapons.Delete(id);
+}
+
+fn getRangedWeaponDescription(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+    const id = req.param("id") orelse {
+        res.setStatus(.bad_request);
+        return;
+    };
+
+    const query = try req.query();
+    const lang = query.get("lang") orelse "en";
+    const desc = db.RangedWeapons.GetDescription(req.arena, id, lang) catch |err| {
+        if (err == db.ResultErrors.NotFound) {
+            // The description does not exist
+            try res.json(descModel.Description {
+                .Id = id,
+                .Language = lang,
+                .Contents = ""
+            }, .{});
+            return;
+        }
+        return err;
+    };
+
+    try res.json(desc, .{});
+}
+
+fn setRangedWeaponDescription(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+    const id = req.param("id") orelse {
+        res.setStatus(.bad_request);
+        return;
+    };
+
+    const body = try req.json(descModel.RequestBody) orelse {
+        res.setStatus(.bad_request);
+        return;
+    };
+
+    try db.RangedWeapons.SetDescription(.{
+        .Id = id,
+        .Language = body.Language,
+        .Contents = body.Contents
+    });
 }
