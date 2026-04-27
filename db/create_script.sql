@@ -1,4 +1,4 @@
-CREATE TABLE RangedWeapons (
+CREATE TABLE IF NOT EXISTS RangedWeapons (
     id VARCHAR(255) PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     weapon_type VARCHAR(255) NOT NULL,
@@ -11,10 +11,11 @@ CREATE TABLE RangedWeapons (
     rate_of_fire INTEGER,
     reliability VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    origin VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE RangedWeaponsDescriptions (
+CREATE TABLE IF NOT EXISTS RangedWeaponsDescriptions (
     id VARCHAR(255) REFERENCES RangedWeapons(id),
     language VARCHAR(16),
     contents TEXT,

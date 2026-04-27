@@ -42,7 +42,9 @@ fn getRangedWeaponById(_: *Handler.RequestData, req: *httpz.Request, res: *httpz
     try res.json(found, .{});
 }
 
-fn newRangedWeapon(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+fn newRangedWeapon(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+    try data.CheckAccess(.editor);
+
     var body = try req.json(model.RequestBody) orelse {
         res.setStatus(.bad_request);
         return;
@@ -63,7 +65,9 @@ fn newRangedWeapon(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Res
     res.setStatus(.created);
 }
 
-fn updateRangedWeapon(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+fn updateRangedWeapon(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+    try data.CheckAccess(.editor);
+
     const id = req.param("id") orelse {
         res.setStatus(.bad_request);
         return;
@@ -85,7 +89,9 @@ fn updateRangedWeapon(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.
     };  
 }
 
-fn deleteRangedWeapon(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+fn deleteRangedWeapon(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+    try data.CheckAccess(.editor);
+
     const id = req.param("id") orelse {
         res.setStatus(.bad_request);
         return;
@@ -118,7 +124,9 @@ fn getRangedWeaponDescription(_: *Handler.RequestData, req: *httpz.Request, res:
     try res.json(desc, .{});
 }
 
-fn setRangedWeaponDescription(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+fn setRangedWeaponDescription(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+    try data.CheckAccess(.editor);
+
     const id = req.param("id") orelse {
         res.setStatus(.bad_request);
         return;

@@ -18,6 +18,9 @@ pub const RangedWeaponType = struct {
     CreatedAt: i64,
     UpdatedAt: i64,
 
+    // The source of the weapom. For example, corebook or an adventure
+    Origin: []const u8,
+
     pub fn GetCompactNotation(self: *RangedWeaponType, separator: u8) ![]const u8 {
         var b: [64]u8 = undefined;
         return try std.fmt.bufPrint(&b, 
@@ -52,6 +55,7 @@ pub const RangedWeaponType = struct {
             .Reliability = try row.get([]const u8, 10),
             .CreatedAt = try row.get(i64, 11),
             .UpdatedAt = try row.get(i64, 12),
+            .Origin = try row.get([]const u8, 13),
         };
     }
 
@@ -72,6 +76,7 @@ pub const RangedWeaponType = struct {
             .Reliability = try allocator.dupe(u8, try row.get([]const u8, 10)),
             .CreatedAt = try row.get(i64, 11),
             .UpdatedAt = try row.get(i64, 12),
+            .Origin = try allocator.dupe(u8, try row.get([]const u8, 13)),
         };
     }
 
@@ -92,6 +97,7 @@ pub const RequestBody = struct {
     NumberOfShots: u31,
     RateOfFire: u32,
     Reliability: []const u8,
+    Origin: []const u8,
 
     pub fn ToModel(this: RequestBody) RangedWeaponType {
         return RangedWeaponType {
@@ -107,7 +113,8 @@ pub const RequestBody = struct {
             .RateOfFire = this.RateOfFire,
             .Reliability = this.Reliability,
             .CreatedAt = 0,
-            .UpdatedAt = 0
+            .UpdatedAt = 0,
+            .Origin = this.Origin,
         };
     }
 };
@@ -129,6 +136,7 @@ fn getTestType() RangedWeaponType {
         .Reliability = "ST",
         .CreatedAt = 0,
         .UpdatedAt = 0,
+        .Origin = "corebook",
     };
 }
 
@@ -153,6 +161,7 @@ test "Request to model" {
         .NumberOfShots = 8,
         .RateOfFire = 2,
         .Reliability = "ST",
+        .Origin = "corebook"
     };
 
     const expected = getTestType();

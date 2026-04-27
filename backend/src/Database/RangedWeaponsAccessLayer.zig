@@ -46,8 +46,9 @@ pub fn Update(displayName: []const u8, updatedModel: *model.RangedWeaponType) !v
         \\ number_of_shots = $9,
         \\ rate_of_fire = $10,
         \\ reliability = $11,
+        \\ origin = $12,
         \\ updated_at = CURRENT_TIMESTAMP
-        \\ WHERE id = $12
+        \\ WHERE id = $13
         ;
 
     _ = try conn.pool.exec(query, .{
@@ -62,6 +63,7 @@ pub fn Update(displayName: []const u8, updatedModel: *model.RangedWeaponType) !v
         updatedModel.NumberOfShots,
         updatedModel.RateOfFire,
         updatedModel.Reliability,
+        updatedModel.Origin,
         displayName,
     });
 }
@@ -70,9 +72,9 @@ pub fn Create(NewWeapon: *model.RangedWeaponType) !void {
     if (try Exists(NewWeapon.Id)) return conn.ResultErrors.AlreadyExists;
     const query = 
         \\ INSERT INTO RangedWeapons 
-        \\ (id, name, weapon_type, accuracy, concealability, availability, damage, ammunition, number_of_shots, rate_of_fire, reliability)
+        \\ (id, name, weapon_type, accuracy, concealability, availability, damage, ammunition, number_of_shots, rate_of_fire, reliability, origin)
         \\ VALUES
-        \\ ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        \\ ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
         ;
 
     _ = try conn.pool.exec(query, .{
@@ -87,6 +89,7 @@ pub fn Create(NewWeapon: *model.RangedWeaponType) !void {
         NewWeapon.NumberOfShots,
         NewWeapon.RateOfFire,
         NewWeapon.Reliability,
+        NewWeapon.Origin,
     });
 }
 

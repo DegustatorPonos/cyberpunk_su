@@ -3,6 +3,11 @@ const httpz = @import("httpz");
 const userModel = @import("Models/User.zig");
 const tokens = @import("Authentication/Tokens.zig");
 
+pub const errors = error {
+    Unauthorized,
+    Forbidden,
+};
+
 pub const RequestData = struct {
     User: ?userModel.User,
 
@@ -32,13 +37,31 @@ pub const RequestData = struct {
         if (self.User == null) return false;
         return self.User.?.Role >= minimalRole;
     }
+
+    pub fn CheckAccess(self: RequestData, minimalRole: userModel.Role) !void {
+        if (self.User == null) return errors.Unauthorized;
+        if (@intFromEnum(self.User.?.Role) < @intFromEnum(minimalRole)) 
+            return errors.Forbidden;
+    }
 };
 
 pub const Handler = struct {
     pub fn dispatch(_: *Handler, action: httpz.Action(*RequestData), req: *httpz.Request, res: *httpz.Response) !void {
         var data = try RequestData.Init(req);
         // std.debug.print("Data: {any}\n", .{ data });
-        try action(&data, req, res);
+        action(&data, req, res) catch |err| {
+            switch (err) {
+                errors.Forbidden => {
+                    res.setStatus(.forbidden);
+                },
+                errors.Unauthorized => {
+                    res.setStatus(.unauthorized);
+                },
+                else => {
+                    return err;
+                }
+            }
+        };
         std.debug.print("{any} {s}: {d}\n", .{req.method, req.url.raw, res.status});
     }
 };
