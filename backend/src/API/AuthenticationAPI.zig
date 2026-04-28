@@ -64,5 +64,11 @@ fn login(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !vo
     };
 
     const token = try Tokens.GenerateNewSession(res.arena, user);
-    try res.json(.{ .Token = token } , .{});
+    try res.json(.{ 
+        .Token = token,
+        .User = .{
+            .Username = user.Username,
+            .Role = user.Role.ToString(),
+        },
+    } , .{});
 }

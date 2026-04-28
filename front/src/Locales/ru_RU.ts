@@ -8,8 +8,14 @@ lang.LocalizedStrings = new Map<string, string>([
     ["contents", "Содержание"],
     ["classes list", "Список классов"],
     ["weapons", "Оружие"],
+    ["login", "Вход"],
     ["weapons index", "Список вооружения"],
     ["ranged weapons", "Дальнобойное оружие"],
+
+    ["username", "Имя пользователя"],
+    ["password", "Пароль"],
+    ["log in", "Войти"],
+    ["welcome", "Добро пожаловать"],
 
     ["heavy pistols", "Тяжёлые пистолеты"],
     ["medium pistols", "Средние пистолеты"],
@@ -45,6 +51,7 @@ lang.LocalizedStrings = new Map<string, string>([
 
     // Origins
     ["corebook", "Книга игрока"],
+
 ]);
 
 export default lang;

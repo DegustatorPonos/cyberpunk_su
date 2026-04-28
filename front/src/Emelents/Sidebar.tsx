@@ -19,6 +19,7 @@ function Sidebar({setLang}: SidebarProps) {
                     <SidebarListElement Href='/' Text='Home' />
                     <SidebarListElement Href='/classes' Text='Classes' />
                     <SidebarListElement Href='/weapons' Text='Weapons' />
+                    <SidebarListElement Href='/login' Text='Login' />
                 </ul>
                 <button onClick={() => {
                     setLang("ru");

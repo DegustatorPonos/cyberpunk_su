@@ -21,7 +21,14 @@
 }
 
 .Topbar > h1 {
+    margin-top: 0px;
+    flex-direction: row;
     margin-bottom: 0px;
+}
+
+.Topbar > h1 > img {
+  height: 1em;
+  width: auto;
 }
 
 .TopbarContents {
