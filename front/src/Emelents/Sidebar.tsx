@@ -20,8 +20,14 @@ function Sidebar({setLang}: SidebarProps) {
                     <SidebarListElement Href='/classes' Text='Classes' />
                     <SidebarListElement Href='/weapons' Text='Weapons' />
                 </ul>
-                <button onClick={() => setLang("ru")}> ru </button>
-                <button onClick={() => setLang("en")}> en </button>
+                <button onClick={() => {
+                    setLang("ru");
+                    window.location.reload();
+                }}> ru </button>
+                <button onClick={() => {
+                    setLang("en");
+                    window.location.reload();
+                }}> en </button>
             </div>
         </nav>
     );

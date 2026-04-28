@@ -24,12 +24,13 @@ lang.LocalizedStrings = new Map<string, string>([
     ["number of shots", "Количество выстрелов"],
     ["rate of fire", "Скорострельность"],
     ["reliability", "Надёжность"],
+    ["origin", "Источник"],
 
     // Concealabilities
     ["pocket", "Карман"],
     ["jacket", "Куртка"],
     ["long", "Длинный плащ"],
-    ["Nothing", "Невозможно спрятать"],
+    ["nothing", "Невозможно спрятать"],
 
     // Avaliabilities
     ["excellent", "Отличная"],
@@ -42,6 +43,8 @@ lang.LocalizedStrings = new Map<string, string>([
     ["standard", "Обычное"],
     ["unreliable", "Ненадёжное"],
 
+    // Origins
+    ["corebook", "Книга игрока"],
 ]);
 
 export default lang;

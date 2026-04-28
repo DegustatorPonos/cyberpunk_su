@@ -1,9 +1,10 @@
 import { useContext, useState } from "react";
-import { LanguageContext } from "../Locales/Context";
+import { AllowedLanguages, LanguageContext } from "../Locales/Context";
 import { BackendURL } from "../Config";
 import axios from "axios";
 import { RangedWeapon } from "../Models/RangedWeapon";
-import { Navigate, useParams } from "react-router";
+import { Description } from "../Models/Description";
+import { useParams } from "react-router";
 import { GetLocalizedString } from "../Locales/Locales";
 import "./Weapons.css"
 
@@ -13,9 +14,11 @@ function RangedWeaponPage() {
     const { id } = useParams();
     const lang = useContext(LanguageContext);
     const [weapon, setWeapon] = useState<RangedWeapon | null>(null);
+    const [description, setDescription] = useState<Description | null>(null);
 
     useState(() => {
         getWeapon(id).then(data => setWeapon(data));
+        getWeaponDescription(id, lang).then(data => setDescription(data));
     });
 
     if (weapon == null) {
@@ -30,7 +33,7 @@ function RangedWeaponPage() {
                 <tbody>
                     <tr> 
                         <td> { GetLocalizedString("Accuracy", lang) } </td>
-                        <td> {weapon.Accuracy} </td>
+                        <td> { weapon.Accuracy } </td>
                     </tr>
                     <tr>
                         <td> { GetLocalizedString("Concealability", lang) } </td>
@@ -42,22 +45,30 @@ function RangedWeaponPage() {
                     </tr>
                     <tr>
                         <td> { GetLocalizedString("Damage/Ammunition", lang) } </td>
-                        <td> {weapon.Damage}({weapon.Ammunition}) </td>
+                        <td> { weapon.Damage }({ weapon.Ammunition }) </td>
                     </tr>
                     <tr>
                         <td> { GetLocalizedString("Number Of Shots", lang) } </td>
-                        <td> {weapon.NumberOfShots} </td>
+                        <td> { weapon.NumberOfShots } </td>
                     </tr>
                     <tr>
                         <td> { GetLocalizedString("Rate Of Fire", lang) } </td>
-                        <td> {weapon.RateOfFire} </td>
+                        <td> { weapon.RateOfFire } </td>
                     </tr>
                     <tr>
                         <td> { GetLocalizedString("Reliability", lang) } </td>
                         <td> { GetLocalizedString(weapon.Reliability, lang) } </td>
                     </tr>
+                    <tr>
+                        <td> { GetLocalizedString("Origin", lang) } </td>
+                        <td> { GetLocalizedString(weapon.Origin, lang) } </td>
+                    </tr>
                 </tbody>
             </table>
+
+            <p>
+                {description?.Contents}
+            </p>
         </div>
     );
 }
@@ -67,6 +78,26 @@ async function getWeapon(id: string | undefined): Promise<RangedWeapon | null>  
     try {
         const {data, status} = await axios.get<RangedWeapon>(
             `${RangedWeaponsURL}/${id}`,
+            {
+                headers: { Accept: "application/json" }
+            }
+        );
+        
+        if (status != 200) return null; 
+
+        return data;
+
+    } catch (err) {
+        console.log(`Failed to get ranged weapon: ${err}`);
+        return null;
+    }
+}
+
+async function getWeaponDescription(id: string | undefined, lanuage: AllowedLanguages): Promise<Description | null> {
+    if (id == undefined) return null;
+    try {
+        const {data, status} = await axios.get<Description>(
+            `${RangedWeaponsURL}/${id}/description?lang=${lanuage}`,
             {
                 headers: { Accept: "application/json" }
             }

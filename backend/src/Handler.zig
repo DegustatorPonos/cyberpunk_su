@@ -3,7 +3,7 @@ const httpz = @import("httpz");
 const userModel = @import("Models/User.zig");
 const tokens = @import("Authentication/Tokens.zig");
 
-pub const errors = error {
+pub const authError = error {
     Unauthorized,
     Forbidden,
 };
@@ -38,10 +38,12 @@ pub const RequestData = struct {
         return self.User.?.Role >= minimalRole;
     }
 
-    pub fn CheckAccess(self: RequestData, minimalRole: userModel.Role) !void {
-        if (self.User == null) return errors.Unauthorized;
+    /// This function returns an error that is caught by a handler. Add this to
+    /// the start of the handler to add an auth
+    pub fn CheckAccess(self: RequestData, minimalRole: userModel.Role) authError!void {
+        if (self.User == null) return authError.Unauthorized;
         if (@intFromEnum(self.User.?.Role) < @intFromEnum(minimalRole)) 
-            return errors.Forbidden;
+            return authError.Forbidden;
     }
 };
 
@@ -51,10 +53,10 @@ pub const Handler = struct {
         // std.debug.print("Data: {any}\n", .{ data });
         action(&data, req, res) catch |err| {
             switch (err) {
-                errors.Forbidden => {
+                authError.Forbidden => {
                     res.setStatus(.forbidden);
                 },
-                errors.Unauthorized => {
+                authError.Unauthorized => {
                     res.setStatus(.unauthorized);
                 },
                 else => {

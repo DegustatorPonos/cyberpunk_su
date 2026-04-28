@@ -11,6 +11,7 @@ export type RangedWeapon = {
     NumberOfShots: number,
     RateOfFire: number,
     Reliability: string,
+    Origin: string,
 
     CreatedAt: number,
     UpdatedAt: number,
@@ -28,4 +29,5 @@ export type RangedWeaponRequest = {
     NumberOfShots: number,
     RateOfFire: number,
     Reliability: string,
+    Origin: string,
 };
