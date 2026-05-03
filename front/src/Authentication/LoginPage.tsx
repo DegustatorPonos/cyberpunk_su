@@ -3,7 +3,6 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router";
 import { BackendURL } from "../Config";
 import { Authentication, SaveState } from "./ContextProvider";
-import { useCookies } from 'react-cookie';
 import { GetLocalizedString } from "../Locales/Locales";
 import { LanguageContext } from "../Locales/Context";
 
@@ -40,6 +39,9 @@ function LoginPage() {
                     window.location.reload();
                 });
             }}> { GetLocalizedString("Log in", lang) } </button>
+
+
+            <p> Don't have an account? <a href="/register"> Click here. </a> </p>
         </div>
     );
 }

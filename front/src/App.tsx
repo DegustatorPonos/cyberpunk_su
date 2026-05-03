@@ -14,7 +14,9 @@ import RangedWeaponPage from './Pages/RangedWeapon';
 import { AuthContext, Authentication, GetUserInfo } from './Authentication/ContextProvider';
 import { useCookies } from 'react-cookie';
 import LoginPage from './Authentication/LoginPage';
+import LogoutPage from './Authentication/LogoutPage';
 import { User } from './Authentication/Models';
+import RegisterPage from './Authentication/RegisterPage';
 
 const router = createBrowserRouter([
     {
@@ -33,9 +35,19 @@ const router = createBrowserRouter([
         path: "/weapons/:id",
         element: (<RangedWeaponPage />),
     },
+
+    // auth
     {
         path: "/login",
         element: (<LoginPage />),
+    },
+    {
+        path: "/register",
+        element: (<RegisterPage />),
+    },
+    {
+        path: "/logout",
+        element: (<LogoutPage />),
     },
 ]);
 

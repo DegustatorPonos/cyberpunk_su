@@ -1,4 +1,6 @@
 import { useContext } from 'react';
+import { AuthContext } from '../Authentication/ContextProvider';
+import { User } from '../Authentication/Models';
 import { AllowedLanguages, LanguageContext } from '../Locales/Context';
 import { GetLocalizedString } from '../Locales/Locales';
 import './Elements.css';
@@ -9,6 +11,7 @@ type SidebarProps = {
 };
 
 function Sidebar({setLang}: SidebarProps) {
+    var user = useContext(AuthContext);
     var lang = useContext(LanguageContext);
 
     return (
@@ -19,7 +22,7 @@ function Sidebar({setLang}: SidebarProps) {
                     <SidebarListElement Href='/' Text='Home' />
                     <SidebarListElement Href='/classes' Text='Classes' />
                     <SidebarListElement Href='/weapons' Text='Weapons' />
-                    <SidebarListElement Href='/login' Text='Login' />
+                    { AuthElement(user) }
                 </ul>
                 <button onClick={() => {
                     setLang("ru");
@@ -31,6 +34,17 @@ function Sidebar({setLang}: SidebarProps) {
                 }}> en </button>
             </div>
         </nav>
+    );
+}
+
+function AuthElement(user: User | null) {
+    if (user != null) {
+        return (
+            <SidebarListElement Href='/logout' Text='Logout' />
+        );
+    }
+    return (
+        <SidebarListElement Href='/login' Text='Login' />
     );
 }
 

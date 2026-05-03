@@ -23,6 +23,14 @@ fn getUser(data: *Handler.RequestData, _: *httpz.Request, res: *httpz.Response) 
     }, .{});
 }
 
+const authResult = struct {
+    Token: []const u8,
+    User: struct {
+        Username: []const u8,
+        Role: []const u8
+    },
+};
+
 fn register(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
     var body = try req.json(model.RequestBody) orelse {
         res.setStatus(.bad_request);
@@ -40,6 +48,19 @@ fn register(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) 
         res.setStatus(.internal_server_error);
         return;
     };
+
+    const loginResult = loginAction(req.arena, body) catch |err| {
+        if (err == db.ResultErrors.NotFound) {
+            res.setStatus(.unauthorized);
+            try res.json(errDesc.ErrorDescriptor {
+                .Message = "Login or password is incorrect"
+            }, .{});
+            return;
+        }
+        return err;
+    };
+
+    try res.json(loginResult, .{});
     res.setStatus(.created);
 }
 
@@ -71,4 +92,37 @@ fn login(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !vo
             .Role = user.Role.ToString(),
         },
     } , .{});
+}
+
+/// Logs in with the given credentials
+fn loginAction(allocator: std.mem.Allocator, requetsed: model.RequestBody) !authResult {
+    const username = requetsed.Username;
+    const pwd = requetsed.Password;
+    const user = try db.Users.GetByCredentials(allocator, username, pwd); // catch |err| {
+        // if (err == db.ResultErrors.NotFound) {
+            // res.setStatus(.unauthorized);
+            // try res.json(errDesc.ErrorDescriptor {
+                // .Message = "Login or password is incorrect"
+            // }, .{});
+            // return;
+        // }
+        // return err;
+    // };
+
+    const token = try Tokens.GenerateNewSession(allocator, user);
+
+    return authResult {
+        .Token = token,
+        .User = .{
+            .Username = user.Username,
+            .Role = user.Role.ToString(),
+        }
+    };
+    // try res.json(.{ 
+        // .Token = token,
+        // .User = .{
+            // .Username = user.Username,
+            // .Role = user.Role.ToString(),
+        // },
+    // } , .{});
 }

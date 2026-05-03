@@ -15,6 +15,8 @@ lang.LocalizedStrings = new Map<string, string>([
     ["username", "Имя пользователя"],
     ["password", "Пароль"],
     ["log in", "Войти"],
+    ["logout", "Выйти"],
+    ["register", "Зарегистрироваться"],
     ["welcome", "Добро пожаловать"],
 
     ["heavy pistols", "Тяжёлые пистолеты"],
