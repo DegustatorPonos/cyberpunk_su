@@ -42,7 +42,9 @@ fn register(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) 
     db.Users.Create(&body_model) catch |err| {
         if (err == db.ResultErrors.AlreadyExists) {
             res.setStatus(.bad_request);
-            try res.json(errDesc.AlreadyExistsDescriptor, .{});
+            try res.json(errDesc.ErrorDescriptor {
+                .Message = "The user with that username already exists"
+            }, .{});
             return;
         }
         res.setStatus(.internal_server_error);
@@ -70,10 +72,7 @@ fn login(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !vo
         return;
     };
 
-    const username = body.Username;
-    const pwd = body.Password;
-
-    const user = db.Users.GetByCredentials(req.arena, username, pwd) catch |err| {
+    const loginResult = loginAction(req.arena, body) catch |err| {
         if (err == db.ResultErrors.NotFound) {
             res.setStatus(.unauthorized);
             try res.json(errDesc.ErrorDescriptor {
@@ -84,30 +83,14 @@ fn login(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !vo
         return err;
     };
 
-    const token = try Tokens.GenerateNewSession(res.arena, user);
-    try res.json(.{ 
-        .Token = token,
-        .User = .{
-            .Username = user.Username,
-            .Role = user.Role.ToString(),
-        },
-    } , .{});
+    try res.json(loginResult, .{});
 }
 
 /// Logs in with the given credentials
 fn loginAction(allocator: std.mem.Allocator, requetsed: model.RequestBody) !authResult {
     const username = requetsed.Username;
     const pwd = requetsed.Password;
-    const user = try db.Users.GetByCredentials(allocator, username, pwd); // catch |err| {
-        // if (err == db.ResultErrors.NotFound) {
-            // res.setStatus(.unauthorized);
-            // try res.json(errDesc.ErrorDescriptor {
-                // .Message = "Login or password is incorrect"
-            // }, .{});
-            // return;
-        // }
-        // return err;
-    // };
+    const user = try db.Users.GetByCredentials(allocator, username, pwd);
 
     const token = try Tokens.GenerateNewSession(allocator, user);
 
@@ -118,11 +101,4 @@ fn loginAction(allocator: std.mem.Allocator, requetsed: model.RequestBody) !auth
             .Role = user.Role.ToString(),
         }
     };
-    // try res.json(.{ 
-        // .Token = token,
-        // .User = .{
-            // .Username = user.Username,
-            // .Role = user.Role.ToString(),
-        // },
-    // } , .{});
 }

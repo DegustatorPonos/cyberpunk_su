@@ -1,10 +1,11 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router";
 import { BackendURL } from "../Config";
 import { Authentication, SaveState } from "./ContextProvider";
 import { GetLocalizedString } from "../Locales/Locales";
 import { LanguageContext } from "../Locales/Context";
+import { BackendError } from "../Models/ErrorResponce";
 
 const RegisterURL = `${BackendURL}/auth/register`;
 
@@ -13,6 +14,7 @@ function RegisterPage() {
 
     const [username, setUsername] = useState<string>("");
     const [passw, setPassw] = useState<string>("");
+    const [errMessage, setErrorMessage] = useState<string>("");
     const navigate = useNavigate();
 
     function SetAuthState(newAuthState: Authentication | null) {
@@ -37,13 +39,17 @@ function RegisterPage() {
                     SetAuthState(data);
                     navigate("/");
                     window.location.reload();
+                }, (err) => {
+                    setErrorMessage(err);
+                    console.log(err);
                 });
             }}> { GetLocalizedString("Register", lang) } </button>
+            <p> { errMessage } </p> 
         </div>
     );
 }
 
-async function Register(username: string, passw: string, onSuccess: (data: Authentication) => void) {
+async function Register(username: string, passw: string, onSuccess: (data: Authentication) => void, onError: (message: string) => void) {
     await axios.post<Authentication>(
         RegisterURL, {
             Username: username,
@@ -52,7 +58,15 @@ async function Register(username: string, passw: string, onSuccess: (data: Authe
     ).then(resp => {
         onSuccess(resp.data);
     }).catch(err => {
-        console.log(`Failed to send a login responce: ${err}`);
+        if (axios.isAxiosError(err)) {
+            const parsedErr = err as AxiosError<BackendError>;
+            if (parsedErr.response) {
+                console.log(parsedErr.response);
+                onError(parsedErr.response.data.Message);
+                return
+            }
+        }
+        return "An unexpected error occured"
     });
 }
 
