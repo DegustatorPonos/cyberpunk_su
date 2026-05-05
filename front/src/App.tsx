@@ -10,17 +10,19 @@ import { useEffect, useState } from 'react';
 import { ReadCurrentLocale, SaveCurrentLocale } from './Locales/Locales';
 import LegalNote from './Emelents/LegalNote';
 import WeaponsIndex from './Pages/Weapons';
-import RangedWeaponPage from './Pages/RangedWeapon';
-import { AuthContext, Authentication, GetUserInfo } from './Authentication/ContextProvider';
+import { AuthContext, GetUserInfo } from './Authentication/ContextProvider';
 import { useCookies } from 'react-cookie';
 import LoginPage from './Authentication/LoginPage';
 import LogoutPage from './Authentication/LogoutPage';
 import { User } from './Authentication/Models';
 import RegisterPage from './Authentication/RegisterPage';
+import { EditRangedWeaponPage, RangedWeaponPage } from './Pages/RangedWeapon';
+import ErrorHandler from './ErrorHandler';
 
 const router = createBrowserRouter([
     {
         index: true,
+        errorElement: (<ErrorHandler />),
         element: (<IndexElement />),
     },
     {
@@ -34,6 +36,10 @@ const router = createBrowserRouter([
     {
         path: "/weapons/:id",
         element: (<RangedWeaponPage />),
+    },
+    {
+        path: "/weapons/:id/edit",
+        element: (<EditRangedWeaponPage />),
     },
 
     // auth

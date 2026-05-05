@@ -7,10 +7,11 @@ import { Description } from "../Models/Description";
 import { useParams } from "react-router";
 import { GetLocalizedString } from "../Locales/Locales";
 import "./Weapons.css"
+import { AuthContext } from "../Authentication/ContextProvider";
 
 const RangedWeaponsURL = `${BackendURL}/weapons/ranged`;
 
-function RangedWeaponPage() {
+export function RangedWeaponPage() {
     const { id } = useParams();
     const lang = useContext(LanguageContext);
     const [weapon, setWeapon] = useState<RangedWeapon | null>(null);
@@ -113,4 +114,14 @@ async function getWeaponDescription(id: string | undefined, lanuage: AllowedLang
     }
 }
 
-export default RangedWeaponPage;
+export function EditRangedWeaponPage() {
+    var user = useContext(AuthContext);
+
+    if (user == null || user.Role != "editor") {
+    }
+
+    return (
+        <div>
+        </div>
+    );
+}

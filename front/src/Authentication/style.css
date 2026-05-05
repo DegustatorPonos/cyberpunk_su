@@ -1,0 +1,32 @@
+.prompt {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.prompt > h2 {
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+
+.prompt > input {
+    width: 200px;
+    border: 0px;
+    border-bottom: 1px solid var(--colorscheme-gray);
+}
+
+.prompt > input:focus {
+    outline: none;
+}
+
+.authButton {
+    margin-top: 15px;
+    font-family: "LXGW Marker Gothic", sans-serif;
+    color: var(--colorscheme-gray);
+    padding: 3px;
+    min-width: 100px;
+    border: 2px solid var(--colorscheme-black);
+    background-color: var(--colorscheme-white);
+    cursor: pointer;
+}

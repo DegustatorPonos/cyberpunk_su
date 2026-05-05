@@ -1,3 +1,4 @@
+import './style.css';
 import axios, { AxiosError } from "axios";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router";
@@ -30,10 +31,15 @@ function RegisterPage() {
 
     return (
         <div>
-            <h2> { GetLocalizedString("Username", lang) } </h2>
-            <input onChange={ev => setUsername(ev.target.value)} />
-            <h2> { GetLocalizedString("Password", lang) } </h2>
-            <input onChange={ev => setPassw(ev.target.value)} />
+            <div className="prompt">
+                <h2> { GetLocalizedString("Username", lang) } </h2>
+                <input onChange={ev => setUsername(ev.target.value)} />
+            </div>
+            <p> { GetLocalizedString("*security-warning*", lang) } </p>
+            <div className="prompt">
+                <h2> { GetLocalizedString("Password", lang) } </h2>
+                <input onChange={ev => setPassw(ev.target.value)} />
+            </div>
             <button onClick={() => {
                 Register(username, passw, (data) => {
                     SetAuthState(data);
@@ -66,7 +72,8 @@ async function Register(username: string, passw: string, onSuccess: (data: Authe
                 return
             }
         }
-        return "An unexpected error occured"
+        onError("An unexpected error occured");
+        return;
     });
 }
 

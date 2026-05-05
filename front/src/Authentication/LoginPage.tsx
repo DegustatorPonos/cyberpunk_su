@@ -28,20 +28,22 @@ function LoginPage() {
 
     return (
         <div>
-            <h2> { GetLocalizedString("Username", lang) } </h2>
-            <input onChange={ev => setUsername(ev.target.value)} />
-            <h2> { GetLocalizedString("Password", lang) } </h2>
-            <input onChange={ev => setPassw(ev.target.value)} />
-            <button onClick={() => {
+            <p> { GetLocalizedString("*acc-prompt*", lang) } <a href="/register"> { GetLocalizedString("Click here", lang) }. </a> </p>
+            <div className="prompt">
+                <h2> { GetLocalizedString("Username", lang) } </h2>
+                <input onChange={ev => setUsername(ev.target.value)} />
+            </div>
+            <div className="prompt">
+                <h2> { GetLocalizedString("Password", lang) } </h2>
+                <input onChange={ev => setPassw(ev.target.value)} />
+            </div>
+            <button className="authButton" onClick={() => {
                 Login(username, passw, (data) => {
                     SetAuthState(data);
                     navigate("/");
                     window.location.reload();
                 });
             }}> { GetLocalizedString("Log in", lang) } </button>
-
-
-            <p> Don't have an account? <a href="/register"> Click here. </a> </p>
         </div>
     );
 }

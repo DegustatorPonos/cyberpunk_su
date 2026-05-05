@@ -39,7 +39,6 @@
 .TopbarContents > h2 {
     --width: 280px;
     min-width: var(--width);
-    max-width: var(--width);
     min-height: 30px;
     padding: 5px;
     margin: 0px;
