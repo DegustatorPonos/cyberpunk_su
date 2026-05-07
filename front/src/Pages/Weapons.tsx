@@ -52,14 +52,14 @@ function generatedRangedWeaponsList(rangedWeapons: RangedWeapon[] | null, langua
         const elements = categorized.get(x)?.map(w => {
             return (
             <tr key={w.Id}>
-                <td> <a href={`/weapons/${w.Id}`}> {w.Name} ({GetLocalizedString(w.Origin, language)}) </a> </td>
+                <td> <a href={`/weapons/ranged/${w.Id}`}> {w.Name} ({GetLocalizedString(w.Origin, language)}) </a> </td>
                 <td> {w.Accuracy} </td>
-                <td> {w.Concealability} </td>
-                <td> {w.Avaliability} </td>
+                <td> { GetLocalizedString(w.Concealability, language) } </td>
+                <td> { GetLocalizedString(w.Avaliability, language) } </td>
                 <td> {w.Damage}({w.Ammunition}) </td>
                 <td> {w.NumberOfShots} </td>
                 <td> {w.RateOfFire} </td>
-                <td> {w.Reliability} </td>
+                <td> { GetLocalizedString(w.Reliability, language) } </td>
             </tr>
             )
         });

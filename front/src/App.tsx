@@ -34,12 +34,12 @@ const router = createBrowserRouter([
         element: (<WeaponsIndex />),
     },
     {
-        path: "/weapons/:id/edit",
+        path: "/weapons/ranged/:id/edit",
         errorElement: (<ErrorHandler />),
         element: (<EditRangedWeaponPage />),
     },
     {
-        path: "/weapons/:id",
+        path: "/weapons/ranged/:id",
         element: (<RangedWeaponPage />),
     },
 
