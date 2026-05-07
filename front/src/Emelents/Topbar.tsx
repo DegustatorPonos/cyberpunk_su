@@ -8,7 +8,7 @@ const defaultPathName = 'index';
 function Topbar() {
     var language = useContext(LanguageContext);
     var user = useContext(AuthContext);
-    let path =  getTopbarElement(window.location.pathname);
+    var path = getTopbarElement(window.location.pathname);
 
     function getTopText() {
         if (user == null) {

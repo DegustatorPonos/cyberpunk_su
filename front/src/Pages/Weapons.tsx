@@ -5,11 +5,14 @@ import { LanguageContext } from "../Locales/Context";
 import { GetLocalizedString } from "../Locales/Locales";
 import { AllowedLanguages } from "../Locales/Context";
 import { RangedWeapon } from "../Models/RangedWeapon";
+import { AuthContext } from "../Authentication/ContextProvider";
+import { User } from "../Authentication/Models";
 
 const RangedWeaponsURL = `${BackendURL}/weapons/ranged`;
 
 function WeaponsIndex() {
     const lang = useContext(LanguageContext);
+    var user = useContext(AuthContext);
     const [rangedWeapons, setRangedWeapons] = useState<RangedWeapon[] | null>(null);
 
     useState(() => {
@@ -22,7 +25,8 @@ function WeaponsIndex() {
             <h1> {GetLocalizedString("Weapons index", lang)} </h1>
         </span>
             <h2> {GetLocalizedString("Ranged weapons", lang)} </h2>
-            {generatedRangedWeaponsList(rangedWeapons, lang)}
+            { generatedRangedWeaponsList(rangedWeapons, lang) }
+            { adminButtons(user) }
         </div>
     );
 }
@@ -106,6 +110,18 @@ async function getRangedWeapons(): Promise<RangedWeapon[]> {
     } catch (err) {
         console.log(`Failed to get ranged weapons: ${err}`);
         return new Array<RangedWeapon>();
+    }
+}
+
+function adminButtons(user: User | null) {
+    if (!user || user.Role != "editor") {
+        return (<p></p>);
+    } else {
+        return (
+            <div>
+               <a href="/weapons/new/edit"> New ranged weapon </a>
+            </div>
+        )
     }
 }
 

@@ -34,12 +34,13 @@ const router = createBrowserRouter([
         element: (<WeaponsIndex />),
     },
     {
-        path: "/weapons/:id",
-        element: (<RangedWeaponPage />),
+        path: "/weapons/:id/edit",
+        errorElement: (<ErrorHandler />),
+        element: (<EditRangedWeaponPage />),
     },
     {
-        path: "/weapons/:id/edit",
-        element: (<EditRangedWeaponPage />),
+        path: "/weapons/:id",
+        element: (<RangedWeaponPage />),
     },
 
     // auth
@@ -69,7 +70,14 @@ function App() {
     const [authCookie, ] = useCookies(['X-AUTH-TOKEN']);
     const [auth, setAuth] = useState<User | null>(null);
     useEffect(() => {
-        GetUserInfo(authCookie['X-AUTH-TOKEN']).then(v => setAuth(v));
+        GetUserInfo(authCookie['X-AUTH-TOKEN']).then(
+            v => {
+                console.log(v);
+                if (!v || v == undefined)
+                    document.cookie = "X-AUTH-TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                setAuth(v);
+            }
+        );
     }, []);
 
     return (

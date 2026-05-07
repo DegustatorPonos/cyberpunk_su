@@ -14,6 +14,7 @@ pub fn RegisterEndpoints(router: *httpz.Router(*Handler.Handler,*const fn (*Hand
 
 fn getUser(data: *Handler.RequestData, _: *httpz.Request, res: *httpz.Response) !void { 
     if (data.User == null) {
+        res.setStatus(.unauthorized);
         try res.json(.{.status = "Unauthnticated"}, .{});
         return;
     }

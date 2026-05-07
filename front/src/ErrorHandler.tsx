@@ -28,8 +28,8 @@ function ErrorHandler() {
 function forbid(language: AllowedLanguages) {
     return (
         <div>
-        <h1> { GetLocalizedString("Forbidden", language) } </h1>
-        <p> { GetLocalizedString("*forbidden*", language) } </p>
+            <h1> { GetLocalizedString("Forbidden", language) } </h1>
+            <p> { GetLocalizedString("*forbidden*", language) } </p>
         </div>
     );
 }

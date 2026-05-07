@@ -23,3 +23,7 @@ td {
 .WeaponPage > span {
     display: flex;
 }
+
+.DmgInput {
+    max-width: 40%;
+}
