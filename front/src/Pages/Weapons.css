@@ -16,6 +16,13 @@ td {
     color: var(--colorscheme-gray);
 }
 
+input {
+    font-family: "Rubik Dirt", system-ui;
+    width: 99%;
+    border: 0px;
+    border-bottom: 1px solid var(--colorscheme-gray);
+}
+
 .WeaponPage {
     flex-grow: 1;
 }
@@ -26,4 +33,25 @@ td {
 
 .DmgInput {
     max-width: 40%;
+}
+
+.NameEdit {
+    font-size: 30px;
+    margin-bottom: 10px;
+}
+
+td > select {
+    width: 100%;
+    border: 0px;
+    background: var(--colorscheme-white);
+    font-family: "LXGW Marker Gothic", sans-serif;
+}
+
+.descPanel > * {
+    margin-right: 5px;
+}
+
+.descriptionInput {
+    height: 10rem;
+    width: 80%;
 }

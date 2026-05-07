@@ -199,33 +199,42 @@ export function EditRangedWeaponPage() {
 
     return (
         <div className="WeaponPage">
-            <span> 
-            <input value={Name} onChange={(val) => {
-                setName(val.target.value);
-            }} /> 
+            <span>
+                <h1> Editing a weapon </h1>
             </span>
-            <select 
-            value={WeaponType}
-            onChange={ (val) => {
-                const newWeaponType = val.target.value;
-                setWeaponType(newWeaponType);
-            }}> 
-                <option value="Light pistol"> Light pistol </option>
-                <option value="Medium pistol"> Medium pistol </option>
-                <option value="Heavy pistol"> Heavy pistol </option>
-                <option value="Very heavy pistol"> Very heavy pistol </option>
-
-                <option value="Light submachinegun"> Light submachinegun </option>
-                <option value="Medium submachinegun"> Medium submachinegun </option>
-                <option value="Heavy submachinegun"> Heavy submachinegun </option>
-
-                <option value="Assault rifle"> Assault rifle </option>
-                <option value="Heavy weapon"> Heavy weapon </option>
-                <option value="Exotic"> Exotic </option>
-
-            </select>
+            <span> 
+                <input className="NameEdit" value={Name} onChange={(val) => {
+                    setName(val.target.value);
+                }} /> 
+            </span>
             <table> 
                 <tbody>
+                    <tr> 
+                        <td> { GetLocalizedString("Weapon type", lang) } </td>
+                        <td> 
+                            <select 
+                            value={WeaponType}
+                            onChange={ (val) => {
+                                const newWeaponType = val.target.value;
+                                setWeaponType(newWeaponType);
+                            }}> 
+                                <option value="Light pistol"> Light pistol </option>
+                                <option value="Medium pistol"> Medium pistol </option>
+                                <option value="Heavy pistol"> Heavy pistol </option>
+                                <option value="Very heavy pistol"> Very heavy pistol </option>
+                
+                                <option value="Light submachinegun"> Light submachinegun </option>
+                                <option value="Medium submachinegun"> Medium submachinegun </option>
+                                <option value="Heavy submachinegun"> Heavy submachinegun </option>
+                
+                                <option value="Assault rifle"> Assault rifle </option>
+                                <option value="Heavy weapon"> Heavy weapon </option>
+                                <option value="Exotic"> Exotic </option>
+                
+                            </select>
+                        </td>
+                    </tr>
+
                     <tr> 
                         <td> { GetLocalizedString("Accuracy", lang) } </td>
                         <td> 
@@ -345,43 +354,46 @@ export function EditRangedWeaponPage() {
                 } else {
                     UpdateRangedWeapon(id, updated, authCookie['X-AUTH-TOKEN']);
                 }
-                navigate('/weapons');
-                document.location.reload();
+                // navigate('/weapons');
+                // document.location.reload();
             }}> Update </button> 
+
             <button onClick={ () => {
                 if (id == "new") return;
                 DeleteRangedWeapon(id, authCookie['X-AUTH-TOKEN']);
-                navigate('/weapons');
-                document.location.reload();
+                // navigate('/weapons');
+                // document.location.reload();
             }}> Delete </button> 
 
-            <select 
-                value={currentLanguage}
-                onChange={ (val) => {
-                    setCurrentLanguage(val.target.value as AllowedLanguages);
-                }}> 
-                <option value="ru"> ru </option>
-                <option value="en"> en </option>
-            </select>
-
-            <div>
-                <input id="description" 
-                    value={DescriptionContents} 
+            <div className="descPanel">
+                <span> Description update </span>
+                <select 
+                    value={currentLanguage}
                     onChange={ (val) => {
-                        SetDescContents(val.target.value);
-                    }}
-                    />
-            </div>
+                        setCurrentLanguage(val.target.value as AllowedLanguages);
+                    }}> 
+                    <option value="ru"> ru </option>
+                    <option value="en"> en </option>
+                </select>
 
-            <button onClick={ () => {
-                if (id == "new") return;
-                const newDesc: Description = {
-                    Id: "",
-                    Language: currentLanguage,
-                    Contents: DescriptionContents,
-                }
-                updateWeaponDescription(id, newDesc, authCookie['X-AUTH-TOKEN']);
-            }}> Update description </button> 
+                <button onClick={ () => {
+                    if (id == "new") return;
+                    const newDesc: Description = {
+                        Id: "",
+                        Language: currentLanguage,
+                        Contents: DescriptionContents,
+                    }
+                    updateWeaponDescription(id, newDesc, authCookie['X-AUTH-TOKEN']);
+                }}> Update </button> 
+            </div>
+    
+            <textarea className="descriptionInput"
+                value={DescriptionContents} 
+                onChange={ (val) => {
+                    SetDescContents(val.target.value);
+                }}
+                />
+    
         </div>
     );
 }
@@ -414,6 +426,7 @@ async function UpdateRangedWeapon(id: string | undefined, model: RangedWeaponReq
     if (!isIdValid(id)) return;
     const uri = `${RangedWeaponsURL}/${id}`;
 
+    console.log(model);
     await axios.put(uri, model, {
         headers: {
             Authorization: `Bearer ${token}`
