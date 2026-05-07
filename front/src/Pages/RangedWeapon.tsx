@@ -84,25 +84,6 @@ export function RangedWeaponPage() {
         </div>
     );
 }
-async function getWeaponDescription(id: string | undefined, lanuage: AllowedLanguages): Promise<Description | null> {
-    if (id == undefined) return null;
-    try {
-        const {data, status} = await axios.get<Description>(
-            `${RangedWeaponsURL}/${id}/description?lang=${lanuage}`,
-            {
-                headers: { Accept: "application/json" }
-            }
-        );
-        
-        if (status != 200) return null; 
-
-        return data;
-
-    } catch (err) {
-        console.log(`Failed to get ranged weapon: ${err}`);
-        return null;
-    }
-}
 
 const defaultNewRangedWeapon: RangedWeapon = {
     Id: "",
@@ -129,6 +110,7 @@ export function EditRangedWeaponPage() {
     var [weapon, setWeapon] = useState<RangedWeapon | null>(null);
     const [description, setDescription] = useState<Description | null>(null);
     const [authCookie, ] = useCookies(['X-AUTH-TOKEN']);
+    const navigate = useNavigate();
 
     const [Name, setName] = useState<string>();
     const [WeaponType, setWeaponType] = useState<string>();
@@ -141,7 +123,9 @@ export function EditRangedWeaponPage() {
     const [RateOfFire, setRateOfFire] = useState<number>();
     const [Reliability, setReliability] = useState<string>();
     const [Origin, setOrigin] = useState<string>();
-    const navigate = useNavigate();
+
+    const [currentLanguage, setCurrentLanguage] = useState<AllowedLanguages>("en");
+    const [DescriptionContents, SetDescContents] = useState<string>("");
 
     useState(() => {
         if (id == 'new') {
@@ -149,7 +133,7 @@ export function EditRangedWeaponPage() {
             return
         }
         getWeapon(id).then(data => setWeapon(data));
-        getWeaponDescription(id, lang).then(data => setDescription(data));
+        getWeaponDescription(id, currentLanguage).then(data => setDescription(data));
     });
 
     useEffect(() => {
@@ -171,8 +155,17 @@ export function EditRangedWeaponPage() {
             setRateOfFire(weapon.RateOfFire);
             setReliability(weapon.Reliability);
             setOrigin(weapon.Origin);
+            SetDescContents(description?.Contents ?? "");
         }
     }, [weapon]);
+
+    useEffect(() => {
+        getWeaponDescription(id, currentLanguage).then(val => {
+            const input = document.getElementById('description') as HTMLInputElement | null;
+            if (!input) return;
+            input.value = val?.Contents ?? '';
+        });
+    }, [currentLanguage]);
 
     function getUpdatedWeapon(): RangedWeaponRequest {
         var outp: RangedWeaponRequest = {
@@ -362,15 +355,43 @@ export function EditRangedWeaponPage() {
                 document.location.reload();
             }}> Delete </button> 
 
-            <p>
-                {description?.Contents}
-            </p>
+            <select 
+                value={currentLanguage}
+                onChange={ (val) => {
+                    setCurrentLanguage(val.target.value as AllowedLanguages);
+                }}> 
+                <option value="ru"> ru </option>
+                <option value="en"> en </option>
+            </select>
+
+            <div>
+                <input id="description" 
+                    value={DescriptionContents} 
+                    onChange={ (val) => {
+                        SetDescContents(val.target.value);
+                    }}
+                    />
+            </div>
+
+            <button onClick={ () => {
+                if (id == "new") return;
+                const newDesc: Description = {
+                    Id: "",
+                    Language: currentLanguage,
+                    Contents: DescriptionContents,
+                }
+                updateWeaponDescription(id, newDesc, authCookie['X-AUTH-TOKEN']);
+            }}> Update description </button> 
         </div>
     );
 }
 
-async function getWeapon(id: string | undefined): Promise<RangedWeapon | null>  {
-    if (id == undefined) return null;
+function isIdValid(id: string | undefined): boolean {
+    return id != undefined && id != "new" && id?.length > 0;
+}
+
+async function getWeapon(id: string | undefined): Promise<RangedWeapon | null> {
+    if (!isIdValid(id)) return null;
     try {
         const {data, status} = await axios.get<RangedWeapon>(
             `${RangedWeaponsURL}/${id}`,
@@ -390,7 +411,7 @@ async function getWeapon(id: string | undefined): Promise<RangedWeapon | null>  
 }
 
 async function UpdateRangedWeapon(id: string | undefined, model: RangedWeaponRequest, token: string) {
-    if (id == undefined) return null;
+    if (!isIdValid(id)) return;
     const uri = `${RangedWeaponsURL}/${id}`;
 
     await axios.put(uri, model, {
@@ -433,7 +454,7 @@ async function CreateRangedWeapon(model: RangedWeaponRequest, token: string) {
 }
 
 async function DeleteRangedWeapon(id: string | undefined, token: string) {
-    if (id == undefined || id == "new" || id.length < 1) {
+    if (!isIdValid(id)) {
         throw new Error("Invalid ID");
     }
 
@@ -448,5 +469,38 @@ async function DeleteRangedWeapon(id: string | undefined, token: string) {
     })
     .catch(err => {
         console.log(`Failed to create the model: ${err}`)
+    });
+}
+
+async function getWeaponDescription(id: string | undefined, lanuage: AllowedLanguages): Promise<Description | null> {
+    if (!isIdValid(id)) return null;
+    try {
+        const {data, status} = await axios.get<Description>(
+            `${RangedWeaponsURL}/${id}/description?lang=${lanuage}`,
+            {
+                headers: { Accept: "application/json" }
+            }
+        );
+        
+        if (status != 200) return null; 
+
+        return data;
+
+    } catch (err) {
+        console.log(`Failed to get ranged weapon: ${err}`);
+        return null;
+    }
+}
+
+async function updateWeaponDescription(id: string | undefined, updated: Description, token: string) {
+    if (!isIdValid) return;
+    const uri = `${RangedWeaponsURL}/${id}/description`;
+    axios.post(uri, {
+        Language: updated.Language,
+        Contents: updated.Contents,
+    }, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
     });
 }
