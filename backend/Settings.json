@@ -1,0 +1,17 @@
+{
+    "Port": 6969, 
+    "CorsParams": {
+        "Origin": "*",
+        "Methods": "GET,POST,PUT,DELETE,OPTIONS",
+        "Headers": "authorization,content-type"
+    },
+    "RedisParams": {
+        "Address": "127.0.0.1",
+        "Port": 6379
+    },
+    "DbParams": {
+        "Address": "localhost",
+        "Port": 5432
+    }
+}
+

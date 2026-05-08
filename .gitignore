@@ -4,3 +4,4 @@ zig-pkg
 hiredis
 
 .env
+app

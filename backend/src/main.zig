@@ -5,10 +5,14 @@ const db = @import("Database/Connection.zig");
 const handler = @import("Handler.zig");
 const tokens = @import("Authentication/Tokens.zig");
 const redis = @import("Redis/Connection.zig");
+const settings = @import("Settings.zig");
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
+
+    try settings.ReadConfig(allocator);
+    defer settings.Deinit(allocator);
 
     try tokens.Init();
    
@@ -23,13 +27,13 @@ pub fn main() !void {
     };
 
     var server = try httpz.Server(*handler.Handler).init(allocator, .{
-        .address = .all(6969),
+        .address = .all(settings.Current.Port),
     }, &httpHandler);
 
     const cors = try server.middleware(httpz.middleware.Cors, .{
-        .origin = "*",
-        .methods = "GET,POST,PUT,DELETE,OPTIONS",
-        .headers = "authorization,content-type",
+        .origin = settings.Current.CorsParams.Origin,
+        .methods = settings.Current.CorsParams.Methods,
+        .headers = settings.Current.CorsParams.Headers,
     });
 
     defer {

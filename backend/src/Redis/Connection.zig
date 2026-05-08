@@ -1,4 +1,5 @@
 const std = @import("std");
+const settings = @import("../Settings.zig");
 const redis = @cImport(
     @cInclude("hiredis/hiredis.h")
     );
@@ -8,7 +9,10 @@ const addr: [*]const u8 = "127.0.0.1";
 const port: u16 = 6379;
 
 pub fn Connect() !void {
-    connection = redis.redisConnect(addr, port);
+    connection = redis.redisConnect(
+        settings.Current.RedisParams.Address.ptr,
+        settings.Current.RedisParams.Port);
+
     if (connection == null or connection.?.err != 0) {
         if (connection != null) {
             @panic(&connection.?.errstr);
@@ -57,6 +61,11 @@ pub fn ReadFromTopic(allocator: std.mem.Allocator, topic: []const u8, Key: []con
 }
 
 test "Redis connection" {
+    const alloc = std.testing.allocator;
+
+    try settings.ReadConfig(alloc);
+    defer settings.Deinit(alloc);
+
     try Connect();
     defer Disconnect();
 
@@ -66,7 +75,6 @@ test "Redis connection" {
         .SecondsToLive = 1,
     });
 
-    const alloc = std.testing.allocator;
 
     var resp = try ReadFromTopic(alloc, "test", "key");
     try std.testing.expectEqualStrings("value", resp orelse "not found");

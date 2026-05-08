@@ -1,6 +1,9 @@
 all:
 	zig build test && zig build run
 
+build:
+	zig build && cp zig-out/bin/backend app
+
 test:
 	zig build test
 
