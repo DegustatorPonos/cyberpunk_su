@@ -110,7 +110,6 @@ export function EditRangedWeaponPage() {
     var [weapon, setWeapon] = useState<RangedWeapon | null>(null);
     const [description, setDescription] = useState<Description | null>(null);
     const [authCookie, ] = useCookies(['X-AUTH-TOKEN']);
-    const navigate = useNavigate();
 
     const [Name, setName] = useState<string>();
     const [WeaponType, setWeaponType] = useState<string>();
@@ -161,7 +160,7 @@ export function EditRangedWeaponPage() {
 
     useEffect(() => {
         getWeaponDescription(id, currentLanguage).then(val => {
-            const input = document.getElementById('description') as HTMLInputElement | null;
+            const input = document.getElementById('description') as HTMLTextAreaElement | null;
             if (!input) return;
             input.value = val?.Contents ?? '';
         });

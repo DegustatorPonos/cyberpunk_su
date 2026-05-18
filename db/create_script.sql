@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS RangedWeapons (
 );
 
 CREATE TABLE IF NOT EXISTS RangedWeaponsDescriptions (
-    id VARCHAR(255) REFERENCES RangedWeapons(id),
+    id VARCHAR(255) REFERENCES RangedWeapons(id) ON DELETE CASCADE,
     language VARCHAR(16),
     contents TEXT,
 

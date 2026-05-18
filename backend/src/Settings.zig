@@ -38,7 +38,9 @@ pub fn ReadConfig(allocator: std.mem.Allocator) !void {
     var parsed = std.json.parseFromSlice(
         SettingsStruct, 
         allocator, 
-        contents, .{}) catch |err| {
+        contents, .{
+            .ignore_unknown_fields = true
+        }) catch |err| {
         std.debug.print("Failed to parse settings: {any}\n", .{err});
         return err;
     };

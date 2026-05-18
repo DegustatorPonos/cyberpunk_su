@@ -119,7 +119,7 @@ function adminButtons(user: User | null) {
     } else {
         return (
             <div>
-               <a href="/weapons/new/edit"> New ranged weapon </a>
+               <a href="/weapons/ranged/new/edit"> New ranged weapon </a>
             </div>
         )
     }

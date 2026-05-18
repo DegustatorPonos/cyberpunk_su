@@ -12,7 +12,6 @@ pub fn main() !void {
     const allocator = gpa.allocator();
 
     try settings.ReadConfig(allocator);
-    defer settings.Deinit(allocator);
 
     try tokens.Init();
    
@@ -52,6 +51,7 @@ pub fn main() !void {
     @import("API/AuthenticationAPI.zig").RegisterEndpoints(router);
 
     try server.listen();
+    settings.Deinit(allocator);
 }
 
 fn index(_: *handler.RequestData, _: *httpz.Request, res: *httpz.Response) !void {
