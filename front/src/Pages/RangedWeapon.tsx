@@ -4,7 +4,7 @@ import { BackendURL } from "../Config";
 import axios from "axios";
 import { RangedWeapon, RangedWeaponRequest } from "../Models/RangedWeapon";
 import { Description } from "../Models/Description";
-import { useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
 import { GetLocalizedString } from "../Locales/Locales";
 import "./Weapons.css"
 import { AuthContext } from "../Authentication/ContextProvider";
@@ -29,7 +29,7 @@ export function RangedWeaponPage() {
     }
 
     function editButton() {
-        if (!user || user.Role != "editor") {
+        if (!user || user.Role !== "editor") {
             return (<p></p>);
         } else {
             return ( <a href={`${id}/edit`}> Edit </a> );
@@ -127,7 +127,7 @@ export function EditRangedWeaponPage() {
     const [DescriptionContents, SetDescContents] = useState<string>("");
 
     useState(() => {
-        if (id == 'new') {
+        if (id === 'new') {
             setWeapon(defaultNewRangedWeapon);
             return
         }
@@ -156,7 +156,7 @@ export function EditRangedWeaponPage() {
             setOrigin(weapon.Origin);
             SetDescContents(description?.Contents ?? "");
         }
-    }, [weapon]);
+    }, [weapon, description?.Contents]);
 
     useEffect(() => {
         getWeaponDescription(id, currentLanguage).then(val => {
@@ -164,7 +164,7 @@ export function EditRangedWeaponPage() {
             if (!input) return;
             input.value = val?.Contents ?? '';
         });
-    }, [currentLanguage]);
+    }, [currentLanguage, id]);
 
     function getUpdatedWeapon(): RangedWeaponRequest {
         var outp: RangedWeaponRequest = {
@@ -188,11 +188,11 @@ export function EditRangedWeaponPage() {
         return <div>Loading...</div>;
     }
 
-    if (!user || user.Role != "editor") {
+    if (!user || user.Role !== "editor") {
         throw new Response("Forbidden", { status: 403 });
     }
 
-    if (weapon == null) {
+    if (weapon === null) {
         return <h1> Not found </h1>; // <Navigate to="/404" replace />;
     }
 
@@ -348,20 +348,16 @@ export function EditRangedWeaponPage() {
 
             <button onClick={ () => {
                 const updated = getUpdatedWeapon();
-                if (id == "new") {
+                if (id === "new") {
                     CreateRangedWeapon(updated, authCookie['X-AUTH-TOKEN']);
                 } else {
                     UpdateRangedWeapon(id, updated, authCookie['X-AUTH-TOKEN']);
                 }
-                // navigate('/weapons');
-                // document.location.reload();
             }}> Update </button> 
 
             <button onClick={ () => {
-                if (id == "new") return;
+                if (id === "new") return;
                 DeleteRangedWeapon(id, authCookie['X-AUTH-TOKEN']);
-                // navigate('/weapons');
-                // document.location.reload();
             }}> Delete </button> 
 
             <div className="descPanel">
@@ -376,7 +372,7 @@ export function EditRangedWeaponPage() {
                 </select>
 
                 <button onClick={ () => {
-                    if (id == "new") return;
+                    if (id === "new") return;
                     const newDesc: Description = {
                         Id: "",
                         Language: currentLanguage,
@@ -398,7 +394,7 @@ export function EditRangedWeaponPage() {
 }
 
 function isIdValid(id: string | undefined): boolean {
-    return id != undefined && id != "new" && id?.length > 0;
+    return id !== undefined && id !== "new" && id?.length > 0;
 }
 
 async function getWeapon(id: string | undefined): Promise<RangedWeapon | null> {
@@ -411,7 +407,7 @@ async function getWeapon(id: string | undefined): Promise<RangedWeapon | null> {
             }
         );
         
-        if (status != 200) return null; 
+        if (status !== 200) return null; 
 
         return data;
 
@@ -444,11 +440,11 @@ function generateId(Name: string): string {
 }
 
 async function CreateRangedWeapon(model: RangedWeaponRequest, token: string) {
-    if (model.Name.length == 0) {
+    if (model.Name.length === 0) {
         throw new Error('The model name should not be empty');
     }
     model.Id = generateId(model.Name);
-    if (model.Id == "new") {
+    if (model.Id === "new") {
         throw new Error("Forbidden name");
     }
 
@@ -494,7 +490,7 @@ async function getWeaponDescription(id: string | undefined, lanuage: AllowedLang
             }
         );
         
-        if (status != 200) return null; 
+        if (status !== 200) return null; 
 
         return data;
 
