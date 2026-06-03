@@ -28,11 +28,12 @@ pub const SettingsStruct = struct {
 
 pub var Current: *SettingsStruct = undefined;
 
-pub fn ReadConfig(allocator: std.mem.Allocator) !void {
-    const file = try std.fs.cwd().openFile(SettingsFile, .{});
-    defer file.close();
+pub fn ReadConfig(allocator: std.mem.Allocator, io: std.Io) !void {
+    // const file = try std.fs.cwd().openFile(SettingsFile, .{});
+    // defer file.close();
 
-    const contents = try file.readToEndAlloc(allocator, std.math.maxInt(usize));
+    // const contents = try file.readToEndAlloc(allocator, std.math.maxInt(usize));
+    const contents = try std.Io.Dir.cwd().readFileAlloc(io, SettingsFile, allocator, .limited(std.math.maxInt(usize)));
     defer allocator.free(contents);
 
     var parsed = std.json.parseFromSlice(

@@ -63,7 +63,7 @@ pub fn ReadFromTopic(allocator: std.mem.Allocator, topic: []const u8, Key: []con
 test "Redis connection" {
     const alloc = std.testing.allocator;
 
-    try settings.ReadConfig(alloc);
+    try settings.ReadConfig(alloc, std.testing.io);
     defer settings.Deinit(alloc);
 
     try Connect();
@@ -78,7 +78,10 @@ test "Redis connection" {
 
     var resp = try ReadFromTopic(alloc, "test", "key");
     try std.testing.expectEqualStrings("value", resp orelse "not found");
-    std.Thread.sleep(1_500_000_000);
+
+    try std.testing.io.sleep(.fromSeconds(2), .awake);
+
+    // std.Thread.sleep(1_500_000_000);
     // KVP TTL check
     if (resp) |r|  {
         alloc.free(r);

@@ -69,9 +69,9 @@ pub const RequestBody = struct {
     // You are expected to free the User.PasswordHash afterwards. 
     // Shouldn't be a problem since it's supposed to be called with httpz's
     // req.arena
-    pub fn ToModel(self: RequestBody, allocator: std.mem.Allocator) !User {
+    pub fn ToModel(self: RequestBody, allocator: std.mem.Allocator, io: std.Io) !User {
         var buf: [60]u8 = undefined;
-        const hashed = try pwd.HashPassword(self.Password, &buf);
+        const hashed = try pwd.HashPassword(self.Password, &buf, io);
         return User {
             .Id = "",
             .Username = self.Username,
@@ -99,7 +99,7 @@ test "Request to user" {
         .Password = "password",
     };
 
-    const model = try body.ToModel(allocator);
+    const model = try body.ToModel(allocator, std.testing.io);
     try std.testing.expectEqualStrings(model.Username, body.Username);
     try std.testing.expectEqual(model.Id.len, 0);
     try std.testing.expectEqual(model.Role, Role.user);

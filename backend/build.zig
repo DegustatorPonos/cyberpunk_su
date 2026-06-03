@@ -100,7 +100,7 @@ pub fn build(b: *std.Build) void {
     exe.root_module.addImport("pg", pg_module);
 
     // .env
-    const dotenv_module = b.dependency("dotenv", .{}).module("dotenv");
+    const dotenv_module = b.dependency("dotenv", .{ .target = target, .optimize = optimize }).module("dotenv");
     exe.root_module.addImport("dotenv", dotenv_module);
 
     // Redis

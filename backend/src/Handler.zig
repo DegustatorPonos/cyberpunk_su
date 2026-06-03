@@ -10,9 +10,11 @@ pub const authError = error {
 
 pub const RequestData = struct {
     User: ?userModel.User,
+    Io: std.Io,
 
-    pub fn Init(req: *httpz.Request) !RequestData {
+    pub fn Init(req: *httpz.Request, io: std.Io) !RequestData {
         return .{
+            .Io = io,
             .User = try getUser(req),
         };
     }
@@ -48,8 +50,10 @@ pub const RequestData = struct {
 };
 
 pub const Handler = struct {
-    pub fn dispatch(_: *Handler, action: httpz.Action(*RequestData), req: *httpz.Request, res: *httpz.Response) !void {
-        var data = try RequestData.Init(req);
+    io: std.Io,
+
+    pub fn dispatch(self: *Handler, action: httpz.Action(*RequestData), req: *httpz.Request, res: *httpz.Response) !void {
+        var data = try RequestData.Init(req, self.io);
         // std.debug.print("Data: {any}\n", .{ data });
         action(&data, req, res) catch |err| {
             switch (err) {

@@ -7,25 +7,25 @@ const tokens = @import("Authentication/Tokens.zig");
 const redis = @import("Redis/Connection.zig");
 const settings = @import("Settings.zig");
 
-pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
+pub fn main(init: std.process.Init) !void {
+    const allocator = init.gpa;
 
-    try settings.ReadConfig(allocator);
+    try settings.ReadConfig(allocator, init.io);
 
-    try tokens.Init();
-   
+    try tokens.Init(init.io);
+    
     // PSQL connection
-    try db.Connect(allocator);
+    try db.Connect(init);
     defer db.Disconnect();
 
     try redis.Connect();
     defer redis.Disconnect();
 
     var httpHandler = handler.Handler {
+        .io = init.io,
     };
 
-    var server = try httpz.Server(*handler.Handler).init(allocator, .{
+    var server = try httpz.Server(*handler.Handler).init(init.io, allocator, .{
         .address = .all(settings.Current.Port),
     }, &httpHandler);
 

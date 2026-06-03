@@ -12,10 +12,10 @@ pub const errors = error {
     NotFound,
 };
 
-pub fn Init() !void {
+pub fn Init(io: std.Io) !void {
     // Random enough
     var seed: u64 = undefined;
-    try std.posix.getrandom(std.mem.asBytes(&seed));
+    io.random(std.mem.asBytes(&seed));
     prng = std.Random.DefaultPrng.init(seed);
     rnd = prng.random();
 }
@@ -36,7 +36,7 @@ pub fn GenerateNewSession(allocator: std.mem.Allocator, user: userModel.User) ![
     const newToken = generateSessionToken(token);
 
     // Redis cache 
-    var string: std.io.Writer.Allocating = .init(allocator);
+    var string: std.Io.Writer.Allocating = .init(allocator);
     defer string.deinit();
     try string.writer.print("{f}", .{ std.json.fmt(user, .{}) });
     try redis.WriteToTopic(topicName, redis.Message {

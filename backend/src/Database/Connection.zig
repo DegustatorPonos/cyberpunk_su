@@ -9,11 +9,20 @@ pub const ResultErrors = error {
 
 pub var pool: *pg.Pool = undefined;
 
-pub fn Connect(alloc: std.mem.Allocator) !void {
-    var env = try dotenv.init(alloc, ".env");
+const EnvKeys = enum {
+    PG_USERNAME,
+    PG_PASSWORD,
+};
+
+pub fn Connect(init: std.process.Init) !void {
+    var env = dotenv.init(init, EnvKeys);
     defer env.deinit();
 
-    pool = try pg.Pool.init(alloc, .{
+    try env.load(.{
+        .include_current_process_envs = true,
+    });
+
+    pool = try pg.Pool.init(init.io, init.gpa, .{
         .size = 5,
         .connect = .{
             .port = 5432,
@@ -21,8 +30,8 @@ pub fn Connect(alloc: std.mem.Allocator) !void {
         },
         .auth = .{
             .database = "cyber2020",
-            .username = env.get("PG_USERNAME") orelse unreachable,
-            .password = env.get("PG_PASSWORD") orelse unreachable,
+            .username = env.key(.PG_USERNAME),
+            .password = env.key(.PG_PASSWORD),
             .timeout = 10_000
         }
     });

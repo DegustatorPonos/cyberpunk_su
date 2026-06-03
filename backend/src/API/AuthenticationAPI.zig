@@ -32,13 +32,13 @@ const authResult = struct {
     },
 };
 
-fn register(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+fn register(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
     var body = try req.json(model.RequestBody) orelse {
         res.setStatus(.bad_request);
         return;
     };
 
-    var body_model = try body.ToModel(req.arena);
+    var body_model = try body.ToModel(req.arena, data.Io);
 
     db.Users.Create(&body_model) catch |err| {
         if (err == db.ResultErrors.AlreadyExists) {
