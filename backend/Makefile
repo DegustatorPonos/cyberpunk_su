@@ -11,3 +11,7 @@ test:
 deps:
 	git clone https://github.com/redis/hiredis
 	cd hiredis; sudo make install
+	cd hiredis; sudo make; cp libhiredis.so ../libhiredis.so.1.3.0
+
+build-container:
+	sudo docker build -t cp2020_back .

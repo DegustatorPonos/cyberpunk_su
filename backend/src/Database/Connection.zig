@@ -1,6 +1,7 @@
 const std = @import("std");
 const pg = @import("pg");
 const dotenv = @import("dotenv");
+const settings = @import("../Settings.zig");
 
 pub const ResultErrors = error {
     NotFound,
@@ -22,11 +23,12 @@ pub fn Connect(init: std.process.Init) !void {
         .include_current_process_envs = true,
     });
 
-    pool = try pg.Pool.init(init.io, init.gpa, .{
+    std.debug.print("Connecting to the db at {s}\n", .{settings.Current.DbParams.Address});
+    pool = pg.Pool.init(init.io, init.gpa, .{
         .size = 5,
         .connect = .{
             .port = 5432,
-            .host = "localhost"
+            .host = settings.Current.DbParams.Address,
         },
         .auth = .{
             .database = "cyber2020",
@@ -34,7 +36,10 @@ pub fn Connect(init: std.process.Init) !void {
             .password = env.key(.PG_PASSWORD),
             .timeout = 10_000
         }
-    });
+    }) catch |err| {
+        std.debug.print("Failed to connect to postgres", .{});
+        return err;
+    };
 }
 
 pub fn Disconnect() void {

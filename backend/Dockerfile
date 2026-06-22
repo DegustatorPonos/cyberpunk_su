@@ -1,16 +1,21 @@
-FROM alpine:3.22.4
-RUN apk update
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y \
+    redis-server \
+    git \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-# Installing zig
-# RUN apk add zig=0.15.2-r0
-
-# Installing redis
-RUN apk add redis redis-openrc git build-base make
-# RUN rc-update add redis default
-RUN git clone https://github.com/redis/hiredis.git && cd hiredis && make install
 
 WORKDIR /app
-COPY ./app /app/app
-# RUN make build
+COPY ./app /app
+COPY ./Settings.json /app
+COPY ./.env /app
+COPY ./libhiredis.so.1.3.0 /app
+
+ENV LD_LIBRARY_PATH=/usr/local/lib:/app
+
+COPY ./entry.sh /app/entry.sh
+RUN chmod +x /app/entry.sh
+
 EXPOSE 6969
-CMD ["./app"]
+CMD ["./entry.sh"]
