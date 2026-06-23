@@ -5,7 +5,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router';
 import IndexElement from './Emelents/IndexElement';
 import ClassesList from './Emelents/ClassList';
 import Topbar from './Emelents/Topbar';
-import { AllowedLanguages, LanguageContext } from './Locales/Context';
+import { AllowedLanguage, LanguageContext } from './Locales/Context';
 import { useEffect, useState } from 'react';
 import { ReadCurrentLocale, SaveCurrentLocale } from './Locales/Locales';
 import LegalNote from './Emelents/LegalNote';
@@ -59,9 +59,9 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-    const [lang, setLang] = useState<AllowedLanguages>(ReadCurrentLocale());
+    const [lang, setLang] = useState<AllowedLanguage>(ReadCurrentLocale());
 
-    function SetLanguage(newLang: AllowedLanguages) {
+    function SetLanguage(newLang: AllowedLanguage) {
         console.log(`Setting a new language ${newLang}...`);
         SaveCurrentLocale(newLang);
         setLang(newLang);

@@ -11,7 +11,7 @@
         "Port": 6379
     },
     "DbParams": {
-        "Address": "cyber2020pg",
+        "Address": "localhost",
         "Port": 5432
     }
 }

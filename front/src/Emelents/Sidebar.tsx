@@ -1,13 +1,13 @@
 import { useContext } from 'react';
 import { AuthContext } from '../Authentication/ContextProvider';
 import { User } from '../Authentication/Models';
-import { AllowedLanguages, LanguageContext } from '../Locales/Context';
+import { AllowedLanguage, LanguageContext } from '../Locales/Context';
 import { GetLocalizedString } from '../Locales/Locales';
 import './Elements.css';
 import SidebarListElement from './SidebarElement';
 
 type SidebarProps = {
-    setLang: (newLang: AllowedLanguages) => void;
+    setLang: (newLang: AllowedLanguage) => void;
 };
 
 function Sidebar({setLang}: SidebarProps) {

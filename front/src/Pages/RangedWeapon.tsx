@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { AllowedLanguages, LanguageContext } from "../Locales/Context";
+import { AllowedLanguage, LanguageContext } from "../Locales/Context";
 import { BackendURL } from "../Config";
 import axios from "axios";
 import { RangedWeapon, RangedWeaponRequest } from "../Models/RangedWeapon";
@@ -108,7 +108,6 @@ export function EditRangedWeaponPage() {
     const { id } = useParams();
     const lang = useContext(LanguageContext);
     var [weapon, setWeapon] = useState<RangedWeapon | null>(null);
-    const [description, setDescription] = useState<Description | null>(null);
     const [authCookie, ] = useCookies(['X-AUTH-TOKEN']);
 
     const [Name, setName] = useState<string>();
@@ -123,8 +122,20 @@ export function EditRangedWeaponPage() {
     const [Reliability, setReliability] = useState<string>();
     const [Origin, setOrigin] = useState<string>();
 
-    const [currentLanguage, setCurrentLanguage] = useState<AllowedLanguages>("en");
-    const [DescriptionContents, SetDescContents] = useState<string>("");
+    const [currentLanguage, setCurrentLanguage] = useState<AllowedLanguage>("en");
+
+    function setDescription(newDesc: Description | null) {
+        const input = document.getElementById('descriptionInput') as HTMLTextAreaElement | null;
+        if (!input) return;
+        input.value = newDesc?.Contents ?? '';
+    };
+
+    useEffect(() => {
+        if (user !== null) {
+            setIsLoading(false);
+            getWeaponDescription(id, currentLanguage).then(data => setDescription(data));
+        }
+    }, [user]);
 
     useState(() => {
         if (id === 'new') {
@@ -132,14 +143,8 @@ export function EditRangedWeaponPage() {
             return
         }
         getWeapon(id).then(data => setWeapon(data));
-        getWeaponDescription(id, currentLanguage).then(data => setDescription(data));
     });
 
-    useEffect(() => {
-        if (user !== null) {
-            setIsLoading(false);
-        }
-    }, [user]);
 
     useEffect(() => {
         if (weapon) {
@@ -154,15 +159,12 @@ export function EditRangedWeaponPage() {
             setRateOfFire(weapon.RateOfFire);
             setReliability(weapon.Reliability);
             setOrigin(weapon.Origin);
-            SetDescContents(description?.Contents ?? "");
         }
-    }, [weapon, description?.Contents]);
+    }, [weapon]);
 
     useEffect(() => {
         getWeaponDescription(id, currentLanguage).then(val => {
-            const input = document.getElementById('description') as HTMLTextAreaElement | null;
-            if (!input) return;
-            input.value = val?.Contents ?? '';
+            setDescription(val);
         });
     }, [currentLanguage, id]);
 
@@ -365,7 +367,7 @@ export function EditRangedWeaponPage() {
                 <select 
                     value={currentLanguage}
                     onChange={ (val) => {
-                        setCurrentLanguage(val.target.value as AllowedLanguages);
+                        setCurrentLanguage(val.target.value as AllowedLanguage);
                     }}> 
                     <option value="ru"> ru </option>
                     <option value="en"> en </option>
@@ -376,18 +378,13 @@ export function EditRangedWeaponPage() {
                     const newDesc: Description = {
                         Id: "",
                         Language: currentLanguage,
-                        Contents: DescriptionContents,
+                        Contents: (document.getElementById('descriptionInput') as HTMLTextAreaElement).value,
                     }
                     updateWeaponDescription(id, newDesc, authCookie['X-AUTH-TOKEN']);
                 }}> Update </button> 
             </div>
     
-            <textarea className="descriptionInput"
-                value={DescriptionContents} 
-                onChange={ (val) => {
-                    SetDescContents(val.target.value);
-                }}
-                />
+            <textarea className="descriptionInput" id="descriptionInput"  />
     
         </div>
     );
@@ -480,7 +477,7 @@ async function DeleteRangedWeapon(id: string | undefined, token: string) {
     });
 }
 
-async function getWeaponDescription(id: string | undefined, lanuage: AllowedLanguages): Promise<Description | null> {
+async function getWeaponDescription(id: string | undefined, lanuage: AllowedLanguage): Promise<Description | null> {
     if (!isIdValid(id)) return null;
     try {
         const {data, status} = await axios.get<Description>(

@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { useRouteError } from "react-router";
-import { AllowedLanguages, LanguageContext } from "./Locales/Context";
+import { AllowedLanguage, LanguageContext } from "./Locales/Context";
 import { GetLocalizedString } from "./Locales/Locales";
 
 type RouteError = {
@@ -25,7 +25,7 @@ function ErrorHandler() {
 }
 
 
-function forbid(language: AllowedLanguages) {
+function forbid(language: AllowedLanguage) {
     return (
         <div>
             <h1> { GetLocalizedString("Forbidden", language) } </h1>

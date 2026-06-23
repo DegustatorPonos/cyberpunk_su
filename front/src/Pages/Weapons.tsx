@@ -3,7 +3,7 @@ import { useContext, useState } from "react";
 import { BackendURL } from "../Config";
 import { LanguageContext } from "../Locales/Context";
 import { GetLocalizedString } from "../Locales/Locales";
-import { AllowedLanguages } from "../Locales/Context";
+import { AllowedLanguage } from "../Locales/Context";
 import { RangedWeapon } from "../Models/RangedWeapon";
 import { AuthContext } from "../Authentication/ContextProvider";
 import { User } from "../Authentication/Models";
@@ -31,7 +31,7 @@ function WeaponsIndex() {
     );
 }
 
-function generatedRangedWeaponsList(rangedWeapons: RangedWeapon[] | null, language: AllowedLanguages): any {
+function generatedRangedWeaponsList(rangedWeapons: RangedWeapon[] | null, language: AllowedLanguage): any {
     if (!rangedWeapons) {
         return (
             <div> </div>
