@@ -11,7 +11,7 @@ WORKDIR /app
 COPY ./app /app
 COPY ./Settings_deployment.json /app/Settings.json
 COPY ./.env /app
-COPY ./libhiredis.so.1.3.0 /app
+COPY ./libhiredis.so.* /app
 
 ENV LD_LIBRARY_PATH=/usr/local/lib:/app
 

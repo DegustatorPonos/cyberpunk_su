@@ -104,6 +104,7 @@ pub fn build(b: *std.Build) void {
     exe.root_module.addImport("dotenv", dotenv_module);
 
     // Redis
+    exe.root_module.addLibraryPath(b.path("."));
     exe.root_module.linkSystemLibrary("hiredis", .{
         .needed = true,
     });
