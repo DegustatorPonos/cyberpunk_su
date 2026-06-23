@@ -33,6 +33,7 @@ pub fn main(init: std.process.Init) !void {
         .origin = settings.Current.CorsParams.Origin,
         .methods = settings.Current.CorsParams.Methods,
         .headers = settings.Current.CorsParams.Headers,
+        .credentials = if (settings.Current.CorsParams.AllowCredentials) "true" else "",
     });
 
     defer {

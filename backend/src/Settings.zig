@@ -13,6 +13,7 @@ pub const SettingsStruct = struct {
         Origin: []const u8,
         Methods: []const u8,
         Headers: []const u8,
+        AllowCredentials: bool,
     },
 
     RedisParams: struct {

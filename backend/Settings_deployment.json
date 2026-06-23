@@ -1,0 +1,17 @@
+{
+    "Port": 9001, 
+    "CorsParams": {
+        "Origin": "http://localhost:9000",
+        "Methods": "GET,POST,PUT,DELETE,OPTIONS",
+        "Headers": "authorization,content-type",
+        "AllowCredentials": true
+    },
+    "RedisParams": {
+        "Address": "127.0.0.1",
+        "Port": 6379
+    },
+    "DbParams": {
+        "Address": "cyber2020pg",
+        "Port": 5432
+    }
+}

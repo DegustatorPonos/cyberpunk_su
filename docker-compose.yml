@@ -20,7 +20,7 @@ services:
     image: cp2020_back
     container_name: cyber2020backend
     ports:
-      - "9001:6969"
+      - "9001:9001"
     depends_on:
       postgres:
         condition: service_healthy

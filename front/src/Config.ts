@@ -1,1 +1,1 @@
-export const BackendURL = "http://localhost:6969";
+export const BackendURL = process.env.REACT_APP_BACKEND_IP || "http://localhost:6969";
