@@ -4,7 +4,7 @@ ARG NGINX_VERSION=alpine3.22
 # Use a lightweight Node.js image for building (customizable via ARG)
 FROM node:${NODE_VERSION} AS builder
 
-ENV REACT_APP_BACKEND_IP=http://localhost:9001
+ENV REACT_APP_BACKEND_IP=https://cyberpunk-back.physick.ru
 ENV NODE_ENV=production
 
 # Set the working directory inside the container

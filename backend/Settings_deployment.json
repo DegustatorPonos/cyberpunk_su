@@ -1,7 +1,7 @@
 {
     "Port": 9001, 
     "CorsParams": {
-        "Origin": "http://localhost:9000",
+        "Origin": "http://cyberpunk.physick.ru/",
         "Methods": "GET,POST,PUT,DELETE,OPTIONS",
         "Headers": "authorization,content-type",
         "AllowCredentials": true
