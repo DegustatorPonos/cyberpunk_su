@@ -18,11 +18,18 @@ services:
 
   backend:
     image: cp2020_back
+    container_name: cyber2020backend
     ports:
       - "9001:6969"
     depends_on:
       postgres:
         condition: service_healthy
+
+  frontend:
+    image: cp2020_front
+    container_name: cyber2020frontend
+    ports:
+      - "9000:8080"
 
 volumes:
   postgres_data:
