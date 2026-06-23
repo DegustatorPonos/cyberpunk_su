@@ -41,7 +41,7 @@ pub fn ReadConfig(allocator: std.mem.Allocator, io: std.Io) !void {
         SettingsStruct, 
         allocator, 
         contents, .{
-            .ignore_unknown_fields = true
+            .ignore_unknown_fields = true,
         }) catch |err| {
         std.debug.print("Failed to parse settings: {any}\n", .{err});
         return err;
@@ -58,6 +58,7 @@ pub fn ReadConfig(allocator: std.mem.Allocator, io: std.Io) !void {
             .Origin = try allocator.dupe(u8, parsed.value.CorsParams.Origin),
             .Methods = try allocator.dupe(u8, parsed.value.CorsParams.Methods),
             .Headers = try allocator.dupe(u8, parsed.value.CorsParams.Headers),
+            .AllowCredentials = parsed.value.CorsParams.AllowCredentials,
         },
 
         .RedisParams = .{

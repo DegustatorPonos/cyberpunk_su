@@ -3,7 +3,8 @@
     "CorsParams": {
         "Origin": "*",
         "Methods": "GET,POST,PUT,DELETE,OPTIONS",
-        "Headers": "authorization,content-type"
+        "Headers": "authorization,content-type",
+        "AllowCredentials": false
     },
     "RedisParams": {
         "Address": "127.0.0.1",
