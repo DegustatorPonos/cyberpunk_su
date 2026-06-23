@@ -110,18 +110,6 @@ export function EditRangedWeaponPage() {
     var [weapon, setWeapon] = useState<RangedWeapon | null>(null);
     const [authCookie, ] = useCookies(['X-AUTH-TOKEN']);
 
-    const [Name, setName] = useState<string>();
-    const [WeaponType, setWeaponType] = useState<string>();
-    const [Accuracy, setAccuracy] = useState<number>();
-    const [Concealability, setConcealability] = useState<string>();
-    const [Avaliability, setAvaliability] = useState<string>();
-    const [Damage, setDamage] = useState<string>();
-    const [Ammunition, setAmmunition] = useState<string>();
-    const [NumberOfShots, setNumberOfShots] = useState<number>();
-    const [RateOfFire, setRateOfFire] = useState<number>();
-    const [Reliability, setReliability] = useState<string>();
-    const [Origin, setOrigin] = useState<string>();
-
     const [currentLanguage, setCurrentLanguage] = useState<AllowedLanguage>("en");
 
     function setDescription(newDesc: Description | null) {
@@ -147,44 +135,10 @@ export function EditRangedWeaponPage() {
 
 
     useEffect(() => {
-        if (weapon) {
-            setName(weapon.Name);
-            setWeaponType(weapon.WeaponType);
-            setAccuracy(weapon.Accuracy);
-            setConcealability(weapon.Concealability);
-            setAvaliability(weapon.Avaliability);
-            setDamage(weapon.Damage);
-            setAmmunition(weapon.Ammunition);
-            setNumberOfShots(weapon.NumberOfShots);
-            setRateOfFire(weapon.RateOfFire);
-            setReliability(weapon.Reliability);
-            setOrigin(weapon.Origin);
-        }
-    }, [weapon]);
-
-    useEffect(() => {
         getWeaponDescription(id, currentLanguage).then(val => {
             setDescription(val);
         });
     }, [currentLanguage, id]);
-
-    function getUpdatedWeapon(): RangedWeaponRequest {
-        var outp: RangedWeaponRequest = {
-            Id: id || "",
-            Name: Name || "",
-            WeaponType: WeaponType || "",
-            Accuracy: Accuracy || 0,
-            Concealability: Concealability || "",
-            Avaliability: Avaliability || "",
-            Damage: Damage || "",
-            Ammunition: Ammunition || "",
-            NumberOfShots: NumberOfShots || 0,
-            RateOfFire: RateOfFire || 0,
-            Reliability: Reliability || "",
-            Origin: Origin || "",
-        };
-        return outp;
-    }
 
     if (isLoading) {
         return <div>Loading...</div>;
@@ -204,8 +158,9 @@ export function EditRangedWeaponPage() {
                 <h1> Editing a weapon </h1>
             </span>
             <span> 
-                <input className="NameEdit" value={Name} onChange={(val) => {
-                    setName(val.target.value);
+                <input className="NameEdit" value={weapon.Name || ""} onChange={(val) => {
+                    if (!weapon) return;
+                    setWeapon({...weapon, Name: val.target.value});
                 }} /> 
             </span>
             <table> 
@@ -214,10 +169,10 @@ export function EditRangedWeaponPage() {
                         <td> { GetLocalizedString("Weapon type", lang) } </td>
                         <td> 
                             <select 
-                            value={WeaponType}
+                            value={weapon.WeaponType || ""}
                             onChange={ (val) => {
-                                const newWeaponType = val.target.value;
-                                setWeaponType(newWeaponType);
+                                if (!weapon) return;
+                                setWeapon({...weapon, WeaponType: val.target.value});
                             }}> 
                                 <option value="Light pistol"> Light pistol </option>
                                 <option value="Medium pistol"> Medium pistol </option>
@@ -239,8 +194,9 @@ export function EditRangedWeaponPage() {
                     <tr> 
                         <td> { GetLocalizedString("Accuracy", lang) } </td>
                         <td> 
-                            <input value={Accuracy} type="number" onChange={(val) => {
-                                setAccuracy(+val.target.value);
+                            <input value={weapon.Accuracy} type="number" onChange={(val) => {
+                                if (!weapon) return;
+                                setWeapon({...weapon, Accuracy: Number(val.target.value)});
                             }} /> 
                         </td>
                     </tr>
@@ -249,10 +205,10 @@ export function EditRangedWeaponPage() {
                         <td> { GetLocalizedString("Concealability", lang) } </td>
                         <td> 
                             <select 
-                                value={Concealability}
+                                value={weapon.Concealability || ""}
                                 onChange={ (val) => {
-                                    const newConcealability = val.target.value;
-                                    setConcealability(newConcealability);
+                                    if (!weapon) return;
+                                    setWeapon({...weapon, Concealability: val.target.value});
                                 }}> 
                                 <option value="Pocket"> Pocket </option>
                                 <option value="Jacket"> Jacket </option>
@@ -266,10 +222,10 @@ export function EditRangedWeaponPage() {
                         <td> { GetLocalizedString("Avaliability", lang) } </td>
                         <td>
                             <select 
-                                value={Avaliability}
+                                value={weapon.Avaliability || ""}
                                 onChange={ (val) => {
-                                    const newAvaliability = val.target.value;
-                                    setAvaliability(newAvaliability);
+                                    if (!weapon) return;
+                                    setWeapon({...weapon, Avaliability: val.target.value});
                                 }}> 
                                 <option value="Excellent"> Excellent </option>
                                 <option value="Common"> Common </option>
@@ -284,15 +240,17 @@ export function EditRangedWeaponPage() {
                         <td>
                         <input 
                         className="DmgInput"
-                        value={Damage}
+                        value={weapon.Damage || ""}
                         onChange={val => {
-                            setDamage(val.target.value);
+                            if (!weapon) return;
+                            setWeapon({...weapon, Damage: val.target.value});
                         }}/> (
                             <input 
                             className="DmgInput"
-                            value={Ammunition}
+                            value={weapon.Ammunition || ""}
                             onChange={val => {
-                                setAmmunition(val.target.value);
+                                if (!weapon) return;
+                                setWeapon({...weapon, Ammunition: val.target.value});
                             }}/>
                         ) 
                         </td>
@@ -301,8 +259,9 @@ export function EditRangedWeaponPage() {
                     <tr>
                         <td> { GetLocalizedString("Number Of Shots", lang) } </td>
                         <td> 
-                            <input value={NumberOfShots} type="number" onChange={(val) => {
-                                setNumberOfShots(+val.target.value);
+                            <input value={weapon.NumberOfShots || ""} type="number" onChange={(val) => {
+                                if (!weapon) return;
+                                setWeapon({...weapon, NumberOfShots: Number(val.target.value)});
                             }} /> 
                         </td>
                     </tr>
@@ -310,8 +269,9 @@ export function EditRangedWeaponPage() {
                     <tr>
                         <td> { GetLocalizedString("Rate Of Fire", lang) } </td>
                         <td> 
-                            <input value={RateOfFire} type="number" onChange={(val) => {
-                                setRateOfFire(+val.target.value);
+                            <input value={weapon.RateOfFire || ""} type="number" onChange={(val) => {
+                                if (!weapon) return;
+                                setWeapon({...weapon, RateOfFire: Number(val.target.value)});
                             }} /> 
                         </td>
                     </tr>
@@ -320,10 +280,10 @@ export function EditRangedWeaponPage() {
                         <td> { GetLocalizedString("Reliability", lang) } </td>
                         <td> 
                             <select 
-                                value={Reliability}
+                                value={weapon.Reliability || ""}
                                 onChange={ (val) => {
-                                    const newReliability = val.target.value;
-                                    setReliability(newReliability);
+                                    if (!weapon) return;
+                                    setWeapon({...weapon, Reliability: val.target.value});
                                 }}> 
                                 <option value="Very reliable"> Very reliable </option>
                                 <option value="Standard"> Standard </option>
@@ -336,10 +296,10 @@ export function EditRangedWeaponPage() {
                         <td> { GetLocalizedString("Origin", lang) } </td>
                         <td> 
                             <select 
-                                value={Origin}
+                                value={weapon.Origin || ""}
                                 onChange={ (val) => {
-                                    const newOrigin = val.target.value;
-                                    setOrigin(newOrigin);
+                                    if (!weapon) return;
+                                    setWeapon({...weapon, Origin: val.target.value});
                                 }}> 
                                 <option value="Corebook"> Corebook </option>
                             </select>
@@ -349,11 +309,10 @@ export function EditRangedWeaponPage() {
             </table>
 
             <button onClick={ () => {
-                const updated = getUpdatedWeapon();
                 if (id === "new") {
-                    CreateRangedWeapon(updated, authCookie['X-AUTH-TOKEN']);
+                    CreateRangedWeapon(weapon, authCookie['X-AUTH-TOKEN']);
                 } else {
-                    UpdateRangedWeapon(id, updated, authCookie['X-AUTH-TOKEN']);
+                    UpdateRangedWeapon(id, weapon, authCookie['X-AUTH-TOKEN']);
                 }
             }}> Update </button> 
 
@@ -414,12 +373,14 @@ async function getWeapon(id: string | undefined): Promise<RangedWeapon | null> {
     }
 }
 
-async function UpdateRangedWeapon(id: string | undefined, model: RangedWeaponRequest, token: string) {
-    if (!isIdValid(id)) return;
+async function UpdateRangedWeapon(id: string | undefined, model: RangedWeaponRequest | null, token: string) {
+    if (!isIdValid(id) || model === null) return;
     const uri = `${RangedWeaponsURL}/${id}`;
 
-    console.log(model);
-    await axios.put(uri, model, {
+    // Cleaning the exessive fields (backend doesn't like those)
+    const { CreatedAt, UpdatedAt, ...cleanedModel } = model as any;
+    console.log(cleanedModel);
+    await axios.put(uri, cleanedModel, {
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -436,11 +397,15 @@ function generateId(Name: string): string {
     return Name.toLowerCase().replaceAll(' ', '_');
 }
 
-async function CreateRangedWeapon(model: RangedWeaponRequest, token: string) {
-    if (model.Name.length === 0) {
-        throw new Error('The model name should not be empty');
+async function CreateRangedWeapon(rawModel: RangedWeaponRequest | null, token: string) {
+    if (rawModel === null) return;
+    if (rawModel.Name.length === 0) {
+        throw new Error('The rawModel name should not be empty');
     }
+    // Cleaning the exessive fields (backend doesn't like those)
+    const { CreatedAt, UpdatedAt, ...model} = rawModel as any;
     model.Id = generateId(model.Name);
+
     if (model.Id === "new") {
         throw new Error("Forbidden name");
     }
