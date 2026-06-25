@@ -31,7 +31,12 @@ pub const Article = struct {
         const cwd = std.Io.Dir.cwd();
         var threaded: std.Io.Threaded = .init_single_threaded;
         const io = threaded.io();
-        const contents = try cwd.readFileAlloc(io, self.FileLocation, alloc, body_limit);
+        const file_path = try std.fmt.allocPrint(alloc, "{s}/{s}", .{ 
+            settings.Current.Paths.ArticlesPath,
+            self.FileLocation,
+        });
+        defer alloc.free(file_path);
+        const contents = try cwd.readFileAlloc(io, file_path, alloc, body_limit);
         self.Contents = try alloc.dupe(u8, contents);
     }
 

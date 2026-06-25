@@ -13,5 +13,8 @@
     "DbParams": {
         "Address": "localhost",
         "Port": 5432
+    },
+    "Paths": {
+        "ArticlesPath": "Articles"
     }
 }

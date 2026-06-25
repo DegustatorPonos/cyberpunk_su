@@ -12,6 +12,7 @@ COPY ./app /app
 COPY ./Settings_deployment.json /app/Settings.json
 COPY ./.env /app
 COPY ./libhiredis.so.* /app
+COPY ./Articles_deployment/ /app/Articles
 
 ENV LD_LIBRARY_PATH=/usr/local/lib:/app
 

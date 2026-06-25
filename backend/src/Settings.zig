@@ -25,15 +25,15 @@ pub const SettingsStruct = struct {
         Address: []const u8,
         Port: u16,
     },
+    
+    Paths: struct {
+        ArticlesPath: []const u8,
+    },
 };
 
 pub var Current: *SettingsStruct = undefined;
 
 pub fn ReadConfig(allocator: std.mem.Allocator, io: std.Io) !void {
-    // const file = try std.fs.cwd().openFile(SettingsFile, .{});
-    // defer file.close();
-
-    // const contents = try file.readToEndAlloc(allocator, std.math.maxInt(usize));
     const contents = try std.Io.Dir.cwd().readFileAlloc(io, SettingsFile, allocator, .limited(std.math.maxInt(usize)));
     defer allocator.free(contents);
 
@@ -70,6 +70,10 @@ pub fn ReadConfig(allocator: std.mem.Allocator, io: std.Io) !void {
             .Address = try allocator.dupe(u8, parsed.value.DbParams.Address),
             .Port = parsed.value.DbParams.Port,
         },
+        
+        .Paths = .{
+            .ArticlesPath = try allocator.dupe(u8, parsed.value.Paths.ArticlesPath),
+        }
     };
 }
 
@@ -79,5 +83,6 @@ pub fn Deinit(allocator: std.mem.Allocator) void {
     allocator.free(Current.CorsParams.Headers);
     allocator.free(Current.RedisParams.Address);
     allocator.free(Current.DbParams.Address);
+    allocator.free(Current.Paths.ArticlesPath);
     allocator.destroy(Current);
 }
