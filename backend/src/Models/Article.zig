@@ -38,6 +38,12 @@ pub const Article = struct {
         defer alloc.free(file_path);
         const contents = try cwd.readFileAlloc(io, file_path, alloc, body_limit);
         self.Contents = try alloc.dupe(u8, contents);
+
+        var file = try std.Io.Dir.cwd().openFile(io, file_path, .{});
+        defer file.close(io);
+
+        const stat = try file.stat(io);
+        self.CreatedAt = stat.ctime.toSeconds();
     }
 
     /// Expects the same allocator used in the init function.
