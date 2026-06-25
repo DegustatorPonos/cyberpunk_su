@@ -6,9 +6,13 @@ const std = @import("std");
 const pg = @import("pg");
 const model = @import("../Models/Article.zig");
 
-pub fn GetAll(alloc: std.mem.Allocator) !std.ArrayList(model.Article) {
-    const query = "SELECT * FROM Articles ORDER BY updated_at";
-    var result = try conn.pool.query(query, .{});
+/// Gets `pageLength` elements with the offset `page*pageLength`. Page indexing strats with 0
+pub fn GetAll(alloc: std.mem.Allocator, pageLength: u16, page: u16) !std.ArrayList(model.Article) {
+    const query = "SELECT * FROM Articles ORDER BY updated_at LIMIT $1 OFFSET $2";
+    var result = try conn.pool.query(query, .{
+        pageLength,
+        page * pageLength,
+    });
     defer _ = result.deinit();
 
     var outp: std.ArrayList(model.Article) = .empty;
@@ -20,10 +24,21 @@ pub fn GetAll(alloc: std.mem.Allocator) !std.ArrayList(model.Article) {
     return outp;
 }
 
-pub fn GetByLanguage(alloc: std.mem.Allocator, language: []const u8) !std.ArrayList(model.Article) {
+/// Gets `pageLength` elements with the offset `page*pageLength`. Page indexing strats with 0
+pub fn GetByLanguage(alloc: std.mem.Allocator, language: []const u8, pageLength: u16, page: u16) !std.ArrayList(model.Article) {
     std.debug.print("Searching articles in {s}...\n", .{ language });
-    const query = "SELECT * FROM Articles WHERE language LIKE $1 ORDER BY updated_at";
-    var result = try conn.pool.query(query, .{ language });
+    const query = 
+        \\ SELECT * FROM Articles 
+        \\ WHERE language LIKE $1 
+        \\ ORDER BY updated_at
+        \\ LIMIT $2
+        \\ OFFSET $3
+        ;
+    var result = try conn.pool.query(query, .{
+        language,
+        pageLength,
+        page * pageLength,
+    });
     defer _ = result.deinit();
 
     var outp: std.ArrayList(model.Article) = .empty;
