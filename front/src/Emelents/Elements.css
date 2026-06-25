@@ -135,3 +135,27 @@
     font-family: "Rubik Dirt", system-ui !important; 
     font-size: 20px;
 }
+
+.article {
+    min-width: 80%;
+    border: 1px solid var(--colorscheme-gray); 
+    margin-bottom: 20px;
+    padding: 0px;
+}
+
+.date {
+    margin: 1px;
+    font-size: 15px;
+}
+
+.ArticleName {
+    margin: 0px;
+    padding: 5px;
+    font-size: 25px;
+    background-color: var(--colorscheme-black);
+    color: var(--colorscheme-white);
+}
+
+.ArticleContents {
+    padding: 5px;
+}
