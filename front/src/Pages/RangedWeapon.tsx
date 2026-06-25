@@ -24,6 +24,10 @@ export function RangedWeaponPage() {
         getWeaponDescription(id, lang).then(data => setDescription(data));
     });
 
+    useEffect(() => {
+        getWeaponDescription(id, lang).then(data => setDescription(data));
+    }, [lang])
+
     if (weapon == null) {
         return <h1> Not found </h1>; // <Navigate to="/404" replace />;
     }

@@ -26,11 +26,11 @@ function Sidebar({setLang}: SidebarProps) {
                 </ul>
                 <button onClick={() => {
                     setLang("ru");
-                    window.location.reload();
+                    // window.location.reload();
                 }}> ru </button>
                 <button onClick={() => {
                     setLang("en");
-                    window.location.reload();
+                    // window.location.reload();
                 }}> en </button>
             </div>
         </nav>
