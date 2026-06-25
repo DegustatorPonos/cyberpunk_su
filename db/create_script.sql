@@ -29,7 +29,6 @@ CREATE TABLE IF NOT EXISTS Articles (
     name VARCHAR(255),
     language VARCHAR(16),
     file_location TEXT,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY (name, language)
 );

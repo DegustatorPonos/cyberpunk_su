@@ -42,7 +42,7 @@ function generateArticlesList(articles: Article[] | null) {
             <div className="article">
                 <div> <h2 className="ArticleName"> { a.Name } </h2> </div>
                 <p className="ArticleContents"> { a.Contents } </p>
-                <p className="date"> - { new Date(a.CreatedAt/1000).toUTCString() } </p>
+                <p className="date"> - { new Date(a.CreatedAt*1000).toLocaleString() } </p>
             </div>
         );
     })
