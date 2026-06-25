@@ -18,9 +18,20 @@ CREATE TABLE IF NOT EXISTS RangedWeapons (
 CREATE TABLE IF NOT EXISTS RangedWeaponsDescriptions (
     id VARCHAR(255) REFERENCES RangedWeapons(id) ON DELETE CASCADE,
     language VARCHAR(16),
+    /* This field is not used in the actual program and is used to order the articles */
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     contents TEXT,
 
     PRIMARY KEY (id, language)
+);
+
+CREATE TABLE IF NOT EXISTS Articles (
+    name VARCHAR(255),
+    language VARCHAR(16),
+    file_location TEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (name, language)
 );
 
 CREATE TABLE Users (

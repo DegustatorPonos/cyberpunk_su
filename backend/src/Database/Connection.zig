@@ -27,7 +27,7 @@ pub fn Connect(init: std.process.Init) !void {
     pool = pg.Pool.init(init.io, init.gpa, .{
         .size = 5,
         .connect = .{
-            .port = 5432,
+            .port = settings.Current.DbParams.Port,
             .host = settings.Current.DbParams.Address,
         },
         .auth = .{
@@ -48,3 +48,4 @@ pub fn Disconnect() void {
 
 pub const Users = @import("UserAccessLayer.zig");
 pub const RangedWeapons = @import("RangedWeaponsAccessLayer.zig");
+pub const Articles = @import("ArticlesAccessLayer.zig");
