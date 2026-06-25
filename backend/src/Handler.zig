@@ -2,6 +2,10 @@ const std = @import("std");
 const httpz = @import("httpz");
 const userModel = @import("Models/User.zig");
 const tokens = @import("Authentication/Tokens.zig");
+const redis = @import("Redis/Connection.zig");
+
+const cacheTopicName = "RequestCache";
+const cacheTTL: u16 = 300; // 5 minutes
 
 pub const authError = error {
     Unauthorized,
@@ -54,22 +58,37 @@ pub const Handler = struct {
 
     pub fn dispatch(self: *Handler, action: httpz.Action(*RequestData), req: *httpz.Request, res: *httpz.Response) !void {
         var data = try RequestData.Init(req, self.io);
-        // std.debug.print("Data: {any}\n", .{ data });
+
+        // checking the redis cache
+        const cached = shouldCache(req);
+        if (cached) {
+            if (try redis.ReadFromTopic(req.arena, cacheTopicName, req.url.raw)) |found| {
+                std.debug.print("{any} {s} (from cache): {d}\n", .{req.method, req.url.raw, res.status});
+                res.body = found;
+                res.content_type = .JSON;
+                return;
+            }
+        }
+
         action(&data, req, res) catch |err| {
             switch (err) {
-                authError.Forbidden => {
-                    res.setStatus(.forbidden);
-                },
-                authError.Unauthorized => {
-                    res.setStatus(.unauthorized);
-                },
-                else => {
-                    return err;
-                }
+                authError.Forbidden => res.setStatus(.forbidden),
+                authError.Unauthorized => res.setStatus(.unauthorized),
+                else => return err
             }
         };
 
         std.debug.print("{any} {s}: {d}\n", .{req.method, req.url.raw, res.status});
+        // refreshing the redis cache
+        if (cached) {
+            redis.WriteToTopic(cacheTopicName, .{
+                .Key = req.url.raw,
+                .SecondsToLive = cacheTTL,
+                .Value = res.buffer.written(),
+            }) catch |err| {
+                std.debug.print("Failed to cache the responce: {any}\n", .{ err });
+            };
+        }
         // std.debug.print("responce {s}\n", .{ res.buffer.written() });
     }
 };
@@ -81,4 +100,19 @@ fn stripBearerPrefix(header: []const u8) []const u8 {
         return header[headerPrefix.len..];
     }
     return header;
+}
+
+const paths_to_cache = [_][]const u8 {
+    "/index",
+    "/weapons/ranged"
+};
+
+fn shouldCache(req: *httpz.Request) bool {
+    if (req.method != .GET) return false;
+    const req_path = req.url.path;
+    for (paths_to_cache) |path| {
+        if (req_path.len >= path.len and std.mem.eql(u8, path, req_path[0..path.len]))
+            return true;
+    }
+    return false;
 }

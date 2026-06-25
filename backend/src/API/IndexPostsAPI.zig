@@ -17,5 +17,4 @@ fn getArticles(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Respons
     } else articles = try db.Articles.GetAll(req.arena);
 
     return try res.json(articles.items, .{});
-
 }
