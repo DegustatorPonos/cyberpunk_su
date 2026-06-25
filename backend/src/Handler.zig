@@ -68,7 +68,9 @@ pub const Handler = struct {
                 }
             }
         };
+
         std.debug.print("{any} {s}: {d}\n", .{req.method, req.url.raw, res.status});
+        // std.debug.print("responce {s}\n", .{ res.buffer.written() });
     }
 };
 

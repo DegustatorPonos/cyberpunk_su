@@ -19,3 +19,18 @@ pub fn GetAll(alloc: std.mem.Allocator) !std.ArrayList(model.Article) {
     }
     return outp;
 }
+
+pub fn GetByLanguage(alloc: std.mem.Allocator, language: []const u8) !std.ArrayList(model.Article) {
+    std.debug.print("Searching articles in {s}...\n", .{ language });
+    const query = "SELECT * FROM Articles WHERE language LIKE $1 ORDER BY updated_at";
+    var result = try conn.pool.query(query, .{ language });
+    defer _ = result.deinit();
+
+    var outp: std.ArrayList(model.Article) = .empty;
+    while (try result.next()) |row| {
+        var newArticle = try model.Article.MapWithAlloc(alloc, &row);
+        try newArticle.init_body(alloc);
+        try outp.append(alloc, newArticle);
+    }
+    return outp;
+}
