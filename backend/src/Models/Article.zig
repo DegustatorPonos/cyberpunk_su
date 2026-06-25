@@ -22,7 +22,7 @@ pub const Article = struct {
             .Name = try allocator.dupe(u8, try row.get([]const u8, 0)),
             .Language = try allocator.dupe(u8, try row.get([]const u8, 1)),
             .FileLocation = try allocator.dupe(u8, try row.get([]const u8, 2)),
-            .CreatedAt = try row.get(i64, 3),
+            .CreatedAt = 0,
             .Contents = "",
         };
     }
