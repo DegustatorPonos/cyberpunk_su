@@ -28,6 +28,7 @@ pub const SettingsStruct = struct {
     
     Paths: struct {
         ArticlesPath: []const u8,
+        ArticlesScript: []const u8,
     },
 };
 
@@ -73,6 +74,7 @@ pub fn ReadConfig(allocator: std.mem.Allocator, io: std.Io) !void {
         
         .Paths = .{
             .ArticlesPath = try allocator.dupe(u8, parsed.value.Paths.ArticlesPath),
+            .ArticlesScript = try allocator.dupe(u8, parsed.value.Paths.ArticlesScript),
         }
     };
 }
@@ -84,5 +86,6 @@ pub fn Deinit(allocator: std.mem.Allocator) void {
     allocator.free(Current.RedisParams.Address);
     allocator.free(Current.DbParams.Address);
     allocator.free(Current.Paths.ArticlesPath);
+    allocator.free(Current.Paths.ArticlesScript);
     allocator.destroy(Current);
 }

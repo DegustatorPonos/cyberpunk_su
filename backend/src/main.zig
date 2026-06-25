@@ -21,6 +21,11 @@ pub fn main(init: std.process.Init) !void {
     try redis.Connect();
     defer redis.Disconnect();
 
+    // Inititalizing the articles
+    const articlesInitScript = try LoadArticleConfigFile(init.io, init.gpa);
+    defer init.gpa.free(articlesInitScript);
+    try db.Articles.InitializeData(articlesInitScript);
+
     var httpHandler = handler.Handler {
         .io = init.io,
     };
@@ -58,6 +63,15 @@ pub fn main(init: std.process.Init) !void {
 
 fn index(_: *handler.RequestData, _: *httpz.Request, res: *httpz.Response) !void {
     try res.json(.{.Message = "Ok"}, .{});
+}
+
+fn LoadArticleConfigFile(io: std.Io, alloc: std.mem.Allocator) ![]const u8 {
+    const cwd = std.Io.Dir.cwd();
+    const contents = try cwd.readFileAlloc(
+        io, 
+        settings.Current.Paths.ArticlesScript, 
+        alloc, .unlimited);
+    return contents;
 }
 
 test "TestRunner" {

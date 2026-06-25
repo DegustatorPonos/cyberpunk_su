@@ -49,3 +49,7 @@ pub fn GetByLanguage(alloc: std.mem.Allocator, language: []const u8, pageLength:
     }
     return outp;
 }
+
+pub fn InitializeData(script: []const u8) !void {
+    _ = try conn.pool.exec(script, .{});
+}

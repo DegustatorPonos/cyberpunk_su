@@ -15,6 +15,7 @@
         "Port": 5432
     },
     "Paths": {
-        "ArticlesPath": "Articles"
+        "ArticlesPath": "Articles",
+        "ArticlesScript": "Articles/init.sql"
     }
 }
