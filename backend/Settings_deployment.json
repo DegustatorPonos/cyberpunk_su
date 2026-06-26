@@ -1,7 +1,7 @@
 {
     "Port": 9001, 
     "CorsParams": {
-        "Origin": "http://cyberpunk.physick.ru/",
+        "Origin": "http://cyberpunk.physick.ru",
         "Methods": "GET,POST,PUT,DELETE,OPTIONS",
         "Headers": "authorization,content-type",
         "AllowCredentials": true
@@ -15,6 +15,7 @@
         "Port": 5432
     },
     "Paths": {
-        "ArticlesPath": "Articles"
+        "ArticlesPath": "Articles",
+        "ArticlesScript": "Articles/init.sql"
     }
 }
