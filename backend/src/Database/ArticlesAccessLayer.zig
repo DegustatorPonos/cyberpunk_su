@@ -8,7 +8,7 @@ const model = @import("../Models/Article.zig");
 
 /// Gets `pageLength` elements with the offset `page*pageLength`. Page indexing strats with 0
 pub fn GetAll(alloc: std.mem.Allocator, pageLength: u16, page: u16) !std.ArrayList(model.Article) {
-    const query = "SELECT * FROM Articles ORDER BY updated_at LIMIT $1 OFFSET $2";
+    const query = "SELECT * FROM Articles LIMIT $1 OFFSET $2";
     var result = try conn.pool.query(query, .{
         pageLength,
         page * pageLength,
@@ -30,7 +30,6 @@ pub fn GetByLanguage(alloc: std.mem.Allocator, language: []const u8, pageLength:
     const query = 
         \\ SELECT * FROM Articles 
         \\ WHERE language LIKE $1 
-        \\ ORDER BY updated_at
         \\ LIMIT $2
         \\ OFFSET $3
         ;
