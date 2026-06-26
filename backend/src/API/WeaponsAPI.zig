@@ -144,4 +144,5 @@ fn setRangedWeaponDescription(data: *Handler.RequestData, req: *httpz.Request, r
         .Language = body.Language,
         .Contents = body.Contents
     });
+    Handler.clearCachedPages(data.Io, req.arena) catch {};
 }
