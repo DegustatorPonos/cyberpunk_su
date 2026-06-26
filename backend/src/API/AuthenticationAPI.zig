@@ -52,7 +52,7 @@ fn register(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Respons
         return;
     };
 
-    const loginResult = loginAction(req.arena, body) catch |err| {
+    const loginResult = loginAction(data.Io, req.arena, body) catch |err| {
         if (err == db.ResultErrors.NotFound) {
             res.setStatus(.unauthorized);
             try res.json(errDesc.ErrorDescriptor {
@@ -67,13 +67,13 @@ fn register(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Respons
     res.setStatus(.created);
 }
 
-fn login(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+fn login(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
     const body = try req.json(model.RequestBody) orelse {
         res.setStatus(.bad_request);
         return;
     };
 
-    const loginResult = loginAction(req.arena, body) catch |err| {
+    const loginResult = loginAction(data.Io, req.arena, body) catch |err| {
         if (err == db.ResultErrors.NotFound) {
             res.setStatus(.unauthorized);
             try res.json(errDesc.ErrorDescriptor {
@@ -88,12 +88,12 @@ fn login(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !vo
 }
 
 /// Logs in with the given credentials
-fn loginAction(allocator: std.mem.Allocator, requetsed: model.RequestBody) !authResult {
+fn loginAction(io: std.Io, allocator: std.mem.Allocator, requetsed: model.RequestBody) !authResult {
     const username = requetsed.Username;
     const pwd = requetsed.Password;
     const user = try db.Users.GetByCredentials(allocator, username, pwd);
 
-    const token = try Tokens.GenerateNewSession(allocator, user);
+    const token = try Tokens.GenerateNewSession(io, allocator, user);
 
     return authResult {
         .Token = token,

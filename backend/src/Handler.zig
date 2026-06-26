@@ -19,14 +19,14 @@ pub const RequestData = struct {
     pub fn Init(req: *httpz.Request, io: std.Io) !RequestData {
         return .{
             .Io = io,
-            .User = try getUser(req),
+            .User = try getUser(io, req),
         };
     }
 
-    fn getUser(req: *httpz.Request) !?userModel.User {
+    fn getUser(io: std.Io, req: *httpz.Request) !?userModel.User {
         const header = req.header("authorization") orelse return null;
         const stripped = stripBearerPrefix(header);
-        const parsed = tokens.GetUserFromToken(req.arena, stripped) catch |err| {
+        const parsed = tokens.GetUserFromToken(io,  req.arena, stripped) catch |err| {
             if (err == tokens.errors.NotFound) {
                 return null;
             }
@@ -62,7 +62,7 @@ pub const Handler = struct {
         // checking the redis cache
         const cached = shouldCache(req);
         if (cached) {
-            if (try redis.ReadFromTopic(req.arena, cacheTopicName, req.url.raw)) |found| {
+            if (try redis.ReadFromTopic(self.io, req.arena, cacheTopicName, req.url.raw)) |found| {
                 std.debug.print("{any} {s} (from cache): {d}\n", .{req.method, req.url.raw, res.status});
                 res.body = found;
                 res.content_type = .JSON;
@@ -81,7 +81,7 @@ pub const Handler = struct {
         std.debug.print("{any} {s}: {d}\n", .{req.method, req.url.raw, res.status});
         // refreshing the redis cache
         if (cached) {
-            redis.WriteToTopic(cacheTopicName, .{
+            redis.WriteToTopic(self.io, cacheTopicName, .{
                 .Key = req.url.raw,
                 .SecondsToLive = cacheTTL,
                 .Value = res.buffer.written(),

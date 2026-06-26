@@ -8,6 +8,8 @@ var connection: ?*redis.redisContext = undefined;
 const addr: [*]const u8 = "127.0.0.1";
 const port: u16 = 6379;
 
+var redis_mutex = std.Io.Mutex.init;
+
 pub fn Connect() !void {
     connection = redis.redisConnect(
         settings.Current.RedisParams.Address.ptr,
@@ -31,7 +33,10 @@ pub const Message = struct {
     SecondsToLive: u16
 };
 
-pub fn WriteToTopic(topic: []const u8, message: Message) !void {
+pub fn WriteToTopic(io: std.Io, topic: []const u8, message: Message) !void {
+    try redis_mutex.lock(io);
+    defer redis_mutex.unlock(io);
+
     const rep = redis.redisCommand(connection, "SET %b:%b %b EX %d", 
         topic.ptr, topic.len,
         message.Key.ptr, message.Key.len,
@@ -43,7 +48,10 @@ pub fn WriteToTopic(topic: []const u8, message: Message) !void {
     }
 }
 
-pub fn ReadFromTopic(allocator: std.mem.Allocator, topic: []const u8, Key: []const u8) !?[]const u8 {
+pub fn ReadFromTopic(io: std.Io, allocator: std.mem.Allocator, topic: []const u8, Key: []const u8) !?[]const u8 {
+    try redis_mutex.lock(io);
+    defer redis_mutex.unlock(io);
+
     const raw = redis.redisCommand(connection, "GET %b:%b", 
             topic.ptr, topic.len,
             Key.ptr, Key.len);
@@ -62,21 +70,22 @@ pub fn ReadFromTopic(allocator: std.mem.Allocator, topic: []const u8, Key: []con
 
 test "Redis connection" {
     const alloc = std.testing.allocator;
+    const io = std.testing.io;
 
-    try settings.ReadConfig(alloc, std.testing.io);
+    try settings.ReadConfig(alloc, io);
     defer settings.Deinit(alloc);
 
     try Connect();
     defer Disconnect();
 
-    try WriteToTopic("test", Message {
+    try WriteToTopic(io, "test", Message {
         .Key = "key",
         .Value = "value",
         .SecondsToLive = 1,
     });
 
 
-    var resp = try ReadFromTopic(alloc, "test", "key");
+    var resp = try ReadFromTopic(io, alloc, "test", "key");
     try std.testing.expectEqualStrings("value", resp orelse "not found");
 
     try std.testing.io.sleep(.fromSeconds(2), .awake);
@@ -86,7 +95,7 @@ test "Redis connection" {
     if (resp) |r|  {
         alloc.free(r);
     }
-    resp = try ReadFromTopic(alloc, "test", "key");
+    resp = try ReadFromTopic(io, alloc, "test", "key");
     try std.testing.expectEqualStrings("not found", resp orelse "not found");
     if (resp) |r|  {
         defer alloc.free(r);

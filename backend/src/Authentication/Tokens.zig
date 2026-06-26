@@ -31,7 +31,7 @@ fn generateSessionToken(buf: []u8) []u8 {
     return buf;
 }
 
-pub fn GenerateNewSession(allocator: std.mem.Allocator, user: userModel.User) ![]u8 {
+pub fn GenerateNewSession(io: std.Io, allocator: std.mem.Allocator, user: userModel.User) ![]u8 {
     const token: []u8 = try allocator.alloc(u8, 64);
     const newToken = generateSessionToken(token);
 
@@ -39,7 +39,7 @@ pub fn GenerateNewSession(allocator: std.mem.Allocator, user: userModel.User) ![
     var string: std.Io.Writer.Allocating = .init(allocator);
     defer string.deinit();
     try string.writer.print("{f}", .{ std.json.fmt(user, .{}) });
-    try redis.WriteToTopic(topicName, redis.Message {
+    try redis.WriteToTopic(io, topicName, redis.Message {
         .Key = token,
         .Value = string.written(),
         .SecondsToLive = token_ttl,
@@ -48,8 +48,8 @@ pub fn GenerateNewSession(allocator: std.mem.Allocator, user: userModel.User) ![
     return newToken;
 }
 
-pub fn GetUserFromToken(allocator: std.mem.Allocator, token: []const u8) !?std.json.Parsed(userModel.User) {
-    const saved = try redis.ReadFromTopic(allocator, topicName, token) orelse {
+pub fn GetUserFromToken(io: std.Io, allocator: std.mem.Allocator, token: []const u8) !?std.json.Parsed(userModel.User) {
+    const saved = try redis.ReadFromTopic(io, allocator, topicName, token) orelse {
         // std.debug.print("The token was not found \n", .{});
         return errors.NotFound;
     };
