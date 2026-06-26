@@ -68,6 +68,41 @@ pub fn ReadFromTopic(io: std.Io, allocator: std.mem.Allocator, topic: []const u8
     return try allocator.dupe(u8, resp.str[0..resp.len]);
 }
 
+pub fn DeleteKey(io: std.Io, key: []const u8) !void {
+    try redis_mutex.lock(io);
+    defer redis_mutex.unlock(io);
+
+    _ = redis.redisCommand(connection, "DEL %b", key.ptr, key.len,); 
+}
+
+pub fn QueryTopic(io: std.Io, allocator: std.mem.Allocator, topic: []const u8) !?std.ArrayList([]const u8) {
+    try redis_mutex.lock(io);
+    defer redis_mutex.unlock(io);
+
+    const raw = redis.redisCommand(connection, "KEYS %b", topic.ptr, topic.len);
+    if (raw == null) {
+        std.debug.print("raw is null\n", .{});
+        return null;
+    }
+    defer {
+        redis.freeReplyObject(raw);
+    }
+    const resp: *redis.redisReply = @alignCast(@ptrCast(raw));
+    if (resp.type != redis.REDIS_REPLY_ARRAY) {
+        std.debug.print("wrong resp type\n", .{});
+        return null;
+    }
+
+    const len = resp.elements;
+    var outp: std.ArrayList([]const u8) = .empty;
+    for (0..len) |i| {
+        const element: *redis.redisReply = resp.element[i].?;
+        const slice = element.str[0..@as(usize, @intCast(element.len))];
+        try outp.append(allocator, try allocator.dupe(u8, slice));
+    }
+    return outp;
+}
+
 test "Redis connection" {
     const alloc = std.testing.allocator;
     const io = std.testing.io;

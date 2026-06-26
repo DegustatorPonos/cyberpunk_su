@@ -61,6 +61,7 @@ fn newRangedWeapon(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.
         }
         return err;
     }; 
+    Handler.clearCachedPages(data.Io, req.arena) catch {};
 
     res.setStatus(.created);
 }
@@ -87,6 +88,7 @@ fn updateRangedWeapon(data: *Handler.RequestData, req: *httpz.Request, res: *htt
         }
         return err;
     };  
+    Handler.clearCachedPages(data.Io, req.arena) catch {};
 }
 
 fn deleteRangedWeapon(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {

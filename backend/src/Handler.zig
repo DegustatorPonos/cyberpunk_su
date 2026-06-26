@@ -4,7 +4,8 @@ const userModel = @import("Models/User.zig");
 const tokens = @import("Authentication/Tokens.zig");
 const redis = @import("Redis/Connection.zig");
 
-const cacheTopicName = "RequestCache";
+const cacheTopicName = "cp2020_cache";
+const cacheTopicQuery= "cp2020_cache:*";
 const cacheTTL: u16 = 300; // 5 minutes
 
 pub const authError = error {
@@ -115,4 +116,11 @@ fn shouldCache(req: *httpz.Request) bool {
             return true;
     }
     return false;
+}
+
+pub fn clearCachedPages(io: std.Io, alloc: std.mem.Allocator) !void {
+    const saved = try redis.QueryTopic(io, alloc, cacheTopicQuery) orelse return;
+    for (saved.items) |el| {
+        try redis.DeleteKey(io, el);
+    }
 }

@@ -21,6 +21,8 @@ pub fn main(init: std.process.Init) !void {
     try redis.Connect();
     defer redis.Disconnect();
 
+    try handler.clearCachedPages(init.io, init.gpa);
+
     // Inititalizing the articles
     const articlesInitScript = try LoadArticleConfigFile(init.io, init.gpa);
     defer init.gpa.free(articlesInitScript);
