@@ -32,3 +32,37 @@ pub fn Create(newClass: *model.Class) !void {
     const query = "INSERT INTO Classes (name, origin) VALUES ($1, $2)";
     _ = try conn.pool.exec(query, .{ newClass.Name, newClass.Origin });
 }
+
+pub fn GetDescription(allocator: std.mem.Allocator, className: []const u8, language: []const u8) !model.ClassDescription {
+    const query = 
+        \\ SELECT class_name, language, imageurl, contents 
+        \\ FROM ClassDescriptions WHERE class_name = $1 AND language = $2
+        ;
+    var row = try conn.pool.row(query, .{ className, language }) orelse {
+        return conn.ResultErrors.NotFound;
+    };
+
+    const outp = try model.ClassDescription.MapWithAlloc(allocator, &row.row);
+    try row.deinit();
+
+    return outp;
+}
+
+pub fn SetDescription(desc: model.ClassDescription) !void {
+    std.debug.print("Inserting a desc for {s}\n", .{desc.ClassName});
+    const query =
+        \\ INSERT INTO ClassDescriptions (class_name, language, imageurl, contents)
+        \\ VALUES ($1, $2, $3, $4)
+        \\ ON CONFLICT (class_name, language)
+        \\ DO UPDATE SET 
+        \\     contents = EXCLUDED.contents,
+        \\     imageurl = EXCLUDED.imageurl
+        ;
+
+    _ = try conn.pool.exec(query, .{
+        desc.ClassName,
+        desc.Language,
+        desc.ImageURL,
+        desc.Contents,
+    });
+}

@@ -15,3 +15,19 @@ pub const Class = struct {
         };
     }
 };
+
+pub const ClassDescription = struct {
+    ClassName: []const u8,
+    Language: []const u8,
+    Contents: []const u8,
+    ImageURL: []const u8,
+
+    pub fn MapWithAlloc(allocator: std.mem.Allocator, row: *const pg.Row) !ClassDescription {
+        return ClassDescription {
+            .ClassName = try allocator.dupe(u8, try row.get([]const u8, 0)),
+            .Language = try allocator.dupe(u8, try row.get([]const u8, 1)),
+            .ImageURL = try allocator.dupe(u8, try row.get([]const u8, 2)),
+            .Contents = try allocator.dupe(u8, try row.get([]const u8, 3)),
+        };
+    }
+};

@@ -105,7 +105,8 @@ fn stripBearerPrefix(header: []const u8) []const u8 {
 
 const paths_to_cache = [_][]const u8 {
     "/index",
-    "/weapons/ranged"
+    "/classes",
+    "/weapons/ranged",
 };
 
 fn shouldCache(req: *httpz.Request) bool {

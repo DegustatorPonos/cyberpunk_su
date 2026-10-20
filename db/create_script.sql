@@ -45,3 +45,12 @@ CREATE TABLE IF NOT EXISTS Classes (
     name VARCHAR(255) PRIMARY KEY,
     origin VARCHAR(255) NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS ClassDescriptions (
+    class_name VARCHAR(255) REFERENCES Classes(name) ON DELETE CASCADE,
+    language VARCHAR(16) NOT NULL,
+    imageurl VARCHAR(255) NOT NULL,
+    contents TEXT NOT NULL,
+
+    PRIMARY KEY (class_name, language)
+);

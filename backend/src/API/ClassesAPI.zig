@@ -9,6 +9,8 @@ const Tokens = @import("../Authentication/Tokens.zig");
 pub fn RegisterEndpoints(router: *httpz.Router(*Handler.Handler,*const fn (*Handler.RequestData, *httpz.request.Request, *httpz.response.Response) anyerror!void)) void {
     router.get("/classes", getAllClasses, .{});
     router.post("/classes", newClass, .{});
+    router.get("/classes/:class/description", getClassDescription, .{});
+    router.put("/classes/:class/description", setClassDescription, .{});
 }
 
 fn getAllClasses(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
@@ -38,4 +40,52 @@ fn newClass(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Respons
     };
 
     res.setStatus(.created);
+}
+
+fn getClassDescription(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+    const class = req.param("class") orelse {
+        res.setStatus(.bad_request);
+        return;
+    };
+
+    const query = try req.query();
+    const lang = query.get("lang") orelse "en";
+
+    const desc = db.Classes.GetDescription(req.arena, class, lang) catch |err| {
+        switch (err) {
+            db.ResultErrors.NotFound => {
+                res.setStatus(.not_found);
+                try res.json(errDesc.NotFoundDescriptor, .{});
+                return;
+            },
+            else => return err,
+        }
+    };
+
+    try res.json(desc, .{});
+}
+
+fn setClassDescription(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+    try data.CheckAccess(.editor);
+
+    const class = req.param("class") orelse {
+        res.setStatus(.bad_request);
+        return;
+    };
+
+    const body = try req.json(struct {
+        Language: []const u8,
+        Contents: []const u8,
+        ImageURL: []const u8,
+    }) orelse {
+        res.setStatus(.bad_request);
+        return;
+    };
+
+    try db.Classes.SetDescription(.{
+        .ClassName = class,
+        .Language = body.Language,
+        .Contents = body.Contents,
+        .ImageURL = body.ImageURL,
+    });
 }
