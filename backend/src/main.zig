@@ -58,6 +58,7 @@ pub fn main(init: std.process.Init) !void {
     @import("API/WeaponsAPI.zig").RegisterEndpoints(router);
     @import("API/AuthenticationAPI.zig").RegisterEndpoints(router);
     @import("API/IndexPostsAPI.zig").RegisterEndpoints(router);
+    @import("API/ClassesAPI.zig").RegisterEndpoints(router);
 
     try server.listen();
     settings.Deinit(allocator);
