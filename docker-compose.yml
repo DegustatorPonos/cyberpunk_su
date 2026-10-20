@@ -6,8 +6,7 @@ services:
       POSTGRES_USER: dev
       POSTGRES_PASSWORD: dev
       POSTGRES_DB: cyber2020
-    ports:
-      - "5432:5432"
+    ports: ["5432:5432"]
     volumes:
       - postgres_data:/var/lib/postgresql
     healthcheck:
