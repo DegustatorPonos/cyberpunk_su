@@ -21,7 +21,7 @@ pub fn Init(io: std.Io) !void {
 }
 
 /// Generates a new token in the stack. Expects [64]u8 as an input 
-fn generateSessionToken(buf: []u8) []u8 {
+pub fn generateRandomToken(buf: []u8) []u8 {
     for (0..64) |i| {
         buf[i] = std.Random.intRangeAtMost(rnd, u8, 'A', 'z');
         if (buf[i] == '\\') {
@@ -33,7 +33,7 @@ fn generateSessionToken(buf: []u8) []u8 {
 
 pub fn GenerateNewSession(io: std.Io, allocator: std.mem.Allocator, user: userModel.User) ![]u8 {
     const token: []u8 = try allocator.alloc(u8, 64);
-    const newToken = generateSessionToken(token);
+    const newToken = generateRandomToken(token);
 
     // Redis cache 
     var string: std.Io.Writer.Allocating = .init(allocator);

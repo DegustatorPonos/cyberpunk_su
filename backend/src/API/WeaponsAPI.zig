@@ -32,7 +32,7 @@ fn getRangedWeaponById(_: *Handler.RequestData, req: *httpz.Request, res: *httpz
     const found = db.RangedWeapons.GetByDisplayName(req.arena, id) catch |err| {
         // Empty result handling
         if (err == db.ResultErrors.NotFound) {
-            res.setStatus(.no_content);
+            res.setStatus(.not_found);
             try res.json(errDesc.NotFoundDescriptor, .{});
             return;
         }

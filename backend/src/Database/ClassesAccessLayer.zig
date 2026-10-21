@@ -49,7 +49,7 @@ pub fn GetDescription(allocator: std.mem.Allocator, className: []const u8, langu
 }
 
 pub fn SetDescription(desc: model.ClassDescription) !void {
-    std.debug.print("Inserting a desc for {s}\n", .{desc.ClassName});
+    // std.debug.print("Inserting a desc for {s}\n", .{desc.ClassName});
     const query =
         \\ INSERT INTO ClassDescriptions (class_name, language, imageurl, contents)
         \\ VALUES ($1, $2, $3, $4)

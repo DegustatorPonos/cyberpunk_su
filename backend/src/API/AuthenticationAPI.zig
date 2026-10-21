@@ -18,6 +18,7 @@ fn getUser(data: *Handler.RequestData, _: *httpz.Request, res: *httpz.Response) 
         try res.json(.{.status = "Unauthnticated"}, .{});
         return;
     }
+
     try res.json(.{ 
         .Username = data.User.?.Username,
         .Role = data.User.?.Role,
