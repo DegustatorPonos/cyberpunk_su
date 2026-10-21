@@ -1,5 +1,6 @@
 {
     "Port": 6969, 
+    "FilesPath": "Files",
     "CorsParams": {
         "Origin": "*",
         "Methods": "GET,POST,PUT,DELETE,OPTIONS",

@@ -11,9 +11,10 @@ pub fn main(init: std.process.Init) !void {
     const allocator = init.gpa;
 
     try settings.ReadConfig(allocator, init.io);
+    defer settings.Deinit(allocator);
 
     try tokens.Init(init.io);
-    
+
     // PSQL connection
     try db.Connect(init);
     defer db.Disconnect();
@@ -55,13 +56,14 @@ pub fn main(init: std.process.Init) !void {
     });
     router.get("/", index, .{});
 
+    @import("FS/StaticFileServer.zig").RegisterEndpoints(router);
+
     @import("API/WeaponsAPI.zig").RegisterEndpoints(router);
     @import("API/AuthenticationAPI.zig").RegisterEndpoints(router);
     @import("API/IndexPostsAPI.zig").RegisterEndpoints(router);
     @import("API/ClassesAPI.zig").RegisterEndpoints(router);
 
     try server.listen();
-    settings.Deinit(allocator);
 }
 
 fn index(_: *handler.RequestData, _: *httpz.Request, res: *httpz.Response) !void {

@@ -8,6 +8,7 @@ pub const errors = error {
 
 pub const SettingsStruct = struct {
     Port: u16,
+    FilesPath: []const u8,
 
     CorsParams: struct {
         Origin: []const u8,
@@ -54,6 +55,7 @@ pub fn ReadConfig(allocator: std.mem.Allocator, io: std.Io) !void {
     Current = try allocator.create(SettingsStruct);
     Current.* = .{
         .Port = parsed.value.Port,
+        .FilesPath = try allocator.dupe(u8, parsed.value.FilesPath),
         
         .CorsParams = .{
             .Origin = try allocator.dupe(u8, parsed.value.CorsParams.Origin),
