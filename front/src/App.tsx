@@ -3,7 +3,7 @@ import './Fonts.css';
 import Sidebar from './Emelents/Sidebar';
 import { createBrowserRouter, RouterProvider } from 'react-router';
 import IndexElement from './Emelents/IndexElement';
-import ClassesList from './Emelents/ClassList';
+import ClassesIndex from './Pages/Classes/ClassesIndex';
 import Topbar from './Emelents/Topbar';
 import { AllowedLanguage, LanguageContext } from './Locales/Context';
 import { useEffect, useState } from 'react';
@@ -18,6 +18,7 @@ import { User } from './Authentication/Models';
 import RegisterPage from './Authentication/RegisterPage';
 import { EditRangedWeaponPage, RangedWeaponPage } from './Pages/RangedWeapon';
 import ErrorHandler from './ErrorHandler';
+import ClassPage from './Pages/Classes/ClassPage';
 
 const router = createBrowserRouter([
     {
@@ -27,8 +28,14 @@ const router = createBrowserRouter([
     },
     {
         path: "/classes",
-        element: (<ClassesList />),
+        element: (<ClassesIndex />),
     },
+    {
+        path: "/classes/:name",
+        element: (<ClassPage />),
+    },
+
+    // Ranged weapons
     {
         path: "/weapons",
         element: (<WeaponsIndex />),

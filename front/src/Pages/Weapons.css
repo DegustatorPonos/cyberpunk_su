@@ -1,3 +1,8 @@
+:root {
+    --class-preview-width: 200px;
+    --class-preview-height: 300px;
+}
+
 table {
     border-collapse: collapse;
     border: 1px solid black;
@@ -54,4 +59,30 @@ td > select {
 .descriptionInput {
     height: 10rem;
     width: 80%;
+}
+
+.classPreview {
+    width: var(--class-preview-width);
+    height: var(--class-preview-height);
+    list-style-type: none;
+    padding: 5px;
+}
+
+.classPreview > a > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.classPreviewImage {
+    flex-grow: 20;
+}
+
+.classPreviewName, .classPreviewOrigin {
+    flex-grow: 1;
+    margin: 0px;
+}
+
+.classList {
+    display: flex;
+    flex-wrap: wrap;
 }
