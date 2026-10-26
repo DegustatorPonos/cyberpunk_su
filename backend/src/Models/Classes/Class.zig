@@ -7,11 +7,13 @@ pub const Class = struct {
     // The book the class is from (idk if classes are actually distributed
     // across books like in DND but fuck it)
     Origin: []const u8,
+    PreviewPicture: []const u8,
 
     pub fn MapWithAlloc(allocator: std.mem.Allocator, row: *const pg.Row) !Class {
         return Class {
             .Name = try allocator.dupe(u8, try row.get([]const u8, 0)),
             .Origin = try allocator.dupe(u8, try row.get([]const u8, 1)),
+            .PreviewPicture = try allocator.dupe(u8, try row.get([]const u8, 2)),
         };
     }
 };

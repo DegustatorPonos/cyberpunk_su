@@ -267,7 +267,8 @@ Responses:
 [
     {
         "Name": string,
-        "Origin": string
+        "Origin": string,
+        "PreviewPicture": string
     }
 ]
 ```
@@ -278,7 +279,8 @@ Responses:
 ```json
 {
     "Name": string,
-    "Origin": string
+    "Origin": string,
+    "PreviewPicture": string
 }
 ```
 Responses:

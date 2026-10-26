@@ -7,7 +7,7 @@ const pg = @import("pg");
 const model = @import("../Models/Classes/Class.zig");
 
 pub fn GetAll(alloc: std.mem.Allocator) !std.ArrayList(model.Class) {
-    const query = "SELECT name, origin FROM Classes";
+    const query = "SELECT name, origin, preview_picture_url FROM Classes";
     var result = try conn.pool.query(query, .{});
     defer _ = result.deinit();
 
@@ -29,9 +29,33 @@ pub fn Exists(className: []const u8) !bool {
 
 pub fn Create(newClass: *model.Class) !void {
     if (try Exists(newClass.Name)) return conn.ResultErrors.AlreadyExists;
-    const query = "INSERT INTO Classes (name, origin) VALUES ($1, $2)";
-    _ = try conn.pool.exec(query, .{ newClass.Name, newClass.Origin });
+    const query = 
+        \\ INSERT INTO Classes (name, origin, preview_picture_url) 
+        \\ VALUES ($1, $2, $3)"
+        ;
+    _ = try conn.pool.exec(query, .{ 
+        newClass.Name, 
+        newClass.Origin,
+        newClass.PreviewPicture,
+    });
 }
+
+pub fn Update(class: *model.Class) !void {
+    if (!try Exists(class.Name)) return conn.ResultErrors.AlreadyExists;
+    const query = 
+        \\ UPDATE Classes SET 
+        \\ origin = $1,
+        \\ preview_picture_url = $2
+        \\ WHERE name = $3
+        ;
+
+    _ = try conn.pool.exec(query, .{
+        class.Origin,
+        class.PreviewPicture,
+        class.Name,
+    });
+}
+
 
 pub fn GetDescription(allocator: std.mem.Allocator, className: []const u8, language: []const u8) !model.ClassDescription {
     const query = 

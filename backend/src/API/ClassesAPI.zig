@@ -9,6 +9,7 @@ const Tokens = @import("../Authentication/Tokens.zig");
 pub fn RegisterEndpoints(router: *httpz.Router(*Handler.Handler,*const fn (*Handler.RequestData, *httpz.request.Request, *httpz.response.Response) anyerror!void)) void {
     router.get("/classes", getAllClasses, .{});
     router.post("/classes", newClass, .{});
+    router.put("/classes/:class", updateClass, .{});
     router.get("/classes/:class/description", getClassDescription, .{});
     router.put("/classes/:class/description", setClassDescription, .{});
 }
@@ -40,6 +41,24 @@ fn newClass(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Respons
     };
 
     res.setStatus(.created);
+}
+
+fn updateClass(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+    try data.CheckAccess(.editor);
+
+    const class = req.param("class") orelse {
+        res.setStatus(.bad_request);
+        return;
+    };
+
+    var body = try req.json(model.Class) orelse {
+        res.setStatus(.bad_request);
+        return;
+    };
+
+    body.Name = class;
+
+    try db.Classes.Update(&body);
 }
 
 fn getClassDescription(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {

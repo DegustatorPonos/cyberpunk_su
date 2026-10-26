@@ -44,6 +44,8 @@ CREATE TABLE Users (
 CREATE TABLE IF NOT EXISTS Classes (
     name VARCHAR(255) PRIMARY KEY,
     origin VARCHAR(255) NOT NULL
+    preview_picture_url VARCHAR(255) NOT NULL DEFAULT '',
+    VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS ClassDescriptions (
