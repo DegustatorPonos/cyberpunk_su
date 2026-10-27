@@ -6,8 +6,25 @@ const std = @import("std");
 const pg = @import("pg");
 const model = @import("../Models/Classes/Class.zig");
 
+pub fn GetByName(alloc: std.mem.Allocator, name: []const u8) !model.Class {
+    const query = 
+        \\ SELECT name, origin, preview_picture_url 
+        \\ FROM Classes WHERE name = $1
+        ;
+    var row = try conn.pool.row(query, .{ name }) 
+        orelse return conn.ResultErrors.NotFound;
+
+    const outp = model.Class.MapWithAlloc(alloc, &row.row) catch |err| {
+        try row.deinit();
+        return err;
+    };
+
+    try row.deinit();
+    return outp;
+}
+
 pub fn GetAll(alloc: std.mem.Allocator) !std.ArrayList(model.Class) {
-    const query = "SELECT name, origin, preview_picture_url FROM Classes";
+    const query = "SELECT name, origin, preview_picture_url FROM Classes ORDER BY name";
     var result = try conn.pool.query(query, .{});
     defer _ = result.deinit();
 

@@ -26,7 +26,10 @@ pub fn GetByDisplayName(allocator: std.mem.Allocator, displayName: []const u8) !
         return conn.ResultErrors.NotFound;
     };
 
-    const outp = try model.RangedWeaponType.MapWithAlloc(allocator, &row.row);
+    const outp = model.RangedWeaponType.MapWithAlloc(allocator, &row.row) catch |err| {
+        try row.deinit();
+        return err;
+    }; 
     try row.deinit();
     return outp;
 }

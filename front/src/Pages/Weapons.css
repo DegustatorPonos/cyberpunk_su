@@ -86,3 +86,21 @@ td > select {
     display: flex;
     flex-wrap: wrap;
 }
+
+.classImageURL {
+    width: 80%;
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 5px;
+    padding-top: 10px;
+    justify-content: center;
+}
+
+.classImageURL > * {
+    padding: 0px;
+    margin: 0px;
+}
+
+.classImageURL > p {
+    width: 25%;
+}

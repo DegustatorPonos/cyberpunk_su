@@ -81,7 +81,7 @@ pub const Handler = struct {
 
         std.debug.print("{any} {s}: {d}\n", .{req.method, req.url.raw, res.status});
         // refreshing the redis cache
-        if (cached) {
+        if (cached and res.status == 200) {
             redis.WriteToTopic(self.io, cacheTopicName, .{
                 .Key = req.url.raw,
                 .SecondsToLive = cacheTTL,

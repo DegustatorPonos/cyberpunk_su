@@ -5,7 +5,7 @@ export type Class = {
 };
 
 export type ClassDescription = {
-    Name: string,
+    ClassName: string,
     Language: string,
     Contents: string,
     ImageURL: string,

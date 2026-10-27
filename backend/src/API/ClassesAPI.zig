@@ -8,6 +8,7 @@ const Tokens = @import("../Authentication/Tokens.zig");
 
 pub fn RegisterEndpoints(router: *httpz.Router(*Handler.Handler,*const fn (*Handler.RequestData, *httpz.request.Request, *httpz.response.Response) anyerror!void)) void {
     router.get("/classes", getAllClasses, .{});
+    router.get("/classes/:class", getClass, .{});
     router.post("/classes", newClass, .{});
     router.put("/classes/:class", updateClass, .{});
     router.get("/classes/:class/description", getClassDescription, .{});
@@ -19,6 +20,16 @@ fn getAllClasses(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Respo
     defer found.deinit(req.arena);
     
     try res.json(found.items, .{});
+}
+
+fn getClass(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+    const class = req.param("class") orelse {
+        res.setStatus(.bad_request);
+        return;
+    };
+
+    const found = try db.Classes.GetByName(req.arena, class);
+    try res.json(found, .{});
 }
 
 fn newClass(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
@@ -73,8 +84,8 @@ fn getClassDescription(_: *Handler.RequestData, req: *httpz.Request, res: *httpz
     const desc = db.Classes.GetDescription(req.arena, class, lang) catch |err| {
         switch (err) {
             db.ResultErrors.NotFound => {
-                res.setStatus(.not_found);
                 try res.json(errDesc.NotFoundDescriptor, .{});
+                res.setStatus(.not_found);
                 return;
             },
             else => return err,
@@ -93,6 +104,7 @@ fn setClassDescription(data: *Handler.RequestData, req: *httpz.Request, res: *ht
     };
 
     const body = try req.json(struct {
+        ClassName: []const u8,
         Language: []const u8,
         Contents: []const u8,
         ImageURL: []const u8,

@@ -2,30 +2,35 @@ import { GetLocalizedString } from "../../Locales/Locales";
 import { AllowedLanguage, LanguageContext } from "../../Locales/Context";
 import { useContext, useState } from "react";
 import { Class } from "../../Models/Class";
-import axios from "axios";
-import { BackendURL } from "../../Config";
-
-const ClassesURL = `${BackendURL}/classes`;
+import { AuthContext } from "../../Authentication/ContextProvider";
+import { GetClasses } from "./requests";
 
 function ClassesIndex() {
+    var user = useContext(AuthContext);
     const lang = useContext(LanguageContext);
     const [classList, setClassList] = useState<Class[] | null>(null);
     useState(() => {
-        getClasses().then(data => setClassList(data));
+        GetClasses().then(data => setClassList(data));
     });
+
+    const isAdmin = user != null && user.Role === "editor";
 
     return (
         <div className="ClassesDiv">
             <h1> { GetLocalizedString("Classes", lang) } </h1>
-            { generateClassList(classList, lang) }
+            { generateClassList(classList, lang, isAdmin) }
         </div>
     );
 }
 
-function generateClassList(classes: Class[] | null, lang: AllowedLanguage): any {
+function generateClassList(classes: Class[] | null, lang: AllowedLanguage, isAdmin: boolean): any {
     if (classes == null) return ( <div> </div> );
 
     const list = classes.map(x => {
+        function adminData() {
+            if (!isAdmin) return (<span> </span>);
+            return ( <a href={ `/classes/${x.Name}/edit` }> edit </a> );
+        };
         return (
             <li className="classPreview">
                 <a href={ `/classes/${x.Name}` }>
@@ -38,29 +43,12 @@ function generateClassList(classes: Class[] | null, lang: AllowedLanguage): any 
                     <p className="classPreviewOrigin"> { GetLocalizedString(x.Origin, lang) } </p>
                     </div>
                 </a>
+                { adminData() }
             </li>
         );
     });
 
     return (<ul className="classList"> {list} </ul>);
-}
-
-async function getClasses(): Promise<Class[]> {
-    try {
-        const { data, status } = await axios.get<Class[]>(
-            ClassesURL,
-            {
-                headers: { Accept: "application/json" }
-            }
-        );
-
-        if (status != 200) return new Array<Class>();
-
-        return data;
-    } catch (err) {
-        console.log(`Failed to get class list: ${err}`);
-        return new Array<Class>();
-    }
 }
 
 export default ClassesIndex;

@@ -19,6 +19,7 @@ import RegisterPage from './Authentication/RegisterPage';
 import { EditRangedWeaponPage, RangedWeaponPage } from './Pages/RangedWeapon';
 import ErrorHandler from './ErrorHandler';
 import ClassPage from './Pages/Classes/ClassPage';
+import ClassAdminPage from './Pages/Classes/ClassAdmin';
 
 const router = createBrowserRouter([
     {
@@ -29,6 +30,11 @@ const router = createBrowserRouter([
     {
         path: "/classes",
         element: (<ClassesIndex />),
+    },
+    {
+        path: "/classes/:name/edit",
+        errorElement: (<ErrorHandler />),
+        element: (<ClassAdminPage />),
     },
     {
         path: "/classes/:name",
