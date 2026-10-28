@@ -53,9 +53,41 @@ pub fn Update(skill: *model.Skill) !void {
         \\ WHERE name = $3
         ;
 
-    try conn.pool.exec(query, .{
+    _ = try conn.pool.exec(query, .{
         skill.Type,
         skill.Category,
         skill.Name
+    });
+}
+
+pub fn GetDescription(allocator: std.mem.Allocator, skillName: []const u8, language: []const u8) !model.SkillDescription {
+    const query =
+        \\ SELECT skill_name, language, contents
+        \\ FROM SkillDescriptions WHERE skill_name = $1 AND language = $2
+        ;
+    var row = try conn.pool.row(query, .{ skillName, language }) orelse {
+        return conn.ResultErrors.NotFound;
+    };
+
+    const outp = try model.SkillDescription.MapWithAlloc(allocator, &row.row);
+    try row.deinit();
+
+    return outp;
+}
+
+pub fn SetDescription(desc: model.SkillDescription) !void {
+    // std.debug.print("Inserting a desc for {s}\n", .{desc.ClassName});
+    const query =
+        \\ INSERT INTO skilldescriptions (skill_name, language, contents)
+        \\ VALUES ($1, $2, $3)
+        \\ ON CONFLICT (skill_name, language)
+        \\ DO UPDATE SET
+        \\     contents = EXCLUDED.contents
+        ;
+
+    _ = try conn.pool.exec(query, .{
+        desc.SkillName,
+        desc.Language,
+        desc.Contents,
     });
 }

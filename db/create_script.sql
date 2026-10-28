@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS Skills (
 );
 
 
-CREATE TABLE IF NOT EXISTS ClassDescriptions (
+CREATE TABLE IF NOT EXISTS SkillDescriptions (
     skill_name VARCHAR(255) REFERENCES Skills(name) ON DELETE CASCADE,
     language VARCHAR(255) NOT NULL,
     contents TEXT NOT NULL,
