@@ -9,6 +9,7 @@ pub const errors = error {
 pub const SettingsStruct = struct {
     Port: u16,
     FilesPath: []const u8,
+    CachedPaths: []const []const u8,
     CacheTTL: u16,
 
     CorsParams: struct {
@@ -57,8 +58,9 @@ pub fn ReadConfig(allocator: std.mem.Allocator, io: std.Io) !void {
     Current.* = .{
         .Port = parsed.value.Port,
         .FilesPath = try allocator.dupe(u8, parsed.value.FilesPath),
+        .CachedPaths = try dupe_str_arr(allocator, parsed.value.CachedPaths),
         .CacheTTL = 300,
-        
+
         .CorsParams = .{
             .Origin = try allocator.dupe(u8, parsed.value.CorsParams.Origin),
             .Methods = try allocator.dupe(u8, parsed.value.CorsParams.Methods),
@@ -83,6 +85,16 @@ pub fn ReadConfig(allocator: std.mem.Allocator, io: std.Io) !void {
     };
 }
 
+pub fn dupe_str_arr(alloc: std.mem.Allocator, data: []const []const u8) ![]const []const u8 {
+    var outp = try alloc.alloc([]const u8, data.len);
+    for (data, 0..) |str, i| {
+        outp[i] = try alloc.dupe(u8, str);
+    }
+    return outp;
+}
+
+// TODO: complete. Not sure I will ever need to free this memory
+// but let it be ig?
 pub fn Deinit(allocator: std.mem.Allocator) void {
     allocator.free(Current.CorsParams.Origin);
     allocator.free(Current.CorsParams.Methods);

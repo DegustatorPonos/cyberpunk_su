@@ -56,3 +56,18 @@ CREATE TABLE IF NOT EXISTS ClassDescriptions (
 
     PRIMARY KEY (class_name, language)
 );
+
+CREATE TABLE IF NOT EXISTS Skills (
+    name VARCHAR(255) PRIMARY KEY,
+    type VARCHAR(32),
+    category VARCHAR(32)
+);
+
+
+CREATE TABLE IF NOT EXISTS ClassDescriptions (
+    skill_name VARCHAR(255) REFERENCES Skills(name) ON DELETE CASCADE,
+    language VARCHAR(255) NOT NULL,
+    contents TEXT NOT NULL,
+
+    PRIMARY KEY (skill_name, language)
+);

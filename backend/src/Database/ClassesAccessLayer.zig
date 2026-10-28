@@ -58,7 +58,7 @@ pub fn Create(newClass: *model.Class) !void {
 }
 
 pub fn Update(class: *model.Class) !void {
-    if (!try Exists(class.Name)) return conn.ResultErrors.AlreadyExists;
+    if (!try Exists(class.Name)) return conn.ResultErrors.NotFound;
     const query = 
         \\ UPDATE Classes SET 
         \\ origin = $1,

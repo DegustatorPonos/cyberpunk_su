@@ -2,6 +2,13 @@
     "Port": 6969, 
     "FilesPath": "Files",
     "CacheTTL": 30,
+    "CachedPaths": [
+        "/static",
+        "/index",
+        "/classes",
+        "/skills",
+        "/weapons/ranged"
+    ],
     "CorsParams": {
         "Origin": "*",
         "Methods": "GET,POST,PUT,DELETE,OPTIONS",

@@ -273,6 +273,19 @@ Responses:
 ]
 ```
 
+## Get by name
+- GET /classes/:class
+- Params:
+- - :class - Name of the class. Proveded in the Get all Name field
+Responses:
+```json
+{
+    "Name": string,
+    "Origin": string,
+    "PreviewPicture": string
+}
+```
+
 ## New class
 - POST /classes
 - Requires authentication header with editor role
@@ -322,3 +335,7 @@ Responses:
 Responses:
 - 400: Malformed request
 - 200: Success
+
+# Skills
+
+## Get all

@@ -50,3 +50,4 @@ pub const Users = @import("UserAccessLayer.zig");
 pub const RangedWeapons = @import("RangedWeaponsAccessLayer.zig");
 pub const Articles = @import("ArticlesAccessLayer.zig");
 pub const Classes = @import("ClassesAccessLayer.zig");
+pub const Skills = @import("SkillsAccessLayer.zig");
