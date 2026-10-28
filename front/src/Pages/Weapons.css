@@ -104,3 +104,23 @@ td > select {
 .classImageURL > p {
     width: 25%;
 }
+
+.classPageBody {
+    display: flex;
+    flex-direction: row;
+}
+
+.classImage {
+    min-width: 300px;
+    padding: 10px;
+}
+
+.classImage > img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.classDescription {
+    padding: 10px;
+}

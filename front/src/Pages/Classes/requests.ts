@@ -42,6 +42,22 @@ export async function GetClassInfo(name: string | undefined): Promise<Class | nu
     }
 }
 
+export async function UpdateClassInfo(data: Class | null, token: string) {
+    const url = `${ClassesURL}/${data?.Name}`;
+    await axios.put(url, data, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+
+export async function CreateClassInfo(data: Class | null, token: string) {
+    await axios.post(ClassesURL, data, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
 
 export async function GetClassDescription(name: string, lang: AllowedLanguage): Promise<ClassDescription | null> {
     const uri = `${ClassesURL}/${name}/description?lang=${lang}`;
@@ -59,15 +75,6 @@ export async function GetClassDescription(name: string, lang: AllowedLanguage): 
         console.log(`Failed to get class description: ${err}`);
         return null;
     }
-}
-
-export async function UpdateClassInfo(data: Class | null, token: string) {
-    const url = `${ClassesURL}/${data?.Name}`;
-    await axios.put(url, data, {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    });
 }
 
 export async function UpsertDescription(desc: ClassDescription | null, token: string) {

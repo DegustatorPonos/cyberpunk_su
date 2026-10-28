@@ -48,7 +48,7 @@ pub fn Create(newClass: *model.Class) !void {
     if (try Exists(newClass.Name)) return conn.ResultErrors.AlreadyExists;
     const query = 
         \\ INSERT INTO Classes (name, origin, preview_picture_url) 
-        \\ VALUES ($1, $2, $3)"
+        \\ VALUES ($1, $2, $3)
         ;
     _ = try conn.pool.exec(query, .{ 
         newClass.Name, 

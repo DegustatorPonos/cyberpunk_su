@@ -4,7 +4,7 @@ import { useParams } from "react-router";
 import { AuthContext } from "../../Authentication/ContextProvider";
 import { AllowedLanguage } from "../../Locales/Context";
 import { Class, ClassDescription } from "../../Models/Class";
-import { GetClassDescription, GetClassInfo, UpdateClassInfo, UpsertDescription } from "./requests";
+import { CreateClassInfo, GetClassDescription, GetClassInfo, UpdateClassInfo, UpsertDescription } from "./requests";
 
 function ClassAdminPage() {
     var user = useContext(AuthContext);
@@ -107,7 +107,14 @@ function ClassAdminPage() {
         <h1> { isNew ? "Creating a new class" : "Editing a class" } </h1>
                 <span>
                     <input className="NameEdit" value={classData?.Name || ""} onChange={(val) => {
-                        if (!classData) return;
+                        if (!classData) {
+                            setClassData({
+                                Name: val.target.value,
+                                Origin: "",
+                                PreviewPicture: "",
+                            });
+                            return;
+                        };
                         setClassData({...classData, Name: val.target.value});
                     }} /> 
                 </span>
@@ -117,7 +124,14 @@ function ClassAdminPage() {
                             <td> Preview picture </td>
                             <td>
                                 <input value={classData?.PreviewPicture || ""} onChange={(val) => {
-                                    if (!classData) return;
+                                    if (!classData) {
+                                        setClassData({
+                                            Name: "",
+                                            Origin: "",
+                                            PreviewPicture: val.target.value,
+                                        });
+                                        return;
+                                    };
                                     setClassData({...classData, PreviewPicture: val.target.value});
                                 }} /> 
                             </td>
@@ -125,10 +139,19 @@ function ClassAdminPage() {
                         <tr>
                             <td> Origin </td>
                             <td>
-                                <input value={classData?.Origin || ""} onChange={(val) => {
-                                    if (!classData) return;
+                            <input 
+                                value={classData?.Origin || ""} 
+                                onChange={(val) => {
+                                    if (!classData) {
+                                        setClassData({
+                                            Name: "",
+                                            Origin: val.target.value,
+                                            PreviewPicture: "",
+                                        });
+                                        return;
+                                    };
                                     setClassData({...classData, Origin: val.target.value});
-                                }} /> 
+                            }} /> 
                             </td>
                         </tr>
                     </tbody>
@@ -136,6 +159,8 @@ function ClassAdminPage() {
                 <button onClick={() => {
                     if (!isNew) {
                         UpdateClassInfo(classData, authCookie['X-AUTH-TOKEN']);
+                    } else {
+                        CreateClassInfo(classData, authCookie['X-AUTH-TOKEN']);
                     }
                 }}> 
                     { isNew ? "Create" : "Update" } 

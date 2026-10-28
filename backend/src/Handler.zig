@@ -3,10 +3,10 @@ const httpz = @import("httpz");
 const userModel = @import("Models/User.zig");
 const tokens = @import("Authentication/Tokens.zig");
 const redis = @import("Redis/Connection.zig");
+const settings = @import("Settings.zig");
 
 const cacheTopicName = "cp2020_cache";
 const cacheTopicQuery= "cp2020_cache:*";
-const cacheTTL: u16 = 300; // 5 minutes
 
 pub const authError = error {
     Unauthorized,
@@ -84,7 +84,7 @@ pub const Handler = struct {
         if (cached and res.status == 200) {
             redis.WriteToTopic(self.io, cacheTopicName, .{
                 .Key = req.url.raw,
-                .SecondsToLive = cacheTTL,
+                .SecondsToLive = settings.Current.CacheTTL,
                 .Value = res.buffer.written(),
             }) catch |err| {
                 std.debug.print("Failed to cache the responce: {any}\n", .{ err });
