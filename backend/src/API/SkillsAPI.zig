@@ -69,7 +69,14 @@ fn updateSkill(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Resp
     };
     body.Name = name;
 
-    try db.Skills.Update(&body);
+    db.Skills.Update(&body) catch |err| switch (err) {
+        db.ResultErrors.NotFound => {
+            try res.json(errDesc.NotFoundDescriptor, .{});
+            res.setStatus(.not_found);
+            return;
+        },
+        else => return err,
+    };
 }
 
 fn getSkillDescription(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {

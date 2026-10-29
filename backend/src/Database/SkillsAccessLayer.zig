@@ -66,7 +66,7 @@ pub fn Create(skill: *model.Skill) !void {
 }
 
 pub fn Update(skill: *model.Skill) !void {
-    if (try Exists(skill.Name)) return conn.ResultErrors.NotFound;
+    if (!try Exists(skill.Name)) return conn.ResultErrors.NotFound;
     const query = 
         \\ UPDATE Skills SET 
         \\ type = $1,

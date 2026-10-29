@@ -1,9 +1,5 @@
 const std = @import("std");
 
-pub const errors = enum {
-    NotFound,
-};
-
 pub fn unescapePath(allocator: std.mem.Allocator, input: []const u8) ![]u8 {
     var out = try allocator.alloc(u8, input.len);
     errdefer allocator.free(out);

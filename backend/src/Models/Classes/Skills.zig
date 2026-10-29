@@ -57,7 +57,9 @@ pub const SkillView = struct {
 
     pub fn is_valid(self: *Skill) bool {
         if (self.Name.len == 0) return false;
-        if (!std.mem.eql(u8, self.Type, "pickup") and !std.mem.eql(u8, self.Type, "career")) {
+        if (!std.mem.eql(u8, self.Type, "pickup") 
+            and !std.mem.eql(u8, self.Type, "career")
+            and !std.mem.eql(u8, self.Type, "special")) {
             return false;
         }
         return true;
