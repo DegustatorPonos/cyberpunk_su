@@ -103,7 +103,16 @@ fn getClassDescription(_: *Handler.RequestData, req: *httpz.Request, res: *httpz
         }
     };
 
-    try res.json(desc, .{});
+    try res.json(model.ClassDescriptionView {
+        .ClassName = desc.ClassName,
+        .Language = desc.Language,
+        .Contents = desc.Contents,
+        .ImageURL = desc.ImageURL,
+
+
+        .CareerSkills = (try getAttachedSkills(req, res, db.Skills.GetClassCareerSkills)).items,
+        .SpecizalizationSkills = (try getAttachedSkills(req, res, db.Skills.GetClassSpecializations)).items,
+    }, .{});
 }
 
 fn setClassDescription(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
@@ -161,7 +170,7 @@ fn addClassSpecialization(data: *Handler.RequestData, req: *httpz.Request, res: 
 }
 
 fn addClassCareeerSkill(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
-    try addAttachedSkill(data, req, res, db.Skills.AddClassCarreerSkill);
+    try addAttachedSkill(data, req, res, db.Skills.AddClassCareerSkill);
 }
 
 fn deleteClassAttachedSkill(
@@ -192,7 +201,7 @@ fn deleteClassSpecialization(data: *Handler.RequestData, req: *httpz.Request, re
 }
 
 fn deleteClassCareeerSkill(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
-    try deleteClassAttachedSkill(data, req, res, db.Skills.DeleteClassCarreerSkill);
+    try deleteClassAttachedSkill(data, req, res, db.Skills.DeleteClassCareerSkill);
 }
 
 fn getAttachedSkills(
@@ -214,5 +223,5 @@ fn getClassSpecializations(_: *Handler.RequestData, req: *httpz.Request, res: *h
 }
 
 fn getClassCareeerSkills(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
-    try res.json((try getAttachedSkills(req, res, db.Skills.GetClassCarreerSkills)).items, .{});
+    try res.json((try getAttachedSkills(req, res, db.Skills.GetClassCareerSkills)).items, .{});
 }

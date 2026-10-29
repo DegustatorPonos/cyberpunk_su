@@ -127,11 +127,14 @@ pub fn AddClassSpecialization(className: []const u8, skillName: []const u8) !voi
     try addClassSkillRelationship("ClassSkillSpecialization", className, skillName);
 }
 
-pub fn AddClassCarreerSkill(className: []const u8, skillName: []const u8) !void {
-    try addClassSkillRelationship("ClassCarrerSkills", className, skillName);
+pub fn AddClassCareerSkill(className: []const u8, skillName: []const u8) !void {
+    try addClassSkillRelationship("ClassCareerSkills", className, skillName);
 }
 
-fn getClassRelatedSkills(alloc: std.mem.Allocator, tableName: []const u8, className: []const u8) !std.ArrayList(model.Skill) {
+fn getClassRelatedSkills(
+    alloc: std.mem.Allocator,
+    tableName: []const u8,
+    className: []const u8) !std.ArrayList(model.Skill) {
     const query_templ = 
         \\ SELECT name, type, category FROM skills
         \\ WHERE name IN (
@@ -159,8 +162,8 @@ pub fn GetClassSpecializations(alloc: std.mem.Allocator, className: []const u8) 
     return try getClassRelatedSkills(alloc, "ClassSkillSpecialization", className);
 }
 
-pub fn GetClassCarreerSkills(alloc: std.mem.Allocator, className: []const u8) !std.ArrayList(model.Skill) {
-    return try getClassRelatedSkills(alloc, "ClassCarrerSkills", className);
+pub fn GetClassCareerSkills(alloc: std.mem.Allocator, className: []const u8) !std.ArrayList(model.Skill) {
+    return try getClassRelatedSkills(alloc, "ClassCareerSkills", className);
 }
 
 fn deleteClassSkillRelationship(tableName: []const u8, className: []const u8, skillName: []const u8) !void {
@@ -182,6 +185,6 @@ pub fn DeleteClassSpecialization(className: []const u8, skillName: []const u8) !
     try deleteClassSkillRelationship("ClassSkillSpecialization", className, skillName);
 }
 
-pub fn DeleteClassCarreerSkill(className: []const u8, skillName: []const u8) !void {
-    try deleteClassSkillRelationship("ClassCarrerSkills", className, skillName);
+pub fn DeleteClassCareerSkill(className: []const u8, skillName: []const u8) !void {
+    try deleteClassSkillRelationship("ClassCareerSkills", className, skillName);
 }
