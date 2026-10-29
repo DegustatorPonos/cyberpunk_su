@@ -44,16 +44,14 @@ pub const SkillView = struct {
     /// Should be either 'pickup' or 'career'
     Type: []const u8,
     Category: []const u8,
-    Language: []const u8,
-    Contents: []const u8,
+    Description: []const u8,
 
     pub fn MapWithAlloc(allocator: std.mem.Allocator, row: *const pg.Row) !SkillView {
         return .{
             .Name = try allocator.dupe(u8, try row.get([]const u8, 0)),
             .Type = try allocator.dupe(u8, try row.get([]const u8, 1)),
             .Category = try allocator.dupe(u8, try row.get([]const u8, 2)),
-            .Language = try allocator.dupe(u8, try row.get([]const u8, 3)),
-            .Contents = try allocator.dupe(u8, try row.get([]const u8, 4)),
+            .Description = try allocator.dupe(u8, try row.get([]const u8, 3)),
         };
     }
 
@@ -63,5 +61,17 @@ pub const SkillView = struct {
             return false;
         }
         return true;
+    }
+};
+
+pub const ClassSkillLink = struct {
+    ClassName: []const u8,
+    SkillName: []const u8,
+
+    pub fn MapWithAlloc(allocator: std.mem.Allocator, row: *const pg.Row) !ClassSkillLink {
+        return .{
+            .ClassName = try allocator.dupe(u8, try row.get([]const u8, 0)),
+            .SkillName = try allocator.dupe(u8, try row.get([]const u8, 1)),
+        };
     }
 };

@@ -1,18 +1,29 @@
 const std = @import("std");
 const httpz = @import("httpz");
 const model = @import("../Models/Classes/Class.zig");
+const skills = @import("../Models/Classes/Skills.zig");
 const db = @import("../Database/Connection.zig");
 const errDesc = @import("ErrorDescription.zig");
 const Handler = @import("../Handler.zig");
 const Tokens = @import("../Authentication/Tokens.zig");
+const common = @import("common.zig");
 
 pub fn RegisterEndpoints(router: *httpz.Router(*Handler.Handler,*const fn (*Handler.RequestData, *httpz.request.Request, *httpz.response.Response) anyerror!void)) void {
     router.get("/classes", getAllClasses, .{});
-    router.get("/classes/:class", getClass, .{});
     router.post("/classes", newClass, .{});
+    router.get("/classes/:class", getClass, .{});
     router.put("/classes/:class", updateClass, .{});
+
     router.get("/classes/:class/description", getClassDescription, .{});
     router.put("/classes/:class/description", setClassDescription, .{});
+
+    router.get("/classes/:class/career", getClassCareeerSkills, .{});
+    router.post("/classes/:class/career", addClassCareeerSkill, .{});
+    router.delete("/classes/:class/career/:skill", deleteClassCareeerSkill, .{});
+
+    router.get("/classes/:class/specialization", getClassSpecializations, .{});
+    router.post("/classes/:class/specialization", addClassSpecialization, .{});
+    router.delete("/classes/:class/specialization/:skill", deleteClassSpecialization, .{});
 }
 
 fn getAllClasses(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
@@ -119,4 +130,89 @@ fn setClassDescription(data: *Handler.RequestData, req: *httpz.Request, res: *ht
         .Contents = body.Contents,
         .ImageURL = body.ImageURL,
     });
+}
+
+fn addAttachedSkill(
+    data: *Handler.RequestData,
+    req: *httpz.Request,
+    res: *httpz.Response,
+    insertFn: fn ([]const u8, []const u8) anyerror!void
+    ) !void {
+
+    try data.CheckAccess(.editor);
+
+    const class = req.param("class") orelse {
+        res.setStatus(.bad_request);
+        return;
+    };
+
+    const body = try req.json(struct {
+        SkillName: []const u8
+    }) orelse {
+        res.setStatus(.bad_request);
+        return;
+    };
+
+    try insertFn(class, body.SkillName);
+}
+
+fn addClassSpecialization(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+    try addAttachedSkill(data, req, res, db.Skills.AddClassSpecialization);
+}
+
+fn addClassCareeerSkill(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+    try addAttachedSkill(data, req, res, db.Skills.AddClassCarreerSkill);
+}
+
+fn deleteClassAttachedSkill(
+    data: *Handler.RequestData,
+    req: *httpz.Request,
+    res: *httpz.Response,
+    deleteFn: fn ([]const u8, []const u8) anyerror!void
+    ) !void {
+
+    try data.CheckAccess(.editor);
+
+    const class = req.param("class") orelse {
+        res.setStatus(.bad_request);
+        return;
+    };
+
+    const skill_raw = req.param("skill") orelse {
+        res.setStatus(.bad_request);
+        return;
+    };
+    const skill = try common.unescapePath(req.arena, skill_raw);
+    
+    try deleteFn(class, skill);
+}
+
+fn deleteClassSpecialization(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+    try deleteClassAttachedSkill(data, req, res, db.Skills.DeleteClassSpecialization);
+}
+
+fn deleteClassCareeerSkill(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+    try deleteClassAttachedSkill(data, req, res, db.Skills.DeleteClassCarreerSkill);
+}
+
+fn getAttachedSkills(
+    req: *httpz.Request,
+    res: *httpz.Response,
+    retrieveFn: fn (std.mem.Allocator, []const u8) anyerror!std.ArrayList(skills.Skill)
+    ) !std.ArrayList(skills.Skill) {
+
+    const class = req.param("class") orelse {
+        res.setStatus(.bad_request);
+        return error.BadRequest;
+    };
+
+    return try retrieveFn(req.arena, class);
+}
+
+fn getClassSpecializations(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+    try res.json((try getAttachedSkills(req, res, db.Skills.GetClassSpecializations)).items, .{});
+}
+
+fn getClassCareeerSkills(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+    try res.json((try getAttachedSkills(req, res, db.Skills.GetClassCarreerSkills)).items, .{});
 }

@@ -71,3 +71,17 @@ CREATE TABLE IF NOT EXISTS SkillDescriptions (
 
     PRIMARY KEY (skill_name, language)
 );
+
+CREATE TABLE IF NOT EXISTS ClassSkillSpecialization (
+    class_name VARCHAR(255) REFERENCES Classes(name) ON DELETE CASCADE,
+    skill_name VARCHAR(255) REFERENCES Skills(name) ON DELETE CASCADE,
+
+    PRIMARY KEY (class_name, skill_name)
+);
+
+CREATE TABLE IF NOT EXISTS ClassCarrerSkills (
+    class_name VARCHAR(255) REFERENCES Classes(name) ON DELETE CASCADE,
+    skill_name VARCHAR(255) REFERENCES Skills(name) ON DELETE CASCADE,
+
+    PRIMARY KEY (class_name, skill_name)
+);

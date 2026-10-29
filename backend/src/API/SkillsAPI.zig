@@ -15,9 +15,11 @@ pub fn RegisterEndpoints(router: *httpz.Router(*Handler.Handler,*const fn (*Hand
     router.put("/skills/:skill/description", setSkillDescription, .{});
 }
 
-
 fn getAllSkills(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
-    var found = try db.Skills.GetAll(req.arena);
+    const query = try req.query();
+    const lang = query.get("lang") orelse "en";
+
+    var found = try db.Skills.GetAllExpanded(req.arena, lang);
     defer found.deinit(req.arena);
 
     try res.json(found.items, .{});
@@ -107,7 +109,6 @@ fn setSkillDescription(data: *Handler.RequestData, req: *httpz.Request, res: *ht
         res.setStatus(.bad_request);
         return;
     };
-
 
     try db.Skills.SetDescription(.{
         .Language = lang,
