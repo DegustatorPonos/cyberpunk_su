@@ -1,8 +1,7 @@
-import { Class, ClassDescription } from "../../Models/Class";
+import { Class, ClassDescription, ClassDescriptionFull } from "../../Models/Class";
 import { BackendURL } from "../../Config";
 import axios from "axios";
 import { AllowedLanguage } from "../../Locales/Context";
-import ClassPage from "./ClassPage";
 
 const ClassesURL = `${BackendURL}/classes`;
 
@@ -59,10 +58,10 @@ export async function CreateClassInfo(data: Class | null, token: string) {
     });
 }
 
-export async function GetClassDescription(name: string, lang: AllowedLanguage): Promise<ClassDescription | null> {
+export async function GetClassDescription(name: string, lang: AllowedLanguage): Promise<ClassDescriptionFull | null> {
     const uri = `${ClassesURL}/${name}/description?lang=${lang}`;
     try {
-        const {data, status} = await axios.get<ClassDescription>(
+        const {data, status} = await axios.get<ClassDescriptionFull>(
             uri,
             {
                 headers: { Accept: "application/json" }
@@ -76,6 +75,7 @@ export async function GetClassDescription(name: string, lang: AllowedLanguage): 
         return null;
     }
 }
+
 
 export async function UpsertDescription(desc: ClassDescription | null, token: string) {
     const url = `${ClassesURL}/${desc?.ClassName}/description`;

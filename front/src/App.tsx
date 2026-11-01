@@ -20,6 +20,7 @@ import { EditRangedWeaponPage, RangedWeaponPage } from './Pages/RangedWeapon';
 import ErrorHandler from './ErrorHandler';
 import ClassPage from './Pages/Classes/ClassPage';
 import ClassAdminPage from './Pages/Classes/ClassAdmin';
+import SkillsPage from './Pages/Skills/SkillsPage';
 
 const router = createBrowserRouter([
     {
@@ -27,6 +28,7 @@ const router = createBrowserRouter([
         errorElement: (<ErrorHandler />),
         element: (<IndexElement />),
     },
+
     {
         path: "/classes",
         element: (<ClassesIndex />),
@@ -39,6 +41,11 @@ const router = createBrowserRouter([
     {
         path: "/classes/:name",
         element: (<ClassPage />),
+    },
+
+    {
+        path: "/skills",
+        element: (<SkillsPage />),
     },
 
     // Ranged weapons
@@ -85,7 +92,6 @@ function App() {
     useEffect(() => {
         GetUserInfo(authCookie['X-AUTH-TOKEN']).then(
             v => {
-                console.log(v);
                 if (!v || v == undefined)
                     document.cookie = "X-AUTH-TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
                 setAuth(v);

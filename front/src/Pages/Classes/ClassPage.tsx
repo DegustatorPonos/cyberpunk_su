@@ -1,15 +1,17 @@
+import "./classStyles.css"
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { AuthContext } from "../../Authentication/ContextProvider";
 import { LanguageContext } from "../../Locales/Context";
-import { ClassDescription } from "../../Models/Class";
+import { ClassDescriptionFull } from "../../Models/Class";
+import { Skill } from "../../Models/Skill";
 import { GetClassDescription } from "./requests";
 
 function ClassPage() {
     var user = useContext(AuthContext);
     const lang = useContext(LanguageContext);
     const { name } = useParams();
-    const [desc, setDesc] = useState<ClassDescription | null>(null);
+    const [desc, setDesc] = useState<ClassDescriptionFull | null>(null);
 
     useEffect(() => {
         GetClassDescription(name || "", lang).then(res => setDesc(res));
@@ -30,7 +32,13 @@ function ClassPage() {
                 <div className="classImage">
                     <img src={desc?.ImageURL} />
                 </div>
-                { mapClassParagraphs(desc?.Contents || "") }
+                <div className="classDescription">
+                    { mapClassParagraphs(desc?.Contents || "") }
+                    <h2> Specialization </h2>
+                    { mapSkillList(desc?.SpecizalizationSkills || new Array<Skill>()) }
+                    <h2> Career skills </h2>
+                    { mapSkillList(desc?.CareerSkills || new Array<Skill>()) }
+                </div>
             </div>
             { editButton() }
         </div>
@@ -42,8 +50,16 @@ function mapClassParagraphs(contents: string) {
         return (<p>{p}</p>);
     });
     return (
-        <div className="classDescription"> {list} </div>
+        <div> {list} </div>
     );
+}
+
+function mapSkillList(skills: Skill[]) { 
+    const els = skills.map(s => {
+        return (<li key={s.Name}> <a href={`/skills#${s.Name}`}> {s.Name} </a> </li>);
+    });
+
+    return ( <ul> { els } </ul> );
 }
 
 export default ClassPage;

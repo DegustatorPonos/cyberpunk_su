@@ -21,6 +21,7 @@ function Sidebar({setLang}: SidebarProps) {
                 <ul className='ContentsList'>
                     <SidebarListElement Href='/' Text='Home' />
                     <SidebarListElement Href='/classes' Text='Classes' />
+                    <SidebarListElement Href='/skills' Text='Skills' />
                     <SidebarListElement Href='/weapons' Text='Weapons' />
                     { AuthElement(user) }
                 </ul>

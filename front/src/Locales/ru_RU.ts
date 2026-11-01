@@ -4,6 +4,7 @@ const lang = new Language();
 lang.LocalizedStrings = new Map<string, string>([
     ["index", "Главная"],
     ["classes", "Классы"],
+    ["skills", "Навыки"],
     ["home", "Главная"],
     ["forbidden", "Запрещено"],
 

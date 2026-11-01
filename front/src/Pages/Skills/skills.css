@@ -1,0 +1,19 @@
+.skillHeader {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
+.skillHeader > h2, .skillHeader > a > h2 {
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+.skillDesc {
+    margin-top: 0px;
+    margin-bottom: 20px;
+}
+
+.skillCategoryName {
+    margin-bottom: 5px;
+}
