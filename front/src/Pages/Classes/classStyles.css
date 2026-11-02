@@ -61,3 +61,20 @@
 .classDescription {
     padding: 10px;
 }
+
+.classSkillsListName {
+    margin-bottom: 0px;
+}
+
+.classSkillsList {
+    margin-top: 0px;
+    padding-left: 1rem;
+}
+
+.classSkill {
+    list-style: none;
+}
+
+.classSkill > a {
+    color: var(--colorscheme-gray);
+}

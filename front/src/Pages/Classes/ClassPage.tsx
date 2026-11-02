@@ -34,9 +34,9 @@ function ClassPage() {
                 </div>
                 <div className="classDescription">
                     { mapClassParagraphs(desc?.Contents || "") }
-                    <h2> Specialization </h2>
+                    <h2 className="classSkillsListName"> Specialization </h2>
                     { mapSkillList(desc?.SpecizalizationSkills || new Array<Skill>()) }
-                    <h2> Career skills </h2>
+                    <h2 className="classSkillsListName"> Career skills </h2>
                     { mapSkillList(desc?.CareerSkills || new Array<Skill>()) }
                 </div>
             </div>
@@ -56,10 +56,10 @@ function mapClassParagraphs(contents: string) {
 
 function mapSkillList(skills: Skill[]) { 
     const els = skills.map(s => {
-        return (<li key={s.Name}> <a href={`/skills#${s.Name}`}> {s.Name} </a> </li>);
+        return (<li key={s.Name} className="classSkill"> <a href={`/skills#${s.Name}`}> {s.Name} </a> </li>);
     });
 
-    return ( <ul> { els } </ul> );
+    return ( <ul className="classSkillsList"> { els } </ul> );
 }
 
 export default ClassPage;
