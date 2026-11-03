@@ -110,8 +110,8 @@ fn getClassDescription(_: *Handler.RequestData, req: *httpz.Request, res: *httpz
         .ImageURL = desc.ImageURL,
 
 
-        .CareerSkills = (try getAttachedSkills(req, res, db.Skills.GetClassCareerSkills)).items,
-        .SpecizalizationSkills = (try getAttachedSkills(req, res, db.Skills.GetClassSpecializations)).items,
+        .CareerSkills = (try getAttachedSkillViews(req, res, db.Skills.GetClassCareerSkillsViews)).items,
+        .SpecizalizationSkills = (try getAttachedSkillViews(req, res, db.Skills.GetClassSpecializationViews)).items,
     }, .{});
 }
 
@@ -216,6 +216,23 @@ fn getAttachedSkills(
     };
 
     return try retrieveFn(req.arena, class);
+}
+
+fn getAttachedSkillViews(
+    req: *httpz.Request,
+    res: *httpz.Response,
+    retrieveFn: fn (std.mem.Allocator, []const u8, []const u8) anyerror!std.ArrayList(skills.SkillView)
+    ) !std.ArrayList(skills.SkillView) {
+
+    const class = req.param("class") orelse {
+        res.setStatus(.bad_request);
+        return error.BadRequest;
+    };
+
+    const query = try req.query();
+    const lang = query.get("lang") orelse "en";
+    
+    return try retrieveFn(req.arena, class, lang);
 }
 
 fn getClassSpecializations(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {

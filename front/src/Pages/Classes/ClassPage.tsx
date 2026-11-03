@@ -4,8 +4,9 @@ import { useParams } from "react-router";
 import { AuthContext } from "../../Authentication/ContextProvider";
 import { LanguageContext } from "../../Locales/Context";
 import { ClassDescriptionFull } from "../../Models/Class";
-import { Skill } from "../../Models/Skill";
+import { SkillView } from "../../Models/Skill";
 import { GetClassDescription } from "./requests";
+import { GetLocalizedString } from "../../Locales/Locales";
 
 function ClassPage() {
     var user = useContext(AuthContext);
@@ -34,10 +35,10 @@ function ClassPage() {
                 </div>
                 <div className="classDescription">
                     { mapClassParagraphs(desc?.Contents || "") }
-                    <h2 className="classSkillsListName"> Specialization </h2>
-                    { mapSkillList(desc?.SpecizalizationSkills || new Array<Skill>()) }
-                    <h2 className="classSkillsListName"> Career skills </h2>
-                    { mapSkillList(desc?.CareerSkills || new Array<Skill>()) }
+                    <h2 className="classSkillsListName"> { GetLocalizedString("Specialization", lang) } </h2>
+                    { mapSkillList(desc?.SpecizalizationSkills || new Array<SkillView>()) }
+                    <h2 className="classSkillsListName"> { GetLocalizedString("Career skills", lang) } </h2>
+                    { mapSkillList(desc?.CareerSkills || new Array<SkillView>()) }
                 </div>
             </div>
             { editButton() }
@@ -54,9 +55,13 @@ function mapClassParagraphs(contents: string) {
     );
 }
 
-function mapSkillList(skills: Skill[]) { 
+function mapSkillList(skills: SkillView[]) { 
     const els = skills.map(s => {
-        return (<li key={s.Name} className="classSkill"> <a href={`/skills#${s.Name}`}> {s.Name} </a> </li>);
+        return (
+            <li key={s.Name} className="classSkill"> 
+                <a href={`/skills#${s.Name}`}> {s.DisplayName} </a>
+            </li>
+        );
     });
 
     return ( <ul className="classSkillsList"> { els } </ul> );

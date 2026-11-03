@@ -1,4 +1,4 @@
-import { Skill } from "./Skill";
+import { SkillView } from "./Skill";
 
 export type Class = {
     Name: string,
@@ -19,6 +19,6 @@ export type ClassDescriptionFull = {
     Contents: string,
     ImageURL: string,
 
-    SpecizalizationSkills: Skill[],
-    CareerSkills: Skill[],
+    SpecizalizationSkills: SkillView[],
+    CareerSkills: SkillView[],
 };

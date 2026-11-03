@@ -41,6 +41,6 @@ pub const ClassDescriptionView = struct {
     Contents: []const u8,
     ImageURL: []const u8,
     
-    SpecizalizationSkills: []skills.Skill,
-    CareerSkills: []skills.Skill,
+    SpecizalizationSkills: []skills.SkillView,
+    CareerSkills: []skills.SkillView,
 };

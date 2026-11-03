@@ -9,11 +9,16 @@ const pwd = @import("../Authentication/Password.zig");
 
 pub fn GetAllExpanded(alloc: std.mem.Allocator, lang: []const u8) !std.ArrayList(model.SkillView) {
     const query =
-        \\ SELECT s.name, s.type, s.category, COALESCE(d.contents, '') 
-        \\ FROM skills AS s LEFT JOIN 
-        \\ (SELECT skill_name, contents FROM skilldescriptions 
-        \\ WHERE language = $1) AS d
-        \\ ON s.name = d.skill_name
+        \\ SELECT s.name, COALESCE(t.translated, s.name), s.type, s.category, COALESCE(d.contents, '') 
+        \\ FROM skills AS s 
+        \\ LEFT JOIN (
+        \\  SELECT translated, skill_name FROM SkillsTranslation
+        \\  WHERE language = $1
+        \\ ) as t ON s.name = t.skill_name 
+        \\ LEFT JOIN (
+        \\  SELECT skill_name, contents FROM skilldescriptions 
+        \\  WHERE language = $1
+        \\ ) AS d ON s.name = d.skill_name
         \\ ORDER BY s.category ASC, s.name ASC
         ;
     var result = try conn.pool.query(query, .{ lang });
@@ -81,6 +86,22 @@ pub fn Update(skill: *model.Skill) !void {
     });
 }
 
+pub fn UpsertTranslation(skillName: []const u8, language: []const u8, translation: []const u8) !void {
+    const query = 
+        \\ INSERT INTO skillstranslation (skill_name, language, translated)
+        \\ VALUES ($1, $2, $3)
+        \\ ON CONFLICT (skill_name, language)
+        \\ DO UPDATE SET
+        \\  translated = EXCLUDED.translated
+        ;
+
+    _ = try conn.pool.exec(query, .{
+        skillName,
+        language,
+        translation,
+    });
+}
+
 pub fn GetDescription(allocator: std.mem.Allocator, skillName: []const u8, language: []const u8) !model.SkillDescription {
     const query =
         \\ SELECT skill_name, language, contents
@@ -131,6 +152,43 @@ pub fn AddClassCareerSkill(className: []const u8, skillName: []const u8) !void {
     try addClassSkillRelationship("ClassCareerSkills", className, skillName);
 }
 
+fn getClassRelatedSkillViews(
+    alloc: std.mem.Allocator,
+    tableName: []const u8,
+    className: []const u8,
+    language: []const u8) !std.ArrayList(model.SkillView) {
+    const query_templ = 
+        \\ SELECT s.name, COALESCE(t.translated, s.name), s.type, s.category, COALESCE(d.contents, '')
+        \\ FROM skills AS s
+        \\ LEFT JOIN (
+        \\  SELECT translated, skill_name FROM SkillsTranslation
+        \\  WHERE language = $2
+        \\ ) AS t ON s.name = t.skill_name
+        \\ LEFT JOIN (
+        \\  SELECT skill_name, contents FROM skilldescriptions
+        \\  WHERE language = $2
+        \\ ) AS d ON s.name = d.skill_name
+        \\ WHERE s.name IN (
+        \\  SELECT skill_name FROM {s} WHERE class_name = $1
+        \\ ) 
+        \\ ORDER BY s.category ASC, s.name ASC
+        ;
+
+    var buf: [4096]u8 = undefined;
+    const query = try std.fmt.bufPrint(&buf, query_templ, .{ tableName });
+
+    var result = try conn.pool.query(query, .{ className, language });
+    defer result.deinit();
+
+    var outp: std.ArrayList(model.SkillView) = .empty;
+    while (try result.next()) |row| {
+        const newSkill = try model.SkillView.MapWithAlloc(alloc,  &row);
+        try outp.append(alloc, newSkill);
+    }
+
+    return outp;
+}
+
 fn getClassRelatedSkills(
     alloc: std.mem.Allocator,
     tableName: []const u8,
@@ -165,6 +223,21 @@ pub fn GetClassSpecializations(alloc: std.mem.Allocator, className: []const u8) 
 pub fn GetClassCareerSkills(alloc: std.mem.Allocator, className: []const u8) !std.ArrayList(model.Skill) {
     return try getClassRelatedSkills(alloc, "ClassCareerSkills", className);
 }
+
+pub fn GetClassSpecializationViews(alloc: std.mem.Allocator, 
+    className: []const u8,
+    language: []const u8
+    ) !std.ArrayList(model.SkillView) {
+    return try getClassRelatedSkillViews(alloc, "ClassSkillSpecialization", className, language);
+}
+
+pub fn GetClassCareerSkillsViews(alloc: std.mem.Allocator, 
+    className: []const u8,
+    language: []const u8
+    ) !std.ArrayList(model.SkillView) {
+    return try getClassRelatedSkillViews(alloc, "ClassCareerSkills", className, language);
+}
+
 
 fn deleteClassSkillRelationship(tableName: []const u8, className: []const u8, skillName: []const u8) !void {
     const query_templ = 

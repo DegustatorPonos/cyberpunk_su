@@ -38,7 +38,7 @@ function mapSkillViews(skills: SkillView[] | null) {
                 <div className="skillRecord">
                 <div className="skillHeader">
                 <a href={`/skills#${s.Name}`}> <h2> # </h2> </a>
-                <h2 id={s.Name}> {s.Name} </h2>
+                <h2 id={s.Name}> {s.DisplayName} </h2>
                 </div>
                 <p className="skillDesc"> {s.Description || "No description"} </p>
                 </div>

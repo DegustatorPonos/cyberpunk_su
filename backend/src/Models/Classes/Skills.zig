@@ -40,18 +40,28 @@ pub const SkillDescription = struct {
 
 /// The full info about the skill. Is composed of 2 tables
 pub const SkillView = struct {
+    /// The name of the skill in the database
     Name: []const u8,
+    /// The name of the skill visible to the user. Is affected by language
+    DisplayName: []const u8,
     /// Should be either 'pickup' or 'career'
     Type: []const u8,
     Category: []const u8,
     Description: []const u8,
 
+    /// Expects the following fields:
+    /// - Name (skill PK)
+    /// - DisplayName (translated)
+    /// - Type
+    /// - Category
+    /// - Description
     pub fn MapWithAlloc(allocator: std.mem.Allocator, row: *const pg.Row) !SkillView {
         return .{
             .Name = try allocator.dupe(u8, try row.get([]const u8, 0)),
-            .Type = try allocator.dupe(u8, try row.get([]const u8, 1)),
-            .Category = try allocator.dupe(u8, try row.get([]const u8, 2)),
-            .Description = try allocator.dupe(u8, try row.get([]const u8, 3)),
+            .DisplayName = try allocator.dupe(u8, try row.get([]const u8, 1)),
+            .Type = try allocator.dupe(u8, try row.get([]const u8, 2)),
+            .Category = try allocator.dupe(u8, try row.get([]const u8, 3)),
+            .Description = try allocator.dupe(u8, try row.get([]const u8, 4)),
         };
     }
 

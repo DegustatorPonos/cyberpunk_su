@@ -6,6 +6,7 @@ export type Skill = {
 
 export type SkillView = {
     Name: string,
+    DisplayName: string,
     Type: string,
     Category: string,
     Description: string

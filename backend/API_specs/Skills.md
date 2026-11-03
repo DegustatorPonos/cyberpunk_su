@@ -2,12 +2,16 @@
 
 ## Get all
 - GET /skills
+Gets the skill names and descriptions. Translates the name
+- Query params:
+- - lang: the language of the articles requested
 Responses:
 - 200: Success:
 ```json
 [
     {
          "Name": string,
+         "DisplayName": string,
          "Type": string,
          "Category": string,
          "Description": string
@@ -44,6 +48,19 @@ Responses:
 Responses:
 - 400: Malformed request
 - 404: Skill does not exist
+- 200: Success
+
+## Set translation
+- PUT /skills/:skill/translation
+- Requires authentication header with editor role
+```json
+{
+    "Language": string,
+    "Translation": string
+}
+```
+Responses:
+- 400: Malformed request
 - 200: Success
 
 ## Get description

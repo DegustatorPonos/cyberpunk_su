@@ -13,6 +13,8 @@ pub fn RegisterEndpoints(router: *httpz.Router(*Handler.Handler,*const fn (*Hand
 
     router.get("/skills/:skill/description", getSkillDescription, .{});
     router.put("/skills/:skill/description", setSkillDescription, .{});
+
+    router.put("/skills/:skill/translation", setSkillTranslation, .{});
 }
 
 fn getAllSkills(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
@@ -77,6 +79,25 @@ fn updateSkill(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Resp
         },
         else => return err,
     };
+}
+
+fn setSkillTranslation(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+    try data.CheckAccess(.editor);
+
+    const name = req.param("skill") orelse {
+        res.setStatus(.bad_request);
+        return;
+    };
+
+    const body = try req.json(struct {
+        Language: []const u8,
+        Translation: []const u8,
+    }) orelse {
+        res.setStatus(.bad_request);
+        return;
+    };
+
+    try db.Skills.UpsertTranslation(name, body.Language, body.Translation);
 }
 
 fn getSkillDescription(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {

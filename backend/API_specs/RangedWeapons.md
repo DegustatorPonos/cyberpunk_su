@@ -2,6 +2,8 @@
 
 ## Get all
 - GET /weapons/ranged
+- Query params:
+- - lang: the language of the articles requested
 Responses:
 - 200: Success:
 ```json

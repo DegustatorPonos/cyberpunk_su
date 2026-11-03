@@ -48,6 +48,14 @@ CREATE TABLE IF NOT EXISTS Classes (
     VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS ClassTranslation (
+    class_name VARCHAR(255) REFERENCES Classes(name) ON DELETE CASCADE,
+    language VARCHAR(255) NOT NULL,
+    translated VARCHAR(255),
+
+    PRIMARY KEY (class_name, language)
+);
+
 CREATE TABLE IF NOT EXISTS ClassDescriptions (
     class_name VARCHAR(255) REFERENCES Classes(name) ON DELETE CASCADE,
     language VARCHAR(16) NOT NULL,
@@ -63,6 +71,13 @@ CREATE TABLE IF NOT EXISTS Skills (
     category VARCHAR(32)
 );
 
+CREATE TABLE IF NOT EXISTS SkillsTranslation (
+    skill_name VARCHAR(255) REFERENCES Skills(name) ON DELETE CASCADE,
+    language VARCHAR(255) NOT NULL,
+    translated VARCHAR(255),
+
+    PRIMARY KEY (skill_name, language)
+);
 
 CREATE TABLE IF NOT EXISTS SkillDescriptions (
     skill_name VARCHAR(255) REFERENCES Skills(name) ON DELETE CASCADE,

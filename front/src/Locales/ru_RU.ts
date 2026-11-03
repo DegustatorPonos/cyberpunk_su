@@ -22,6 +22,11 @@ lang.LocalizedStrings = new Map<string, string>([
     ["register", "Зарегистрироваться"],
     ["welcome", "Добро пожаловать"],
 
+    // Classes
+    ["specialization", "Специализация"],
+    ["career skills", "Карьерные навыки"],
+
+    // Weapons
     ["light pistols", "Лёгкие пистолеты"],
     ["heavy pistols", "Тяжёлые пистолеты"],
     ["medium pistols", "Средние пистолеты"],
