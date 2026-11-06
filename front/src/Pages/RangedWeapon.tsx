@@ -12,6 +12,8 @@ import { useCookies } from 'react-cookie';
 
 const RangedWeaponsURL = `${BackendURL}/weapons/ranged`;
 
+
+
 export function RangedWeaponPage() {
     var user = useContext(AuthContext);
     const { id } = useParams();

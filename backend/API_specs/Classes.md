@@ -110,7 +110,7 @@ Responces:
 ```
 
 ## Add specialization skill
-- POST classes/:skill/specialization
+- POST classes/:class/specialization
 - Requires authentication header with editor role
 - Params:
 - - :class - Name of the class. Proveded in the Get all Name field
@@ -128,24 +128,18 @@ Responces:
 
 
 ## Remove a specialization skill
-- DELETE classes/:skill/specialization
+- DELETE classes/:skill/specialization/:skill
 - Requires authentication header with editor role
 - Params:
 - - :class - Name of the class. Proveded in the Get all Name field
-```json
-{
-    "Name": string,
-    "Type": string,
-    "Category": string
-}
-```
+- - :skill - Name of the skill. Proveded in the Get all Name field
 Responces:
 - 400: Malformed request
 - 404: Class or skill nto found
-- 201: Success
+- 200: Success
 
 ## Get specialization skill
-- GET classes/:skill/specialization
+- GET classes/:skill/specialization/:skill
 - Params:
 - - :class - Name of the class. Proveded in the Get all Name field
 Responces:
@@ -164,7 +158,7 @@ Responces:
 # Specialization skills
 
 ## Get specialization skill
-- GET classes/:skill/specialization
+- GET classes/:class/specialization
 - Params:
 - - :class - Name of the class. Proveded in the Get all Name field
 Responces:
@@ -199,17 +193,11 @@ Responces:
 
 
 ## Remove a career skill
-- DELETE classes/:skill/career
+- DELETE classes/:skill/career/:skill
 - Requires authentication header with editor role
 - Params:
 - - :class - Name of the class. Proveded in the Get all Name field
-```json
-{
-    "Name": string,
-    "Type": string,
-    "Category": string
-}
-```
+- - :skill - Name of the skill. Proveded in the Get all Name field
 Responces:
 - 400: Malformed request
 - 404: Class or skill nto found

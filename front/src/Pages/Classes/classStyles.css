@@ -78,3 +78,16 @@
 .classSkill > a {
     color: var(--colorscheme-gray);
 }
+
+.skillEditTypeHeader {
+    margin-bottom: 0px;
+}
+
+.classSkillBtn {
+    margin: 0px;
+}
+
+.newAttachedSkillHeader {
+    padding-left: 40px;
+    margin-top: 0px;
+}

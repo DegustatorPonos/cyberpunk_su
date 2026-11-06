@@ -2,9 +2,125 @@ import { useContext, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useParams } from "react-router";
 import { AuthContext } from "../../Authentication/ContextProvider";
-import { AllowedLanguage } from "../../Locales/Context";
-import { Class, ClassDescription } from "../../Models/Class";
-import { CreateClassInfo, GetClassDescription, GetClassInfo, UpdateClassInfo, UpsertDescription } from "./requests";
+import { AllowedLanguage, LanguageContext } from "../../Locales/Context";
+import { GetLocalizedString } from "../../Locales/Locales";
+import { Class, ClassDescriptionFull } from "../../Models/Class";
+import { SkillView, Skill } from "../../Models/Skill";
+import { GetAllSkills } from "../Skills/requests";
+import { AddLinkedSkill, CreateClassInfo, DeleteLinkedSkill, GetAttachedSkills, GetClassDescription, GetClassInfo, SkillLinkType, UpdateClassInfo, UpsertDescription } from "./requests";
+
+interface avaliableSkillSelector {
+    onChange: (selected: string) => void;
+}
+
+function AvaliableSkillSelector(data: avaliableSkillSelector) {
+    const lang = useContext(LanguageContext);
+    const [allSkills, setAllSkills] = useState<string[] | null>(null);
+
+    useState(() => {
+        GetAllSkills(lang).then(res => {
+            setAllSkills(res.map(x => x.Name));
+        });
+    });
+
+    const els = allSkills?.map(x => {
+        return (
+            <option value={x}> {x} </option>
+        );
+    });
+
+    return (
+        <select 
+            onChange={(val: React.ChangeEvent<HTMLSelectElement>) => { 
+                data.onChange(val.target.value) 
+            }}>
+        {els}
+        </select>
+    );
+}
+
+interface skillsEditInfo  {
+    /// Used in determening the relation of the class to the skill
+    SkillSetName: SkillLinkType;
+    ClassName: string;
+}
+
+function SkillsEdit(data: skillsEditInfo) {
+    const lang = useContext(LanguageContext);
+    const [skills, setSkills] = useState<Skill[] | null>(null);
+    const [skillToAdd, setskillToAdd] = useState<string | null>(null);
+    const [authCookie] = useCookies(['X-AUTH-TOKEN']);
+
+    useState(() => {
+        GetAttachedSkills(data.ClassName, data.SkillSetName).then(res => {
+            setSkills(res);
+        });
+    });
+
+    if (!skills) return (
+        <div> 
+            <h2> { GetLocalizedString(data.SkillSetName, lang) } </h2>
+        </div>
+    );
+
+    const els = skills.map(x => {
+        return (
+            <tr>
+                <td> { GetLocalizedString(x.Name, lang) } </td>
+                <td>
+                    <button className="classSkillBtn" onClick={() => {
+                        DeleteLinkedSkill(x, 
+                                          data.ClassName,
+                                          data.SkillSetName,
+                                          authCookie['X-AUTH-TOKEN']);
+
+                        const idx = skills.indexOf(x);
+                        setSkills(Array.prototype.concat(
+                            skills.slice(0, idx),
+                            skills.slice(idx + 1, skills.length),
+                        ));
+                    }}> Delete </button>
+                </td>
+            </tr>
+        )
+    });
+
+    return (
+        <div>
+            <h2 className="skillEditTypeHeader"> { GetLocalizedString(data.SkillSetName, lang) } </h2>
+            <table> 
+                <tbody>
+                    {els} 
+                    <tr>
+                        <td>
+                            <AvaliableSkillSelector onChange={(val) => {
+                                setskillToAdd(val);
+                            }} />
+                        </td>
+                        <td>
+                            <button className="classSkillBtn" onClick={() => {
+                                if (!skillToAdd) return;
+
+                                AddLinkedSkill(skillToAdd, 
+                                               data.ClassName,
+                                               data.SkillSetName,
+                                               authCookie['X-AUTH-TOKEN'])
+                                .then(res => {
+                                    if (res) setSkills([...skills, { 
+                                        Name: skillToAdd,
+                                        Type: "",
+                                        Category: "",
+                                    }]);
+                                });
+                            }}> Add </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    );
+}
+
 
 function ClassAdminPage() {
     var user = useContext(AuthContext);
@@ -14,7 +130,7 @@ function ClassAdminPage() {
     const [isNew, setIsNew] = useState(true);
 
     const [classData, setClassData] = useState<Class | null>(null);
-    const [desc, setDesc] = useState<ClassDescription | null>(null);
+    const [desc, setDesc] = useState<ClassDescriptionFull | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -75,6 +191,9 @@ function ClassAdminPage() {
                                 Language: currentLanguage,
                                 ImageURL: "",
                                 Contents: val.target.value,
+
+                                SpecizalizationSkills: new Array<SkillView>(),
+                                CareerSkills: new Array<SkillView>(),
                             });
                             return;
                         }
@@ -92,6 +211,9 @@ function ClassAdminPage() {
                                 Contents: "",
                                 Language: currentLanguage,
                                 ImageURL: val.target.value,
+
+                                SpecizalizationSkills: new Array<SkillView>(),
+                                CareerSkills: new Array<SkillView>(),
                             });
                             return;
                         }
@@ -168,6 +290,16 @@ function ClassAdminPage() {
 
                 <h2> Description update </h2>
                 { descriptionEditor() }
+                
+                <SkillsEdit 
+                    SkillSetName="specialization"
+                    ClassName={desc?.ClassName || "new"}
+                />
+
+                <SkillsEdit 
+                    SkillSetName="career"
+                    ClassName={desc?.ClassName || "new"}
+                />
         </div>
     );
 }

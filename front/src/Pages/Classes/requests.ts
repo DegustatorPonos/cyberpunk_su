@@ -2,6 +2,7 @@ import { Class, ClassDescription, ClassDescriptionFull } from "../../Models/Clas
 import { BackendURL } from "../../Config";
 import axios from "axios";
 import { AllowedLanguage } from "../../Locales/Context";
+import { Skill } from "../../Models/Skill";
 
 const ClassesURL = `${BackendURL}/classes`;
 
@@ -71,11 +72,10 @@ export async function GetClassDescription(name: string, lang: AllowedLanguage): 
         if (status !== 200) return null; 
         return data;
     } catch (err) {
-        console.log(`Failed to get class description: ${err}`);
+        console.error(`Failed to get class description: ${err}`);
         return null;
     }
 }
-
 
 export async function UpsertDescription(desc: ClassDescription | null, token: string) {
     const url = `${ClassesURL}/${desc?.ClassName}/description`;
@@ -84,4 +84,63 @@ export async function UpsertDescription(desc: ClassDescription | null, token: st
             Authorization: `Bearer ${token}`
         }
     });
+}
+
+export type SkillLinkType = "specialization" | "career"
+
+export async function GetAttachedSkills(className: string, type: SkillLinkType): Promise<Skill[] | null> {
+    const url = `${ClassesURL}/${className}/${type}`;
+    try {
+        const res = await axios.get<Skill[]>(url);
+
+        if (res.status != 200) return null;
+        return res.data;
+    } catch (err) {
+        console.error(`Failed to get attached skills with type ${type}: ${err}`);
+        return new Array<Skill>();
+    }
+}
+
+export function DeleteLinkedSkill(
+    skill: Skill,
+    className: string,
+    type: SkillLinkType,
+    token: string
+    ) {
+    const url = `${ClassesURL}/${className}/${type}/${skill.Name}`;
+    try {
+        axios.delete(url, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    } catch (err) {
+        console.error(`Failed to delete a linked skill: ${err}`);
+    }
+}
+
+export async function AddLinkedSkill(
+    skillName: string,
+    className: string,
+    type: SkillLinkType,
+    token: string
+): Promise<boolean> {
+    const url = `${ClassesURL}/${className}/${type}`;
+
+    const body: { SkillName: string } = {
+        SkillName: skillName,
+    };
+
+    try {
+        const res = await axios.post(url, body, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        return res.status == 200;
+    } catch (err) {
+        console.error(`Failed to add an attached skill with type ${type}: ${err}`);
+        return false;
+    }
 }
