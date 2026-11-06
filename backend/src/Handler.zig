@@ -75,6 +75,7 @@ pub const Handler = struct {
             switch (err) {
                 authError.Forbidden => res.setStatus(.forbidden),
                 authError.Unauthorized => res.setStatus(.unauthorized),
+                error.UnknownField => res.setStatus(.bad_request),
                 else => return err
             }
         };
@@ -89,6 +90,10 @@ pub const Handler = struct {
             }) catch |err| {
                 std.debug.print("Failed to cache the responce: {any}\n", .{ err });
             };
+        } else if (shouldInvalidateCache(req, res)) {
+            redis.DeleteCache(self.io, req.arena, cacheTopicName) catch |err| {
+                std.debug.print("Failed to clear the cache: {any}\n", .{ err });
+            };
         }
         // std.debug.print("responce {s}\n", .{ res.buffer.written() });
     }
@@ -101,6 +106,12 @@ fn stripBearerPrefix(header: []const u8) []const u8 {
         return header[headerPrefix.len..];
     }
     return header;
+}
+
+fn shouldInvalidateCache(req: *httpz.Request, res: *httpz.Response) bool {
+    if (req.method == .GET or req.method == .OPTIONS) return false;
+    if (res.status != 200 and res.status != 201) return false;
+    return true;
 }
 
 fn shouldCache(req: *httpz.Request) bool {

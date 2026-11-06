@@ -72,7 +72,9 @@ pub fn DeleteKey(io: std.Io, key: []const u8) !void {
     try redis_mutex.lock(io);
     defer redis_mutex.unlock(io);
 
-    _ = redis.redisCommand(connection, "DEL %b", key.ptr, key.len,); 
+    const raw = redis.redisCommand(connection, "DEL %b", key.ptr, key.len,); 
+    if (raw == null) return error.RedisCommandFailed;
+    redis.freeReplyObject(raw);
 }
 
 pub fn QueryTopic(io: std.Io, allocator: std.mem.Allocator, topic: []const u8) !?std.ArrayList([]const u8) {
@@ -84,9 +86,8 @@ pub fn QueryTopic(io: std.Io, allocator: std.mem.Allocator, topic: []const u8) !
         std.debug.print("raw is null\n", .{});
         return null;
     }
-    defer {
-        redis.freeReplyObject(raw);
-    }
+    defer redis.freeReplyObject(raw);
+
     const resp: *redis.redisReply = @alignCast(@ptrCast(raw));
     if (resp.type != redis.REDIS_REPLY_ARRAY) {
         std.debug.print("wrong resp type\n", .{});
@@ -95,12 +96,35 @@ pub fn QueryTopic(io: std.Io, allocator: std.mem.Allocator, topic: []const u8) !
 
     const len = resp.elements;
     var outp: std.ArrayList([]const u8) = .empty;
+    errdefer {
+        for (outp.items) |item| allocator.free(item);
+        outp.deinit(allocator);
+    }
+
     for (0..len) |i| {
         const element: *redis.redisReply = resp.element[i].?;
         const slice = element.str[0..@as(usize, @intCast(element.len))];
         try outp.append(allocator, try allocator.dupe(u8, slice));
     }
     return outp;
+}
+
+pub fn DeleteCache(io: std.Io, allocator: std.mem.Allocator, topic: []const u8) !void {
+    const query = try std.fmt.allocPrint(allocator, "{s}:*", .{topic});
+    defer allocator.free(query);
+
+    var found = try QueryTopic(io, allocator, query) orelse return;
+
+    defer {
+        for (found.items) |record| {
+            allocator.free(record);
+        }
+        found.deinit(allocator);
+    }
+
+    for (found.items) |record| {
+        try DeleteKey(io, record);
+    }
 }
 
 test "Redis connection" {
