@@ -28,7 +28,7 @@ function ClassPage() {
 
     return (
         <div className="classPage">
-            <span> <h1> {name} </h1> </span>
+            <span> <h1> {desc?.ClassViewName} </h1> </span>
             <div className="classPageBody">
                 <div className="classImage">
                     <img src={desc?.ImageURL} />

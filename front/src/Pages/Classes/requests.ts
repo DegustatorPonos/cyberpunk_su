@@ -1,4 +1,4 @@
-import { Class, ClassDescription, ClassDescriptionFull } from "../../Models/Class";
+import { Class, ClassDescription, ClassDescriptionFull, ClassView } from "../../Models/Class";
 import { BackendURL } from "../../Config";
 import axios from "axios";
 import { AllowedLanguage } from "../../Locales/Context";
@@ -6,21 +6,22 @@ import { Skill } from "../../Models/Skill";
 
 const ClassesURL = `${BackendURL}/classes`;
 
-export async function GetClasses(): Promise<Class[]> {
+export async function GetClasses(lang: AllowedLanguage): Promise<ClassView[]> {
+    const url = `${ClassesURL}?lang=${lang}`
+
     try {
-        const { data, status } = await axios.get<Class[]>(
-            ClassesURL,
-            {
+        const { data, status } = await axios.get<ClassView[]>(
+            url, {
                 headers: { Accept: "application/json" }
             }
         );
 
-        if (status != 200) return new Array<Class>();
+        if (status != 200) return new Array<ClassView>();
 
         return data;
     } catch (err) {
         console.log(`Failed to get class list: ${err}`);
-        return new Array<Class>();
+        return new Array<ClassView>();
     }
 }
 

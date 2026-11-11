@@ -9,10 +9,14 @@ const Tokens = @import("../Authentication/Tokens.zig");
 const common = @import("common.zig");
 
 pub fn RegisterEndpoints(router: *httpz.Router(*Handler.Handler,*const fn (*Handler.RequestData, *httpz.request.Request, *httpz.response.Response) anyerror!void)) void {
-    router.get("/classes", getAllClasses, .{});
+    router.get("/classes/raw", getAllClasses, .{});
+    router.get("/classes", getAllClassesView, .{});
     router.post("/classes", newClass, .{});
+
     router.get("/classes/:class", getClass, .{});
     router.put("/classes/:class", updateClass, .{});
+
+    router.get("/classes/:class/translation", )
 
     router.get("/classes/:class/description", getClassDescription, .{});
     router.put("/classes/:class/description", setClassDescription, .{});
@@ -26,11 +30,42 @@ pub fn RegisterEndpoints(router: *httpz.Router(*Handler.Handler,*const fn (*Hand
     router.delete("/classes/:class/specialization/:skill", deleteClassSpecialization, .{});
 }
 
+/// The old `GET /classes` handler. Doesn't handle translations
 fn getAllClasses(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
     var found = try db.Classes.GetAll(req.arena);
     defer found.deinit(req.arena);
     
     try res.json(found.items, .{});
+}
+
+fn getAllClassesView(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+    const query = try req.query();
+    const lang = query.get("lang") orelse "en";
+
+    var found = try db.Classes.GetAll(req.arena);
+    defer found.deinit(req.arena);
+
+    const view = struct {
+        Name: []const u8,
+        DisplayName: []const u8,
+        Origin: []const u8,
+        PreviewPicture: []const u8,
+    };
+
+    var outp: std.ArrayList(view) = try .initCapacity(res.arena, found.items.len);
+    for (found.items) |i| {
+        const translatedName = db.Classes.GetNameTranslation(req.arena, i.Name, lang) 
+            catch i.Name
+            orelse i.Name; 
+        try outp.append(req.arena, .{
+            .Name = i.Name,
+            .DisplayName = translatedName,
+            .Origin = i.Origin,
+            .PreviewPicture = i.PreviewPicture,
+        });
+    }
+
+    try res.json(outp.items, .{});
 }
 
 fn getClass(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
@@ -103,8 +138,11 @@ fn getClassDescription(_: *Handler.RequestData, req: *httpz.Request, res: *httpz
         }
     };
 
+    const translation = try db.Classes.GetNameTranslation(req.arena, class, lang) orelse class;
+
     try res.json(model.ClassDescriptionView {
         .ClassName = desc.ClassName,
+        .ClassViewName = translation,
         .Language = desc.Language,
         .Contents = desc.Contents,
         .ImageURL = desc.ImageURL,
@@ -241,4 +279,14 @@ fn getClassSpecializations(_: *Handler.RequestData, req: *httpz.Request, res: *h
 
 fn getClassCareeerSkills(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
     try res.json((try getAttachedSkills(req, res, db.Skills.GetClassCareerSkills)).items, .{});
+}
+
+fn getClassTranslation(_: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+    const class = req.param("class") orelse {
+        res.setStatus(.bad_request);
+        return error.BadRequest;
+    };
+
+    const query = try req.query();
+    const lang = query.get("lang") orelse "en";
 }

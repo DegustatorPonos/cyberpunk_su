@@ -20,6 +20,7 @@ pub const Class = struct {
 };
 
 pub const ClassDescription = struct {
+    /// The ID of the class for referencing
     ClassName: []const u8,
     Language: []const u8,
     Contents: []const u8,
@@ -36,7 +37,11 @@ pub const ClassDescription = struct {
 };
 
 pub const ClassDescriptionView = struct {
+    /// The ID of the class for referencing
     ClassName: []const u8,
+    /// Can be translated; should be displayed 
+    ClassViewName: []const u8,
+
     Language: []const u8,
     Contents: []const u8,
     ImageURL: []const u8,

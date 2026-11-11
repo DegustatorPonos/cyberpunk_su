@@ -53,6 +53,7 @@ Responses:
 ```json
 {
   "ClassName": string,
+  "ClassViewName": string,
   "Language": string,
   "Contents": string,
   "ImageURL": string,

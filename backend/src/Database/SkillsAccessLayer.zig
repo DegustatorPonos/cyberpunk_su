@@ -12,12 +12,12 @@ pub fn GetAllExpanded(alloc: std.mem.Allocator, lang: []const u8) !std.ArrayList
         \\ SELECT s.name, COALESCE(t.translated, s.name), s.type, s.category, COALESCE(d.contents, '') 
         \\ FROM skills AS s 
         \\ LEFT JOIN (
-        \\  SELECT translated, skill_name FROM SkillsTranslation
-        \\  WHERE language = $1
+        \\   SELECT translated, skill_name FROM SkillsTranslation
+        \\   WHERE language = $1
         \\ ) as t ON s.name = t.skill_name 
         \\ LEFT JOIN (
-        \\  SELECT skill_name, contents FROM skilldescriptions 
-        \\  WHERE language = $1
+        \\   SELECT skill_name, contents FROM skilldescriptions 
+        \\   WHERE language = $1
         \\ ) AS d ON s.name = d.skill_name
         \\ ORDER BY s.category ASC, s.name ASC
         ;
@@ -92,7 +92,7 @@ pub fn UpsertTranslation(skillName: []const u8, language: []const u8, translatio
         \\ VALUES ($1, $2, $3)
         \\ ON CONFLICT (skill_name, language)
         \\ DO UPDATE SET
-        \\  translated = EXCLUDED.translated
+        \\   translated = EXCLUDED.translated
         ;
 
     _ = try conn.pool.exec(query, .{
@@ -124,7 +124,7 @@ pub fn SetDescription(desc: model.SkillDescription) !void {
         \\ VALUES ($1, $2, $3)
         \\ ON CONFLICT (skill_name, language)
         \\ DO UPDATE SET
-        \\     contents = EXCLUDED.contents
+        \\   contents = EXCLUDED.contents
         ;
 
     _ = try conn.pool.exec(query, .{
@@ -161,15 +161,15 @@ fn getClassRelatedSkillViews(
         \\ SELECT s.name, COALESCE(t.translated, s.name), s.type, s.category, COALESCE(d.contents, '')
         \\ FROM skills AS s
         \\ LEFT JOIN (
-        \\  SELECT translated, skill_name FROM SkillsTranslation
-        \\  WHERE language = $2
+        \\   SELECT translated, skill_name FROM SkillsTranslation
+        \\   WHERE language = $2
         \\ ) AS t ON s.name = t.skill_name
         \\ LEFT JOIN (
-        \\  SELECT skill_name, contents FROM skilldescriptions
-        \\  WHERE language = $2
+        \\   SELECT skill_name, contents FROM skilldescriptions
+        \\   WHERE language = $2
         \\ ) AS d ON s.name = d.skill_name
         \\ WHERE s.name IN (
-        \\  SELECT skill_name FROM {s} WHERE class_name = $1
+        \\   SELECT skill_name FROM {s} WHERE class_name = $1
         \\ ) 
         \\ ORDER BY s.category ASC, s.name ASC
         ;
@@ -196,8 +196,8 @@ fn getClassRelatedSkills(
     const query_templ = 
         \\ SELECT name, type, category FROM skills
         \\ WHERE name IN (
-        \\  SELECT skill_name FROM {s}
-        \\  WHERE class_name = $1
+        \\   SELECT skill_name FROM {s}
+        \\   WHERE class_name = $1
         \\ )
         \\ ORDER BY category ASC, name ASC
         ;

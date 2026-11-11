@@ -6,6 +6,13 @@ export type Class = {
     Origin: string,
 };
 
+export type ClassView = {
+    Name: string,
+    DisplayName: string,
+    PreviewPicture: string,
+    Origin: string,
+};
+
 export type ClassDescription = {
     ClassName: string,
     Language: string,
@@ -15,6 +22,7 @@ export type ClassDescription = {
 
 export type ClassDescriptionFull = {
     ClassName: string,
+    ClassViewName: string,
     Language: string,
     Contents: string,
     ImageURL: string,

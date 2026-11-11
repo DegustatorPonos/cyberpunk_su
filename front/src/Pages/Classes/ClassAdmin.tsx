@@ -166,18 +166,15 @@ function ClassAdminPage() {
             <div>
                 <div className="descPanel">
                     <span> Description update </span>
-                        <select 
-                        value={currentLanguage}
-                        onChange={ (val) => {
-                            setCurrentLanguage(val.target.value as AllowedLanguage);
-                        }}> 
-                        <option value="ru"> ru </option>
-                        <option value="en"> en </option>
-                    </select>
 
                     <button onClick={ () => {
                         if (isNew) return;
-                        UpsertDescription(desc, authCookie['X-AUTH-TOKEN']);
+                        UpsertDescription({
+                            ClassName: desc?.ClassName || "",
+                            Contents: desc?.Contents || "",
+                            ImageURL: desc?.ImageURL || "",
+                            Language: currentLanguage,
+                        }, authCookie['X-AUTH-TOKEN']);
                     }}> Update </button> 
                 </div>
 
@@ -188,6 +185,7 @@ function ClassAdminPage() {
                             if (!name) return;
                             setDesc({
                                 ClassName: name,
+                                ClassViewName: name,
                                 Language: currentLanguage,
                                 ImageURL: "",
                                 Contents: val.target.value,
@@ -208,6 +206,7 @@ function ClassAdminPage() {
                             if (!name) return;
                             setDesc({
                                 ClassName: name,
+                                ClassViewName: name,
                                 Contents: "",
                                 Language: currentLanguage,
                                 ImageURL: val.target.value,
@@ -240,6 +239,14 @@ function ClassAdminPage() {
                         setClassData({...classData, Name: val.target.value});
                     }} /> 
                 </span>
+                <select 
+                    value={currentLanguage}
+                    onChange={ (val) => {
+                        setCurrentLanguage(val.target.value as AllowedLanguage);
+                    }}> 
+                    <option value="ru"> ru </option>
+                    <option value="en"> en </option>
+                </select>
                 <table>
                     <tbody>
                         <tr>

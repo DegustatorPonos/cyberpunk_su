@@ -1,16 +1,16 @@
 import { GetLocalizedString } from "../../Locales/Locales";
 import { AllowedLanguage, LanguageContext } from "../../Locales/Context";
 import { useContext, useState } from "react";
-import { Class } from "../../Models/Class";
+import { ClassView } from "../../Models/Class";
 import { AuthContext } from "../../Authentication/ContextProvider";
 import { GetClasses } from "./requests";
 
 function ClassesIndex() {
     var user = useContext(AuthContext);
     const lang = useContext(LanguageContext);
-    const [classList, setClassList] = useState<Class[] | null>(null);
+    const [classList, setClassList] = useState<ClassView[] | null>(null);
     useState(() => {
-        GetClasses().then(data => setClassList(data));
+        GetClasses(lang).then(data => setClassList(data));
     });
 
     const isAdmin = user != null && user.Role === "editor";
@@ -23,7 +23,7 @@ function ClassesIndex() {
     );
 }
 
-function generateClassList(classes: Class[] | null, lang: AllowedLanguage, isAdmin: boolean): any {
+function generateClassList(classes: ClassView[] | null, lang: AllowedLanguage, isAdmin: boolean): any {
     if (classes == null) return ( <div> </div> );
 
     const list = classes.map(x => {
@@ -33,7 +33,7 @@ function generateClassList(classes: Class[] | null, lang: AllowedLanguage, isAdm
         };
         return (
             <li className="classPreview">
-                <a href={ `/classes/${x.Name}` }>
+                <a href={ `/classes/${x.DisplayName}` }>
                     <div>
                     <img className="classPreviewImage" 
                         src={x.PreviewPicture || "/classified.png"}

@@ -73,7 +73,6 @@ pub fn Update(class: *model.Class) !void {
     });
 }
 
-
 pub fn GetDescription(allocator: std.mem.Allocator, className: []const u8, language: []const u8) !model.ClassDescription {
     const query = 
         \\ SELECT class_name, language, imageurl, contents 
@@ -96,8 +95,8 @@ pub fn SetDescription(desc: model.ClassDescription) !void {
         \\ VALUES ($1, $2, $3, $4)
         \\ ON CONFLICT (class_name, language)
         \\ DO UPDATE SET 
-        \\     contents = EXCLUDED.contents,
-        \\     imageurl = EXCLUDED.imageurl
+        \\   contents = EXCLUDED.contents,
+        \\   imageurl = EXCLUDED.imageurl
         ;
 
     _ = try conn.pool.exec(query, .{
@@ -106,4 +105,26 @@ pub fn SetDescription(desc: model.ClassDescription) !void {
         desc.ImageURL,
         desc.Contents,
     });
+}
+
+pub fn GetNameTranslation(allocator: std.mem.Allocator, className: []const u8, lang: []const u8) !?[]const u8 {
+    const query =
+        \\ SELECT translated FROM classtranslation WHERE
+        \\ class_name = $1 and language = $2
+        ;
+    var row = try conn.pool.row(query, .{ className, lang }) orelse return null; 
+    const outp = try allocator.dupe(u8, try row.get([]const u8, 0));
+
+    return outp;
+}
+
+pub fn UpsertNameTranslation(className: []const u8, lang: []const u8, translated: []const u8) !void {
+    const query =
+        \\ INSERT INTO classtranslation (class_name, language, translated) 
+        \\ VALUES ($1, $2, $3)
+        \\ ON CONFLICT (class_name, language) DO UPDATE SET
+        \\   translated = EXCLUDED.translated
+        ;
+
+    _ = try conn.pool.exec(query, .{className, lang, translated});
 }
