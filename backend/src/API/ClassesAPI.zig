@@ -16,7 +16,7 @@ pub fn RegisterEndpoints(router: *httpz.Router(*Handler.Handler,*const fn (*Hand
     router.get("/classes/:class", getClass, .{});
     router.put("/classes/:class", updateClass, .{});
 
-    router.get("/classes/:class/translation", )
+    // router.get("/classes/:class/translation", )
 
     router.get("/classes/:class/description", getClassDescription, .{});
     router.put("/classes/:class/description", setClassDescription, .{});
@@ -289,4 +289,7 @@ fn getClassTranslation(_: *Handler.RequestData, req: *httpz.Request, res: *httpz
 
     const query = try req.query();
     const lang = query.get("lang") orelse "en";
+
+    _ = class;
+    _ = lang;
 }

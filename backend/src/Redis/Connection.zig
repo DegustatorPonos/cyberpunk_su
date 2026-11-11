@@ -1,8 +1,6 @@
 const std = @import("std");
 const settings = @import("../Settings.zig");
-const redis = @cImport(
-    @cInclude("hiredis/hiredis.h")
-    );
+const redis = @import("c");
 
 var connection: ?*redis.redisContext = undefined;
 const addr: [*]const u8 = "127.0.0.1";

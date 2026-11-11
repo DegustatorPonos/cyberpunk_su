@@ -25,24 +25,24 @@
     .fingerprint = 0x8fe5c971ecb211bd, // Changing this has security and trust implications.
     // Tracks the earliest Zig version that the package considers to be a
     // supported use case.
-    .minimum_zig_version = "0.16.0",
+    .minimum_zig_version = "0.17.1",
     // This field is optional.
     // Each dependency must either provide a `url` and `hash`, or a `path`.
     // `zig build --fetch` can be used to fetch all dependencies of a package, recursively.
     // Once all dependencies are fetched, `zig build` no longer requires
     // internet connectivity.
     .dependencies = .{
-        .dotenv = .{
-            .url = "https://github.com/xcaeser/zig-dotenv/archive/v0.9.0.tar.gz",
-            .hash = "dotenv-0.9.0-lRzK2ftKAADFPNo2P432xH1J0KixSS1sYdaPriDuZj1a",
-        },
         .httpz = .{
-            .url = "git+https://github.com/karlseguin/http.zig?ref=master#744c588608d2b13e6dba2013577b2e0928877f19",
-            .hash = "httpz-0.0.0-PNVzrCzKCAAKOXAKsuPzDZYzstlou0FLBp3HlDoRgmUa",
+            .url = "git+https://github.com/karlseguin/http.zig?ref=master#1bb71ff128a044b1645df91046473c38abbf965c",
+            .hash = "httpz-0.0.0-PNVzrFNMCQBySpfunggKlQQoD_FvF3yADlqg3xfbdX8p",
         },
         .pg = .{
-            .url = "git+https://github.com/karlseguin/pg.zig?ref=master#4215baf19f7f61a94aab9f6c5893ea12aa9bce96",
-            .hash = "pg-0.0.0-Wp_7gYr_BgC1O2IRXa8tdwXhOZJLLSAl7F_ut1N07zF7",
+            .url = "git+https://github.com/karlseguin/pg.zig?ref=master#a9fb17023e2f534dd1712628c80eaa9a551473a5",
+            .hash = "pg-0.0.0-Wp_7gRJyBwC7ca9P685_O1w7RLoLXAdYpDMgHEmkDJpM",
+        },
+        .libenv = .{
+            .url = "https://github.com/xcaeser/libenv/archive/v0.13.0.tar.gz",
+            .hash = "libenv-0.13.0-anm2HGybAABf-5qtPI5C3qJLczARHxghe8K_fneziu92",
         },
     },
     .paths = .{

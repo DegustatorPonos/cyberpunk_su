@@ -1,6 +1,6 @@
 const std = @import("std");
 const pg = @import("pg");
-const dotenv = @import("dotenv");
+const dotenv = @import("libenv");
 const settings = @import("../Settings.zig");
 
 pub const ResultErrors = error {
