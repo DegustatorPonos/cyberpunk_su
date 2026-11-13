@@ -1,4 +1,4 @@
-import { Class, ClassDescription, ClassDescriptionFull, ClassView } from "../../Models/Class";
+import { Class, ClassDescription, ClassDescriptionFull, ClassTranslation, ClassView } from "../../Models/Class";
 import { BackendURL } from "../../Config";
 import axios from "axios";
 import { AllowedLanguage } from "../../Locales/Context";
@@ -143,5 +143,44 @@ export async function AddLinkedSkill(
     } catch (err) {
         console.error(`Failed to add an attached skill with type ${type}: ${err}`);
         return false;
+    }
+}
+
+export async function GetClassNameTranslation(
+    className: string,
+    lang: AllowedLanguage
+): Promise<string> {
+    const url = `${ClassesURL}/${className}/translation?lang=${lang}`;
+    try {
+        const res = await axios.get<ClassTranslation>(url);
+        if (res.status != 200) return className;
+
+        return res.data.Translation;
+    } catch (err) {
+        console.error(`Failed to get the class translation: ${err}`);
+        return className;
+    }
+}
+
+export async function SetClassNameTranslation(
+    className: string,
+    lang: AllowedLanguage,
+    translated: string,
+    token: string
+) {
+    const url = `${ClassesURL}/${className}/translation`;
+    const body = {
+        Language: lang,
+        Translation: translated,
+    };
+
+    try {
+        await axios.put(url, body, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    } catch (err) {
+        console.error(`Failed to upsert the class translation: ${err}`);
     }
 }

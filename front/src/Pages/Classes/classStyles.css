@@ -91,3 +91,11 @@
     padding-left: 40px;
     margin-top: 0px;
 }
+
+.nameTranslation {
+    padding-bottom: 10px;
+}
+
+.nameTranslationInp {
+    max-width: 60%;
+}

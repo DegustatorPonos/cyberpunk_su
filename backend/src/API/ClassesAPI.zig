@@ -16,7 +16,8 @@ pub fn RegisterEndpoints(router: *httpz.Router(*Handler.Handler,*const fn (*Hand
     router.get("/classes/:class", getClass, .{});
     router.put("/classes/:class", updateClass, .{});
 
-    // router.get("/classes/:class/translation", )
+    router.get("/classes/:class/translation", getClassTranslation, .{});
+    router.put("/classes/:class/translation", setClassTranslation, .{});
 
     router.get("/classes/:class/description", getClassDescription, .{});
     router.put("/classes/:class/description", setClassDescription, .{});
@@ -290,6 +291,29 @@ fn getClassTranslation(_: *Handler.RequestData, req: *httpz.Request, res: *httpz
     const query = try req.query();
     const lang = query.get("lang") orelse "en";
 
-    _ = class;
-    _ = lang;
+    const found = try db.Classes.GetNameTranslation(req.arena, class, lang);
+    try res.json(.{
+        .Translation = found,
+    }, .{});
+}
+
+fn setClassTranslation(data: *Handler.RequestData, req: *httpz.Request, res: *httpz.Response) !void {
+    try data.CheckAccess(.editor);
+
+    const class = req.param("class") orelse {
+        res.setStatus(.bad_request);
+        return error.BadRequest;
+    };
+
+    const reqStruct = struct {
+        Language: []const u8,
+        Translation: []const u8,
+    };
+
+    const body = try req.json(reqStruct) orelse {
+        res.setStatus(.bad_request);
+        return;
+    };
+
+    try db.Classes.UpsertNameTranslation(class, body.Language, body.Translation);
 }

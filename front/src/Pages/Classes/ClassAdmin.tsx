@@ -7,7 +7,7 @@ import { GetLocalizedString } from "../../Locales/Locales";
 import { Class, ClassDescriptionFull } from "../../Models/Class";
 import { SkillView, Skill } from "../../Models/Skill";
 import { GetAllSkills } from "../Skills/requests";
-import { AddLinkedSkill, CreateClassInfo, DeleteLinkedSkill, GetAttachedSkills, GetClassDescription, GetClassInfo, SkillLinkType, UpdateClassInfo, UpsertDescription } from "./requests";
+import { AddLinkedSkill, CreateClassInfo, DeleteLinkedSkill, GetAttachedSkills, GetClassDescription, GetClassInfo, GetClassNameTranslation, SetClassNameTranslation, SkillLinkType, UpdateClassInfo, UpsertDescription } from "./requests";
 
 interface avaliableSkillSelector {
     onChange: (selected: string) => void;
@@ -124,6 +124,7 @@ function SkillsEdit(data: skillsEditInfo) {
 
 function ClassAdminPage() {
     var user = useContext(AuthContext);
+    const lang = useContext(LanguageContext);
     const { name } = useParams();
     const [currentLanguage, setCurrentLanguage] = useState<AllowedLanguage>("en");
     const [authCookie, ] = useCookies(['X-AUTH-TOKEN']);
@@ -131,6 +132,7 @@ function ClassAdminPage() {
 
     const [classData, setClassData] = useState<Class | null>(null);
     const [desc, setDesc] = useState<ClassDescriptionFull | null>(null);
+    const [translation, setTranslation] = useState<string>("");
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -140,13 +142,15 @@ function ClassAdminPage() {
                 setClassData(res); 
                 setIsNew(res == null);
             });
-            GetClassDescription(name || "", currentLanguage).then(res => setDesc(res));
         }
     }, [user]);
 
     useEffect(() => {
         GetClassDescription(name || "", currentLanguage).then(res => {
             setDesc(res);
+        });
+        GetClassNameTranslation(name || "", currentLanguage).then(res => {
+            setTranslation(res);
         });
     }, [currentLanguage, name]);
 
@@ -223,6 +227,31 @@ function ClassAdminPage() {
         );
     }
 
+    function ClassNameUpdate() {
+        return (
+            <div className="nameTranslation">
+                <h2> Class name translation </h2>
+                <div className="descPanel">
+                    <input 
+                        className="nameTranslationInp" 
+                        value={translation || classData?.Name} 
+                        onChange={val => { setTranslation(val.target.value); }}
+                        />
+                    <button
+                        onClick={() => {
+                            if (!classData) return;
+                            SetClassNameTranslation(
+                                classData.Name, 
+                                currentLanguage,
+                                translation,
+                                authCookie['X-AUTH-TOKEN']
+                            )
+                        }}> { GetLocalizedString("Update", lang) } </button>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="WeaponPage">
         <h1> { isNew ? "Creating a new class" : "Editing a class" } </h1>
@@ -239,6 +268,7 @@ function ClassAdminPage() {
                         setClassData({...classData, Name: val.target.value});
                     }} /> 
                 </span>
+
                 <select 
                     value={currentLanguage}
                     onChange={ (val) => {
@@ -247,6 +277,9 @@ function ClassAdminPage() {
                     <option value="ru"> ru </option>
                     <option value="en"> en </option>
                 </select>
+
+                { ClassNameUpdate() }
+
                 <table>
                     <tbody>
                         <tr>

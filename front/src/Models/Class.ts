@@ -1,5 +1,9 @@
 import { SkillView } from "./Skill";
 
+export type ClassTranslation = {
+    Translation: string,
+};
+ 
 export type Class = {
     Name: string,
     PreviewPicture: string,

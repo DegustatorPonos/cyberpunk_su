@@ -91,6 +91,38 @@ Responses:
 - 400: Malformed request
 - 200: Success
 
+# Translations
+
+## Get class translation
+- GET /classes/:class/translation
+- Params:
+- - :class - Name of the class. Proveded in the Get all Name field
+- Query params:
+- - lang: the language of the description requested. Default value: "en"
+Responses:
+- 400: Malformed request
+- 200: Success:
+```json
+{
+    "Translation": string
+}
+```
+
+## Set class translation
+- GET /classes/:class/translation
+- Requires authentication header with editor role
+- Params:
+- - :class - Name of the class. Proveded in the Get all Name field
+```json
+{
+    "Language": string,
+    "Translation": string
+}
+```
+Responses:
+- 400: Malformed request
+- 200: Success
+
 # Specialization skills
 
 ## Get specialization skill

@@ -33,13 +33,13 @@ function generateClassList(classes: ClassView[] | null, lang: AllowedLanguage, i
         };
         return (
             <li className="classPreview">
-                <a href={ `/classes/${x.DisplayName}` }>
+                <a href={ `/classes/${x.Name}` }>
                     <div>
                     <img className="classPreviewImage" 
                         src={x.PreviewPicture || "/classified.png"}
                         alt={GetLocalizedString(x.Name, lang)}
                     />
-                    <h2 className="classPreviewName"> { GetLocalizedString(x.Name, lang) } </h2>
+                    <h2 className="classPreviewName"> { x.DisplayName } </h2>
                     <p className="classPreviewOrigin"> { GetLocalizedString(x.Origin, lang) } </p>
                     </div>
                 </a>

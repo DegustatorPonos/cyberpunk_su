@@ -114,6 +114,7 @@ pub fn GetNameTranslation(allocator: std.mem.Allocator, className: []const u8, l
         ;
     var row = try conn.pool.row(query, .{ className, lang }) orelse return null; 
     const outp = try allocator.dupe(u8, try row.get([]const u8, 0));
+    try row.deinit();
 
     return outp;
 }
